@@ -2,7 +2,7 @@
 
 all: effectivescala.html
 
-%.html: %.md
+%.html: %.mo
 	cat $< | bash proc.sh | bash toc.sh | bash fmt.sh | markdown > $@
 
 %.ps: %.pic
