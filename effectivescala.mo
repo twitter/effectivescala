@@ -1,8 +1,14 @@
 <div>
+<!--
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+-->
 <style>	
 	body {
 		font-family: times, serif;
 		margin: 0 1.0in 0 1.0in;
+/*		line-height: 1.3em;*/
 	}
 
 	address {
@@ -30,6 +36,15 @@
 	code {
 		font-family: Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
 		font-size: 0.75em;
+/*		font-size: 0.90em;*/
+	}
+	
+	address {
+		font-family: 'Lucida Grande', sans-serif;
+	}
+	
+	h1 {
+		font-family: 'Lucida Grande', sans-serif;
 	}
 	
 	h2 {
@@ -93,7 +108,14 @@ brevity enhances clarity. However brevity is a blunt tool that can
 also deliver the opposite effect: After correctness, think always of
 the reader.
 
-Note that this is not an introduction to Scala. We assume the reader
+Above all, *program in Scala*. You are not writing Java, nor Haskell,
+nor OCaml; a Scala program is unlike one written in any of these. In
+order to use the language effectively, you must phrase the problems
+with the tool and constructions provided to you. There's no use
+coercing a Java program into Scala, for it will be inferior in most
+ways to its original.
+
+This is not an introduction to Scala. We assume the reader
 is familiar with the language. Some resources for learning Scala are:
 
 * [Scala School](http://twitter.github.com/scala_school/)
@@ -112,12 +134,12 @@ yet another corner of the language grammar.
 
 This is of particular importance to Scala, as its grammar has a high
 degree of overlap. One telling example is method invocation: Methods
-can be invoked with `.`, with whitespace, without parenthesis for
-nullary or unary methods, with parenthesis for these, … Furthermore,
-the different styles of method invocations expose different
-ambiguities in its grammar! Surely the consistent application of a
-carefully chosen set of formatting rules will resolve a great deal of
-ambiguity for both man and machine.
+can be invoked with "`.`", with whitespace, without parenthesis for
+nullary or unary methods, with parenthesis for these, and so on.
+Furthermore, the different styles of method invocations expose
+different ambiguities in its grammar! Surely the consistent
+application of a carefully chosen set of formatting rules will resolve
+a great deal of ambiguity for both man and machine.
 
 We adhere to the [Scala style
 guide](http://docs.scala-lang.org/style/) plus the following rules.
@@ -343,7 +365,25 @@ Don't use subclassing when an alias will do.
 
 ## Collections
 
-Scala's collections make full use of the poweful type system.
+Scala has a very generic, rich, powerful and composable collections
+library; collections are high level and expose a large set of
+operations. Many collection manipulations and transformations can be
+expressed succinctly and readbly, but careless application of its
+features can often lead to the opposite result. Every Scala programmer
+should read the [collections design
+document](http://www.scala-lang.org/docu/files/collections-api/collections.html);
+it provides great insight and motivation for Scala collections
+library.
+
+Always use the simplest collection that meets your needs.
+
+### Hierarchy
+
+The collections library is large: in addition to an elaborate
+hierarchy (at the root of which is `Traversable[T]`), there are
+`immutable` and `mutable` variants for most collections. Whatever
+the complexity, the following diagram contains the important 
+distinctions (for both `immutable` and `mutable` hierarchies)
 
 <img src="coll.png" style="margin-left: 3em;" />
 .cmd
@@ -358,7 +398,6 @@ Iterable: [
 	"\s+2Iterable[T]\s-2" at Box
 ]
 
-
 Seq: box "Seq[T]" with .n at Iterable.s + (-1.5, -0.5)
 Set: box "Set[T]" with .n at Iterable.s + (0, -0.5)
 Map: box "Map[T]" with .n at Iterable.s + (1.5, -0.5)
@@ -369,19 +408,112 @@ arrow from Iterable.s to Map.nw
 EOF
 .endcmd
 
-Use the simplest collection that meets your needs.
+.LP <code>Iterable[T]</code> is any collection that may be iterated over, they provides an <code>iterator</code> method (and thus <code>foreach</code>). <code>Seq[T]</code>s are collections that are <em>ordered</em>, <code>Set[T]</code>s are mathematical sets (unordered collections of unique items), and <code>Map[T]</code>s are associative arrays, also unordered.
 
-when receiving: the most general, don't receive List[] when you mean Seq[]
+### Use
 
+*Prefer using immutable collections.* They are applicable in most
+circumstances, and make programs easier to reason about since they are
+referentially transparent and are thus also threadsafe by default.
+
+*Use the `mutable` namespace explicitly.* Don't import
+`scala.collections.mutable._` and refer to `Set`, instead
+
+	import scala.collections.mutable
+	val set = mutable.Set()
+
+.LP makes it clear that the mutable variant is being used.
+
+*Use the default constructor for the collection type.* Whenever you
+need an ordered sequence (and not necessarily linked list semantics),
+use the `Seq()` constructor, and so on:
+
+	val seq = Seq(1, 2, 3)
+	val set = Set(1, 2, 3)
+	val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
+
+.LP This style separates the semantics of the collection from its implementation, letting the collections library uses the most appropriate type: you need a <code>Map</code>, not necessarily a Red-Black Tree. Furthermore, these default constructors will often use specialized representations: for example, <code>Map()</code> will use a 3-field object for maps with 3 keys.
+
+The corrolary to the above is: in your own methods and constructors, *receive the most generic collection
+type appropriate*. This typically boils down to one of the above:
+`Iterable`, `Seq`, `Set`, or `Map`. If your method needs a sequence,
+use `Seq[T]`, not `List[T]`.
 
 <!--
-
-use Seq[] for ordered sequential data.
-
-Ordering.
-
-
+something about buffers for construction?
+anything about streams?
 -->
+
+### Style
+
+Functional programming encourages pipelining transformations of an
+immutable collection to shape it to its desired result. This often
+leads to very succinct solutions, but can also be confusing to the
+reader -- it is often difficult to discern the author's intent, or keep
+track of all the intermediate results that are only implied. For example,
+let's say we wanted to aggregate votes for different programming 
+languages from a sequence of (language, num votes), showing them
+in order of most votes to least, we could write:
+	
+	val votes = Seq(("scala", 1), ("java", 4), ("scala", 10), ("scala", 1), ("python", 10))
+	val orderedVotes = votes
+	  .groupBy(_._1)
+	  .map { case (which, counts) => 
+	    (which, counts.foldLeft(0)(_ + _._2))
+	  }.toSeq
+	  .sortBy(_._2)
+	  .reverse
+
+.LP this is both succinct and correct, but nearly every reader will have a difficult time recovering the original intent of the author. A strategy that often serves to clarify is to *name intermediate results and parameters*,
+
+	val votesByLang = votes groupBy { case (lang, _) => lang }
+	val sumByLang = votesByLang map { case (lang, counts) =>
+	  val countsOnly = counts map { case (_, count) => count }
+	  (lang, countsOnly.sum)
+	}
+	val orderedVotes = sumByLang.toSeq
+	  .sortBy { case (_, count) => count }
+	  .reverse
+
+.LP the code is nearly as succinct, but much more clearly expresses both the transformations take place (by naming intermediate values), and the structure of the data being operated on (by naming parameters). If you worry about namespace pollution with this style, group expressions with <code>{}</code>:
+
+	val orderedVotes = {
+	  val votesByLang = ...
+	  ...
+	}
+
+### Performance
+
+High level collections libraries (as with higher level constructs
+generally) make reasoning about performance more difficult: the
+further you stray from instructing the computer directly -- in other
+words, imperative style -- the harder it is to predict the exact
+performance implications of a piece of code. Reasoning about
+correctness however, is typically easier, and readability is also
+enhanced. With Scala the picture is further complicated by the Java
+runtime; Scala hides boxing/unboxing operations from you, which can
+incur severe performance or space penalties.
+
+Before focusing on low level details, make sure you are using a
+collection appropriate for your use. Make sure your datastructure
+doesn't have unexpected asymptotic complexity. The complexities of the
+various Scala collections are described
+[here](http://www.scala-lang.org/docu/files/collections-api/collections_40.html).
+
+The first rule of optimizing for performance is to understand *why*
+your application is slow. Do not operate without data;
+profile^[[Yourkit](http://yourkit.com) is a good profiler] your
+application before proceeding. Focus first on hot loops and large data
+structures. Excessive focus on optimization is typically wasted
+effort. Remember Knuth's maxim: "Premature optimisation is the root of
+all evil."
+
+It is often approriate to use lower level collections in situations
+that require better performance or space efficiency. Use arrays
+instead of lists for large sequences (the immutable `Vector`
+collections provides a referentially transparent interface to arrays);
+and use buffers instead of direct sequence construction when
+performance matters.
 
 ## Concurrency
 
@@ -427,7 +559,7 @@ failure. These qualities has convinced us that they are especially
 well suited for use in functional programming languages, where this is
 the encouraged style.
 
-*Prefer "data transformation" over creating your own futures.* Future
+*Prefer transforming futures over creating your own.* Future
 transformations ensure that failures are propagated, that
 cancellations are signalled, and frees the programmer from thinking
 about the implications of the Java memory model. Even a careful
@@ -482,14 +614,24 @@ multiple futures that should be combined.
 
 ### Collections
 
-Always start with the simplest, most boring, and most standard
-collection that serves the purpose. Don't reach for a concurrent
-collection before you *know* that a synchronized one won't do: the JVM
-has sophisticated machinery to make synchronization cheap, so their
-efficacy may surprise you.
+The subject of concurrent collections is fraught with opinions,
+subtleties, dogma and FUD. In most practical situations they are a
+nonissue: Always start with the simplest, most boring, and most
+standard collection that serves the purpose. Don't reach for a
+concurrent collection before you *know* that a synchronized one won't
+do: the JVM has sophisticated machinery to make synchronization cheap,
+so their efficacy may surprise you.
 
-Many concurrent collections have complicated semantics, and make use
-of subtler aspects of the Java memory model, so make sure you
+If an immutable collection will do, use it -- they are referentially
+transparent, so reasoning about them in a concurrent context is
+simple. Mutations in immutable collections are typically handled by
+updating a reference to the current value (in a `var` cell or an
+`AtomicReference`). Care must be taken to apply these correctly:
+atomics must be retried, and `vars` must be declared volatile in order
+for them to be published to other threads.
+
+Mutable concurrent collections have complicated semantics, and make
+use of subtler aspects of the Java memory model, so make sure you
 understand the implications -- especially with respect to publishing
 updates -- before you use them. Synchronized collections also compose
 better: operations like `getOrElseUpdate` cannot be implemented
@@ -515,6 +657,12 @@ Returns are OK!
 
 
 ## Consider the Java programmer
+
+<!--
+
+generally:  short functions, etc.
+
+-->
 
 
 [Scala]: http://www.scala-lang.org/
