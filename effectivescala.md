@@ -1,94 +1,91 @@
-Title:		Effective Scala
-Date:	2012/01/24
-Quotes Language: english
+<div>
+<style>	
+	body {
+		font-family: times, serif;
+		margin: 0 1.0in 0 1.0in;
+	}
 
-<style>
-body {
-	font-family: times, serif;
-	margin: 0 1.0in 0 1.0in;
-}
-
-
-address {
-	text-align: center;
-}
-
-.header {
-	text-align: center;
-	margin-top: 1em;
-}
-
-.rhs {
-	text-align: left;
-}
-
-p {
-	text-indent: 1em;
-	text-align: justify;
-}
-
-.unind {
-	text-indent: 0em;
-}
-
-code {
-	font-family: Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
-	font-size: 0.75em;
-}
-
-h2 {
-	font-weight: bold;
-	font-size: 110%;
-	margin-top: 1.5em;
-	margin-bottom: 0.05in;
-}
-
-h3 {
-	font-size: 100%;
-	font-style: oblique;
-	margin-top: 1.5em;
-	margin-bottom: 0.05in;
-}
-
-pre {
-	margin: 0 0.5in 0 0.5in;
-}
-
-dl.rules dt {
-	font-style: oblique;
-}
-
-table#toc {
-	margin: 0 auto;
-}
-
-/* XXX: apply only to TOC. todo: reapply -- html whatever? */   
-ul {
-/*	list-style-type: none;*/
-}
-
+	address {
+		text-align: center;
+	}
+	
+	.header {
+		text-align: center;
+		margin-top: 1em;
+	}
+	
+	.rhs {
+		text-align: left;
+	}
+	
+	p {
+		text-indent: 1em;
+		text-align: justify;
+	}
+	
+	.LP {
+		text-indent: 0em;
+	}
+	
+	code {
+		font-family: Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+		font-size: 0.75em;
+	}
+	
+	h2 {
+		font-weight: bold;
+		font-size: 110%;
+		margin-top: 1.5em;
+		margin-bottom: 0.05in;
+	}
+	
+	h3 {
+		font-size: 100%;
+		font-style: oblique;
+		margin-top: 1.5em;
+		margin-bottom: 0.05in;
+	}
+	
+	pre {
+		margin: 0 0.5in 0 0.5in;
+	}
+	
+	dl.rules dt {
+		font-style: oblique;
+	}
+	
+	table#toc {
+		margin: 0 auto;
+	}
+	
+	/* XXX: apply only to TOC. todo: reapply -- html whatever? */   
+	ul {
+	/*	list-style-type: none;*/
+	}
 </style>
+</div>
 
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com</address>
 
 <h2>Table of Contents</h2>
 
-.toc
- 
+.TOC
+
+
 ## Introduction
 
-[Scala] [][#Odersky:2004] is one of the chief application programming
-languages used at Twitter. Much of our infrastructure is written in
-Scala and we have several large libraries[^libs] supporting it. While
-highly effective, Scala is also a large language, and experience has
-taught us to practice great care in its application. This guide
-attempts to distill this experience into short essays, providing a
-guide of *best practices*. Our experience is in creating high volume
-services that form distributed systems (and our advice is thus
-biased), but most of the advice herein should translate naturally to
-other domains. This is not the law, but deviation should be well
-justified.
+[Scala][Scala] is one of the chief application programming languages
+used at Twitter. Much of our infrastructure is written in Scala and
+[we have several large libraries](http://github.com/twitter/)
+supporting it. While highly effective, Scala is also a large language,
+and experience has taught us to practice great care in its
+application. This guide attempts to distill this experience into short
+essays, providing a guide of *best practices*. Our experience is in
+creating high volume services that form distributed systems (and our
+advice is thus biased), but most of the advice herein should translate
+naturally to other domains. This is not the law, but deviation should
+be well justified.
 
 Scala provides many tools that enable succinct expression. Less typing
 is less reading, and less reading is often faster reading, and thus
@@ -216,7 +213,7 @@ provide API documentation. Use the following style:
 	 * ...
 	 */
 	 
-.< but <em>not</em> the standard ScalaDoc style:
+.LP but <em>not</em> the standard ScalaDoc style:
 
 	/** ServiceBuilder builds services
 	 * ...
@@ -259,7 +256,7 @@ in:
 	trait Service
 	def make() = new Service{}
 
-.< does <em>not</em> have a return type of <code>Service</code>. This is achieved with an explicit annotation:
+.LP does <em>not</em> have a return type of <code>Service</code>. This is achieved with an explicit annotation:
 
 	def make(): Service = new Service{}
 
@@ -290,22 +287,22 @@ is typically invalid with mutable collections. Consider
 	  def add[U >: T](item: U)
 	}
 
-.< and the following type hierarchy:
+.LP and the following type hierarchy:
 
 	trait Mammal
 	trait Dog extends Mammal
 	trait Cat extends Mammal
 
-.< If I now have a hash set of dogs
+.LP If I now have a hash set of dogs
 
 	val dogs: HashSet[Dog]
 
-.< treat it as a set of Mammals and add a cat.
+.LP treat it as a set of Mammals and add a cat.
 
 	val mammals: HashSet[Mammal] = dogs
 	mammals.add(new Cat{})
 
-.< This is no longer a HashSet of dogs!
+.LP This is no longer a HashSet of dogs!
 
 <!--
   *	when to use abstract type members?
@@ -318,12 +315,12 @@ purpose, but do not alias types that are self-explanatory.
 
 	() => Int
 
-.< is clearer than
+.LP is clearer than
 
 	type IntMaker = () => Int
 	IntMaker
 
-.< since it is both short and uses a common type. However
+.LP since it is both short and uses a common type. However
 
 	class ConcurrentPool[K, V] {
 	  type Queue = ConcurrentLinkedQueue[V]
@@ -331,13 +328,13 @@ purpose, but do not alias types that are self-explanatory.
 	  ...
 	}
 
-.< is helpful since it communicates purpose and enhances brevity.
+.LP is helpful since it communicates purpose and enhances brevity.
 
 Don't use subclassing when an alias will do.
 
 	trait SocketFactory extends (SocketAddress) => Socket
 	
-.< a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a trait here makes it impossible use a function literal to provide a <code>SockeFactory</code>. If a trait is introduced because it allows a toplevel name, use a package object instead.
+.LP a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a trait here makes it impossible use a function literal to provide a <code>SockeFactory</code>. If a trait is introduced because it allows a toplevel name, use a package object instead.
 
 	package com.twitter
 	package object net {
@@ -345,6 +342,32 @@ Don't use subclassing when an alias will do.
 	}
 
 ## Collections
+
+Scala's collections make full use of the poweful type system.
+
+<img src="coll.png" style="margin-left: 3em;" />
+.cmd
+pic2graph -format png >coll.png <<EOF 
+boxwid=1.0
+
+.ft I
+.ps +9
+
+Iterable: [
+	Box: box wid 1.5*boxwid
+	"\s+2Iterable[T]\s-2" at Box
+]
+
+
+Seq: box "Seq[T]" with .n at Iterable.s + (-1.5, -0.5)
+Set: box "Set[T]" with .n at Iterable.s + (0, -0.5)
+Map: box "Map[T]" with .n at Iterable.s + (1.5, -0.5)
+
+arrow from Iterable.s to Seq.ne
+arrow from Iterable.s to Set.n
+arrow from Iterable.s to Map.nw
+EOF
+.endcmd
 
 Use the simplest collection that meets your needs.
 
@@ -391,8 +414,8 @@ management would be required.
 
 ### Futures
 
-Use Futures[^futures] to manage concurrency. They decouple
-concurrent operations from resource management: for example, [Finagle]
+Use Futures to manage concurrency. They decouple
+concurrent operations from resource management: for example, [Finagle][Finagle]
 multiplexes concurrent operations onto few threads in an efficient
 manner. Scala has lightweight closure literal syntax, so Futures
 introduce little syntactic overhead, and they become second nature to
@@ -459,10 +482,11 @@ multiple futures that should be combined.
 
 ### Collections
 
-Always start with the simplest, most boring, most standard collection that serves
-the purpose. Don't reach for a concurrent collection before you *know* that
-a synchronized one won't do: the JVM has sophisticated machinery to make
-synchronization cheap, so their efficacy may surprise you.
+Always start with the simplest, most boring, and most standard
+collection that serves the purpose. Don't reach for a concurrent
+collection before you *know* that a synchronized one won't do: the JVM
+has sophisticated machinery to make synchronization cheap, so their
+efficacy may surprise you.
 
 Many concurrent collections have complicated semantics, and make use
 of subtler aspects of the Java memory model, so make sure you
@@ -492,13 +516,6 @@ Returns are OK!
 
 ## Consider the Java programmer
 
-
-[#Odersky:2004]: Martin Odersky et. al. *An Overview of the Scala
-Programming Language*. EPFL Tech report, 2004.
-
-[^libs]: [Finagle] and [Util] are used in nearly all of our systems.
-
-[^futures]: Use the [util implementation](https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Future.scala).
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
