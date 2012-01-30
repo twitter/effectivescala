@@ -77,6 +77,10 @@
 	ul {
 	/*	list-style-type: none;*/
 	}
+	
+	.algo {
+		font-variant: small-caps;
+	}
 </style>
 </div>
 
@@ -209,21 +213,43 @@ import concurrent</code></pre> in favor of the unambiguous <pre><code>import com
 <dd>The reader can refer to all imports in one place.</dd>
 </dl>
 
-### Implicits
+### Braces
 
-Implicits are a powerful language feature, but they should be used
-sparingly. They have complicated resolution rules and make it
-difficult -- by simple lexical examination -- to see what's actually
-happening. It's definitely OK to use implicits in the following
-situations:
+Braces are used to create compound expressions (they serve other uses
+in the "module language"), where the value of the compound expression
+is the last expression in the list. Avoid using braces for simple
+expressions; write
 
-* Extending or adding a Scala-style collection
-* Adapting an object ("pimp my library" pattern)
-* Use to *enhance type safety* by providing constraint evidence
-* For `Manifest`s
+	def square(x: Int) = x*x
+	
+.LP but not
 
-If you do find yourself using implicits, always ask yourself if there is
-a way to achieve the same thing without their help.
+	def square(x: Int) = {
+	  x * x
+	}
+	
+.LP even though it may be tempting to distinguish the method body syntactically. The first alternative has less clutter and is easier to read. <em>Avoid syntactical ceremony</em> unless it clarifies.
+
+### Pattern matching
+
+Use pattern matching directly in function definitions when applicable;
+instead of
+
+	list map { item =>
+	  item match {
+	    case Some(x) => x
+	    case None => default
+	  }
+	}
+	
+.LP collapse the match
+
+	list map {
+	  case Some(x) => x
+	  case None => default
+	}
+
+.LP it's clear that the list items are being mapped over &mdash; the extra indirection does not elucidate.
 
 ### Comments
 
@@ -362,6 +388,32 @@ Don't use subclassing when an alias will do.
 	package object net {
 	  type SocketFactory = (SocketAddress) => Socket
 	}
+	
+### Implicits
+
+Implicits are a powerful type system feature, but they should be used
+sparingly. They have complicated resolution rules and make it
+difficult -- by simple lexical examination -- to grasp what is actually
+happening. It's definitely OK to use implicits in the following
+situations:
+
+* Extending or adding a Scala-style collection
+* Adapting or extending an object ("pimp my library" pattern)
+* Use to *enhance type safety* by providing constraint evidence
+* To provide type evidence (typeclassing)
+* For `Manifest`s
+
+If you do find yourself using implicits, always ask yourself if there is
+a way to achieve the same thing without their help.
+
+Do not use implicits to do automatic conversions between similar
+datatypes (for example, converting a list to a stream); these are
+better done explicitly because the types have different semantics, and
+the reader should beware of these implications. A common exception
+to this rule is the use of the standard library's `JavaConversions`. These
+are carefully chosen to retain semantics and don't result in unexpected
+behavior -- they are also idiomatic; the reader knows how they work,
+and expects their application.
 
 ## Collections
 
@@ -464,7 +516,7 @@ in order of most votes to least, we could write:
 	  .sortBy(_._2)
 	  .reverse
 
-.LP this is both succinct and correct, but nearly every reader will have a difficult time recovering the original intent of the author. A strategy that often serves to clarify is to *name intermediate results and parameters*,
+.LP this is both succinct and correct, but nearly every reader will have a difficult time recovering the original intent of the author. A strategy that often serves to clarify is to <em>name intermediate results and parameters</em>:
 
 	val votesByLang = votes groupBy { case (lang, _) => lang }
 	val sumByLang = votesByLang map { case (lang, counts) =>
@@ -651,12 +703,270 @@ Async*?
 -->
 
 
-## Control flow
+## Control structures
 
-Returns are OK!
+Programs in the functional style tends to require fewer traditional
+control structure, and read better when written in the declarative
+style. This typically implies breaking your logic up into several
+small methods or functions, and gluing them together with `match`
+expressions. Functional programs also tend to be more
+expression-oriented: branches of conditionals compute values of
+the same type, `for (..) yield` computes comprehensions, and recursion
+is commonplace.
+
+### Recursion
+
+*Phrasing your problem in recursive terms often simplifies,* and if
+tail-recursive (which can be checked by the `@tailrec` annotation), the 
+compiler will even translate your code into a regular loop.
+
+Consider the standard imperative version of a heap <span
+class="algo">fix-down</span>:
+
+	def fixDown(heap: Array[T], m: Int, n: Int): Unit = {
+	  var k: Int = m
+	  while (n >= 2*k) {
+	    var j = 2*k
+	    if (j < n && heap(j) < heap(j + 1))
+	      j += 1
+	    if (heap(k) >= heap(j))
+	      return
+	    else {
+	      swap(heap, k, j)
+	      k = j
+	    }
+	  }
+	}
+
+Every time the while loop is entered, we're working with state dirtied
+by the previous iteration. The value of each variable is a function of
+which branches were taken, and it returns in the middle of the loop
+when the correct position was found. Here's a (tail) recursive
+implementation^[From [Finagle's heap
+balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41)]:
+
+	@tailrec
+	final def fixDown(heap: Array[T], i: Int, j: Int) {
+	  if (j < i*2) return
+	
+	  val m = if (j == i*2 || heap(2*i) < heap(2*i+1)) 2*i else 2*i + 1
+	  if (heap(m) < heap(i)) {
+	    swap(heap, i, m)
+	    fixDown(heap, m, j)
+	  }
+	}
+
+.LP here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells; invariants abound. It&rsquo;s much easier to reason about, and easier to read as well.
+
+<!--
+elaborate..
+-->
 
 
-## Consider the Java programmer
+### Returns
+
+This is not to say that imperative structures are not also valuable.
+In many cases they are well suited to terminate computation early
+instead of having conditional branches for every possible point of
+termination: indeed in the above `fixDown`, a `return` is used to
+terminate early if we're at the end of the heap.
+
+Returns can be used to cut down on branching and establish invariants.
+This helps the reader by reducing nesting (how did I get here?) and
+making it easier to reason about the correctness of subsequent code
+(the array cannot be accessed out of bounds after this point).
+
+Use `return`s to clarify and enhance readability, but not as you would
+in an imperative language; avoid using them to return the results of a
+computation. Instead of
+
+	def suffix(i: Int) = {
+	  if      (i == 1) return "st"
+	  else if (i == 2) return "nd"
+	  else if (i == 3) return "rd"
+	  else             return "th"
+	}
+
+.LP prefer:
+
+	def suffix(i: Int) =
+	  if      (i == 1) "st"
+	  else if (i == 2) "nd"
+	  else if (i == 3) "rd"
+	  else             "th"
+
+.LP but using a <code>match</code> expression is superior to either:
+
+	def suffix(i: Int) = i match {
+	  case 1 => "st"
+	  case 2 => "nd"
+	  case 3 => "rd"
+	  case _ => "th"
+	}
+
+### `for` loops and comprehensions
+
+`for` provides both succinct and natural expression for looping and
+aggregation. It is especially useful when flattening many sequences.
+The syntax of `for` belies the underlying mechanism as it allocates
+and dispatches closures. This can lead to both unexpected costs and
+semantics; for example
+
+	for (item <- container) {
+	  if (item != 2) return
+	}
+
+.LP may cause a runtime error if the container delays computation, making the <code>return</code> nonlocal!
+
+For these reasons, it is often preferrable to call `foreach`,
+`flatMap`, `map`, and `filter` directly -- but do use `for`s when they
+clarify.
+
+## Functional programming
+
+*Value oriented* programming confers many advantages, especially when
+used in conjunction with functional programming constructs. This style
+emphasizes the transformation of values over stateful mutation,
+yielding code that is referentially transparent, providing stronger
+invariants and thus also easier to reason about. Case classes, pattern
+matching, destructuring bindings, type inference, and lightweight
+closure and method creation syntax are the tools of this craft.
+
+### Case classes as algebraic data types
+
+Case classes encode ADTs: they are useful for modelling a large number
+of data structures and provide for succinct code with strong
+invariants, especially when used in conjunction with pattern matching.
+The pattern matcher implements exhaustivity analysis providing even
+stronger static guarantees.
+
+Use the following pattern when encoding ADTs with case classes:
+
+	sealed abstract class Tree[T]
+	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
+	case class Leaf[T](value: T) extends Tree[T]
+	
+.LP the type <code>Tree[T]</code> has two constructors <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed abstract</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
+
+Together with pattern matching, such modelling results in code that is
+both succinct "obviously correct":
+
+	def findMin[T <: Ordered[T]](tree: Tree[T]) = tree match {
+	  case Node(left, right) => Seq(findMin(left), findMin(right)).min
+	  case Leaf(value) => value
+	}
+
+While recursive structures like trees are classic applications of
+ADTs, their domain is much larger. Disjoint unions in particular are
+readily modelled with ADTs; these occur frequently in state machines.
+
+### Options
+
+The `Option` type is a container that is either empty (`None`) or full
+(`Some(value)`). They provide a safe alternative to the use of `null`,
+and should be used in their stead whenever possible. They are a 
+collection (of at most one item) and they are embellished with 
+collection operations -- use them!
+
+Conditional execution on an `Option` value should be done with
+`foreach`; instead of
+
+	if (opt.isDefined)
+	  operate(opt.get)
+
+.LP write
+
+	opt foreach { value =>
+	  operate(value)
+	}
+
+The style may seem odd, but provides greater safety (we don't call the
+exceptional `get`) and brevity. If both branches are taken, use
+pattern matching:
+
+	opt match {
+	  case Some(value) => operate(value)
+	  case None => defaultAction()
+	}
+
+.LP but if all that's missing is a default value, use <code>getOrElse</code>
+
+	operate(opt getOrElse defaultValue)
+	
+Do not overuse  `Option`: if there is a sensible
+default -- a *Null Object* -- use that instead ([Null object
+pattern](http://en.wikipedia.org/wiki/Null_Object_pattern))
+
+### Pattern matching
+
+Pattern matches (`x match { ...`) are pervasive in well written Scala
+code: they conflate conditional execution, destructuring, and casting
+into one construct. Used well they enhance both clarity and safety.
+
+Use pattern matching for type switches:
+
+	obj match {
+	  case str: String => ...
+	  case addr: SocketAddress => ...
+
+Pattern matching works best when also combined with destructuring (for
+example if you are matching case classes); instead of
+
+	animal match {
+	  case dog: Dog => "dog (%s)".format(dog.breed)
+	  case _ => animal.species
+	  }
+
+.LP write
+
+	animal match {
+	  case Dog(breed) => "dog (%s)".format(breed)
+	  case other => other.species
+	}
+
+Write [custom extractors](http://www.scala-lang.org/node/112) but only with
+a dual constructor (`apply`), otherwise their use may be out of place.
+
+Don't use pattern matching for conditional execution when defaults
+make more sense. The collections libraries usually provide methods
+that return `Option`s; avoid
+
+	val x = list match {
+	  case head :: _ => head
+	  case Nil => default
+	}
+
+.LP because
+
+	val x = list.firstOption getOrElse default
+
+is both shorter and communicates purpose.
+
+### Destructuring bindings
+
+Destructuring value bindings are related to pattern matching; they use the same
+mechanism but are applicable when there is exactly one option (lest you accept
+the possibility of an exception). Destructuring binds are particularly useful for
+tuples and case classes.
+
+	val tuple = ('a', 1)
+	val (char, digit) = tuple
+	
+	val tweet = Tweet("just tweeting", Time.now)
+	val Tweet(text, timestamp) = tweet
+
+## Object oriented programming
+
+
+composition over mixins over inheritance
+
+## Testing
+
+## Garbage collection
+
+## Consider the Java user
+
+## Twitter's standard libraries
 
 <!--
 

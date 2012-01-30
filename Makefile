@@ -1,4 +1,3 @@
-#MMDOPTS = --process-html
 #MARKDOWN = $(HOME)/Library/Haskell/bin/pandoc  -f markdown -t html
 MARKDOWN = peg-markdown --smart --notes
 
