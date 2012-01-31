@@ -81,6 +81,17 @@
 	.algo {
 		font-variant: small-caps;
 	}
+	
+	div.explainer {
+		margin-left: 3em;
+		border-left: 2px solid;
+		padding-left: 1em;
+	}
+	
+	.explainer > h3 {
+		margin-top: 0px;
+		font-style: normal;
+	}
 </style>
 </div>
 
@@ -955,24 +966,231 @@ tuples and case classes.
 	val tweet = Tweet("just tweeting", Time.now)
 	val Tweet(text, timestamp) = tweet
 
+### Lazyness
+
+Fields in scala are computed *by need* when `val` is prefixed with
+`lazy`. Because fields and methods are equivalent in Scala (lest the fields
+are `private[this]`)
+
+	lazy val field = computation()
+
+.LP is (roughly) short-hand for
+
+	var _theField = None
+	def field = if (_theField.isDefined) _theField.get else {
+	  _theField = Some(computation())
+	  _theField.get
+	}
+
+.LP i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
+
+### Call by name
+
+Method parameters may be specified by-name, meaning the parameter is
+bound not to a value but to a *computation* that may be repeated. This
+feature must be applied with care; a caller expecting by-value
+semantics will be surprised. The motivation for this feature is to
+construct syntactically natural DSLs -- new control constructs in
+particular can be made to look much like native language features.
+
+Only use call-by-name for such control constructs, where it is obvious
+to the caller that what is being passed in is a "block" rather than
+the result of an unsuspecting computation. Only use call-by-name arguments
+in the last position of the last argument list. When using call-by-name,
+ensure that method is named so that it is obvious to the caller that 
+its argument is call-by-name.
+
+When you do want a value to be computed multiple times, and especially
+when this computation is side effecting, use explicit functions:
+
+	class SSLConnector(mkEngine: () => SSLEngine)
+	
+.LP The intent remains obvious and caller is left without surprises.
+
 ## Object oriented programming
 
+Much of Scala's vastness lie in its object system. Scala is a *pure*
+language in the sense that *all values* are objects; there is no
+distinction between primitive types or container with composite ones.
+Scala also features mixins allowing for more orthogonal and piecemeal
+construction of modules that can be flexibly put together at compile
+time with all the benefits of static type checking.
 
-composition over mixins over inheritance
+A motivation behind the mixin system was to obviate the need for 
+traditional dependency injection. The culmination of this "component
+style" of programming is [the cake
+pattern](http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html).
 
-## Testing
+In our use, however, we've found that Scala itself removes so much of
+the syntactical overhead of "classic" DI that we'd rather just use
+that: it is clearer, the dependencies are still encoded in the
+(constructor) type, and class construction is so syntactically trivial
+that it becomes a breeze. It's boring and simple and it works. *Use
+dependency injection for program modularization*, and in particular,
+*prefer composition over inheritance* -- for this leads to more
+modular and testable programs. When encountering a situation requiring
+inheritance, ask yourself: how you structure the program if the
+language lacked support for inheritance? The answer may be compelling.
+
+This does not at all imply not using common *interfaces*, or
+implementing common code in traits. In fact-- the use of traits are
+highly encouraged for exactly this reason: multiple interfaces
+(traits) may be implemented by a concrete class, and common code can
+be reused across all such classes.
+
+Keep traits short and orthogonal: don't lump separable functionality
+into a trait, think of the smallest related ideas that fit together. For example,
+imagine you have an something that can do IO:
+
+	trait IOer {
+	  def write(bytes: Array[Byte])
+	  def read(n: Int): Array[Byte]
+	}
+	
+.LP separate the two behaviors:
+
+	trait Reader {
+	  def read(n: Int): Array[Byte]
+	}
+	trait Writer {
+	  def write(bytes: Array[Byte])
+	}
+	
+.LP and mix them together to form what was an <code>IOer</code>: <code>new Reader with Writer</code>&hellip; Interface minimalism leads to greater orthogonality and cleaner modularization.
 
 ## Garbage collection
 
-## Consider the Java user
+We spend a lot of time tuning garbage collection in production. The
+garbage collection concerns are largely similar to those of Java
+though idiomatic Scala code tends to generate more (short-lived)
+garbage than idiomatic Java code -- a byproduct of the functional
+style. Hotspot's generational garbage collection typically makes this
+a nonissue as short lived garbage effectively free in most circumstances
+
+Before tackling GC performance issues, watch
+[this](http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter)
+presentation by Attila that illustrates some of our experiences with
+GC tuning.
+
+In Scala proper, your only tool to mitigate GC problems is to generate
+less garbage; but do not act without data! Unless you are doing
+something obviously degenerate, use the various Java profiling tools
+-- our own include
+[heapster](https://github.com/mariusaeriksen/heapster) and
+[gcprof](https://github.com/twitter/jvmgcprof).
+
+## Java compatibility
+
+When we write code in Scala that is used from Java, we ensure
+that usage from Java remains idiomatic. Oftentimes this requires
+no extra effort -- classes and pure traits are exactly equivalent
+to their Java counterpart -- but sometimes separate Java APIs
+need to be provided. A good way to get a feel for your library's Java
+API is to write a unittest in Java (just for compilation); this also ensures
+that the Java-view of your library remains stable over time as the Scala
+compiler can be volatile in this regard.
+
+Traits that contain implementation are not directly
+usable from Java: extend an abstract class with the trait
+instead.
+
+	// Not directly usable from Java
+	trait Animal {
+	  def eat(other: Animal)
+	  def eatMany(animals: Seq[Animal) = animals foreach(eat())
+	}
+	
+	// But this is:
+	abstract class JavaAnimal extends Animal
 
 ## Twitter's standard libraries
 
-<!--
+The most important standard libraries at Twitter are
+[Util](http://github.com/twitter/util) and
+[Finagle](https://github.com/twitter/finagle). Util should be
+considered an extension to the Scala and Java standard libraries that
+provides missing functionality or more appropriate implementations. Finagle
+is our RPC system; the kernel distributed systems components.
 
-generally:  short functions, etc.
+### Futures
 
--->
+Futures have been <a href="#Concurrency-Futures">discussed</a>
+briefly in the <a href="#Concurrency">concurrency section</a>. They 
+are the central mechanism for coordination asynchronous
+processes and are pervasive in our codebase and core to Finagle.
+Futures allow for the composition of concurrent events, and simplifies
+reasoning about highly concurrent operations. They also lend themselves
+to a highly efficient implementation on the JVM.
+
+Twitter's futures are *asynchronous*, so blocking operations --
+basically any operation that can suspend the execution of its thread;
+network IO and disk IO are examples -- must be handled by a system
+that itself provides futures for the results of said operations.
+Finagle provides such a system for network IO.
+
+Futures are plain and simple: they hold the *promise* for the result
+of a computation that is not yet complete. They are a simple container
+-- a placeholder. A computation could fail of course, and this must 
+also be encoded: a Future can be in exactly one of 3 states: *pending*,
+*failed* or *completed*.
+
+<div class="explainer">
+<h3>Aside: <em>Composition</em></h3>
+<p>Let's revisit what we mean by composition: combining simpler components
+into more complicated ones. The canonical example of this is function
+composition: Given functions <em>f</em> and
+<em>g</em>, the composite function <em>(g&#8728;f)(x) = g(f(x))</em> &mdash; the result
+of applying <em>x</em> to <em>f</em> first, and then the result of that
+to <em>g</em> &mdash; can be written in Scala:</p>
+
+<pre><code>val f = (i: Int) => i.toString
+val g = (s: String) => s+s+s
+val h = g compose f  // : Int => String
+	
+scala> h(123)
+res0: java.lang.String = 123123123</code></pre>
+
+.LP the function <em>h</em> being the composite. It is a <em>new</em> function that combines both <em>f</em> and <em>g</em> in a predefined way.
+</div>
+
+Futures are a type of collection -- they are a container of
+either 0 or 1 elements -- and you'll find they have standard 
+collection methods (eg. `map`, `filter`, and `foreach`). Since a Future's
+value is deferred, the result of applying any of these methods
+is necessarily also deferred; in
+
+	val result: Future[Int]
+	val resultStr: Future[String] = result map { i => i.toString }
+
+.LP the function <code>{ i => i.toString }</code> is not invoked until the integer value becomes available, and the transformed collection <code>resultStr</code> is also unavailable until that time.
+
+`List[A]` defines `flatMap` with this signature:
+
+	flatMap[B](f: A => List[B]): List[B]
+	
+.LP which is a lot like <code>map</code>, except the function must return <em>another list</em> of values, instead of just a single one. The result, <code>List[B]</code>, is all of the intermediate lists concatenated together. If give <code>Future[A]</code> the analagous signature, we would get
+
+	flatMap[B](f: A => Future[B]): Future[B]
+	
+.LP and with analagous semantics: a lot like <code>map</code>, except the function must return <em>another future</em> of a value, instead of a bare value. The result, <code>Future[B]</code>, is the same as the future returned from that function. This seems strange, but recall that a future's value is deferred, but <code>flatMap</code> returns immediately. We have created a composite future that is the sequence of two futures. For example <code>f</code> in
+
+	val makeInt(): Future[Int]
+	val makeString(): Future[String]
+	
+	val f: Future[String] = makeInt() flatMap { ignore =>
+	  makeString()
+	}
+
+.LP is a future that completes with the result of <code>makeString()</code> only after the outer <code>makeInt()</code> also completes; more interestingly:
+
+	val f: Future[(Int, String)] = makeInt() flatMap { theInt =>
+	  makeString() map { theString => (theInt, theString) }
+	}
+	
+.LP is the future that first computes <code>makeInt()</code> then <code>makeString()</code>, returning a tuple of their results.
+
+### Offer/Broker
+
 
 
 [Scala]: http://www.scala-lang.org/
