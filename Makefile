@@ -24,7 +24,7 @@ pub: all
 	9 pic $< | 9 troff | 9 proof
 
 clean:
-	rm effectivescala.html 
+	rm *.html *.png
 
 .PHONY: all clean pub
 
