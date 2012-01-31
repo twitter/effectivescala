@@ -1324,24 +1324,98 @@ def isIdAuthed(id: Int): Future[Boolean] =
 
 <p class="LP">an additional benefit to this type of composition is that error handling is built-in: the future returned from <code>isAuthed(..)</code> will fail if either of <code>getUser(..)</code> or <code>authenticate(..)</code> does with no extra error handling code.</p>
 
-<!--
-#### In practice
+<h4>Style</h4>
 
-Use 
+<p>Future callback methods (<code>respond</code>, <code>onSuccess',</code>onFailure<code>,</code>ensure`)
+return a new future that is <em>chained</em> to its parent. This future is guaranteed
+to be completed only after its parent, enabling patterns like</p>
 
-onSuccess
-onFailure
-ensure
+<pre><code>acquireResource()
+future onSuccess { value =&gt;
+  computeSomething(value)
+} ensure {
+  freeResource()
+}
+</code></pre>
 
-guarantees sequence
+<p class="LP">where <code>freeResource()</code> is guaranteed to be executed only after <code>computeSomething</code>, allowing for emulation of the native <code>try .. finally</code> pattern.</p>
 
-collect(), join(), select()
+<p>Use <code>onSuccess</code> instead of <code>foreach</code> &mdash; it is symmetrical to <code>onFailure</code> and
+is a better name for the purpose, and also allows for chaining.</p>
 
-Futures also define concurrent composition primitives:
+<p>Always try to avoid creating your own <code>Promise</code>s: nearly every task
+can be accomplished via the use of predefined combinators. These
+combinators ensure errors and cancellations are propagated, and generally
+encourage <em>dataflow style</em> programming which usually <a
+href="#Concurrency-Futures">obviates the need for synchronization and
+volatility declarations</a>.</p>
 
-cancellation-- but rarely actually the right thing.
+<p>Code written in tail-recursive style are not subject so space leaks,
+allowing for efficient implementation of loops in dataflow-style:</p>
 
--->
+<pre><code>case class Node(parent: Option[Node], ...)
+def getNode(id: Int): Future[Node] = ...
+
+def getHierarchy(id: Int, nodes: List[Node] = Nil): Future[Node] =
+  getNode(id) flatMap {
+    case n@Node(Some(parent), ..) =&gt; getHierarchy(parent, n :: nodes)
+    case n =&gt; Future.value((n :: nodes).reverse)
+  }
+</code></pre>
+
+<p><code>Future</code> defines many useful methods: Use <code>Future.value()</code> and
+<code>Future.exception()</code> to create pre-satisfied futures.
+<code>Future.collect()</code>, <code>Future.join()</code> and <code>Future.select()</code> provide
+combinators that turn many futures into one (ie. the gather part of a
+scatter-gather operation).</p>
+
+<h4>Cancellation</h4>
+
+<p>Futures implement a weak for of cancellation. Invoking <code>Future#cancel</code>
+does not directly terminate the computation but instead propagates a
+level triggered <em>signal</em> that may be queried by whichever process
+ultimately satisfies the future. Cancellation flows in the opposite
+direction from values: a cancellation signal set by a consumer is
+propagated to its producer. The producer uses <code>onCancellation</code> on
+<code>Promise</code> to listen to this signal and act accordingly.</p>
+
+<p>This means that the cancellation semantics depend on the producer,
+and there is no default implementation. <em>Cancellation is a but a hint</em>.</p>
+
+<h4>Locals</h4>
+
+<p>Util&rsquo;s
+<a href="https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40"><code>Local</code></a>
+provides a reference cell that is local to a particular future dispatch tree. Setting the value of a local makes this
+value available to any computation deferred by a Future in the same thread. They are analagous to thread locals,
+except their scope is not a Java thread but a tree of &ldquo;future threads&rdquo;. In</p>
+
+<pre><code>trait User {
+  def name: String
+  def incrCost(points: Int)
+}
+val user = new Local[User]
+
+...
+
+user() = currentUser
+rpc() ensure {
+  user().incrCost(10)
+}
+</code></pre>
+
+<p class="LP"><code>user()</code> in the <code>ensure</code> block will refer to the value of the <code>user</code> local at the time the callback was added.</p>
+
+<p>As with thread locals, <code>Local</code>s can be very convenient, but should
+almost always be avoided: make sure the problem cannot be sufficiently
+solved by passing data around explicitly, even if it is somewhat
+burdensome.</p>
+
+<p>Locals are used effectively by core libraries for <em>very</em> common
+concerns &mdash; threading through RPC traces, propagating monitors,
+creating &ldquo;stack traces&rdquo; for future callbacks &mdash; where any other solution
+would unduly burden the user. Locals are inappropriate in almost any
+other situation.</p>
 
 <!--
   ### Offer/Broker
