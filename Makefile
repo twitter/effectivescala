@@ -26,5 +26,5 @@ pub: all
 clean:
 	rm effectivescala.html 
 
-.PHONY: all clean
+.PHONY: all clean pub
 
