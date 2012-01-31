@@ -1203,24 +1203,96 @@ following way:
 	  getUser(id) flatMap { user => authenticate(user) }
 
 .LP an additional benefit to this type of composition is that error handling is built-in: the future returned from <code>isAuthed(..)</code> will fail if either of <code>getUser(..)</code> or <code>authenticate(..)</code> does with no extra error handling code.
-<!--
-#### In practice
 
-Use 
+#### Style
 
-onSuccess
-onFailure
-ensure
+Future callback methods (`respond`, `onSuccess', `onFailure`, `ensure`)
+return a new future that is *chained* to its parent. This future is guaranteed
+to be completed only after its parent, enabling patterns like
 
-guarantees sequence
+	acquireResource()
+	future onSuccess { value =>
+	  computeSomething(value)
+	} ensure {
+	  freeResource()
+	}
 
-collect(), join(), select()
+.LP where <code>freeResource()</code> is guaranteed to be executed only after <code>computeSomething</code>, allowing for emulation of the native <code>try .. finally</code> pattern.
 
-Futures also define concurrent composition primitives:
+Use `onSuccess` instead of `foreach` -- it is symmetrical to `onFailure` and
+is a better name for the purpose, and also allows for chaining.
 
-cancellation-- but rarely actually the right thing.
+Always try to avoid creating your own `Promise`s: nearly every task
+can be accomplished via the use of predefined combinators. These
+combinators ensure errors and cancellations are propagated, and generally
+encourage *dataflow style* programming which usually <a
+href="#Concurrency-Futures">obviates the need for synchronization and
+volatility declarations</a>.
 
--->
+Code written in tail-recursive style are not subject so space leaks,
+allowing for efficient implementation of loops in dataflow-style:
+
+	case class Node(parent: Option[Node], ...)
+	def getNode(id: Int): Future[Node] = ...
+
+	def getHierarchy(id: Int, nodes: List[Node] = Nil): Future[Node] =
+	  getNode(id) flatMap {
+	    case n@Node(Some(parent), ..) => getHierarchy(parent, n :: nodes)
+	    case n => Future.value((n :: nodes).reverse)
+	  }
+
+`Future` defines many useful methods: Use `Future.value()` and
+`Future.exception()` to create pre-satisfied futures.
+`Future.collect()`, `Future.join()` and `Future.select()` provide
+combinators that turn many futures into one (ie. the gather part of a
+scatter-gather operation).
+
+#### Cancellation
+
+Futures implement a weak for of cancellation. Invoking `Future#cancel`
+does not directly terminate the computation but instead propagates a
+level triggered *signal* that may be queried by whichever process
+ultimately satisfies the future. Cancellation flows in the opposite
+direction from values: a cancellation signal set by a consumer is
+propagated to its producer. The producer uses `onCancellation` on
+`Promise` to listen to this signal and act accordingly.
+
+This means that the cancellation semantics depend on the producer,
+and there is no default implementation. *Cancellation is a but a hint*.
+
+#### Locals
+
+Util's
+[`Local`](https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40)
+provides a reference cell that is local to a particular future dispatch tree. Setting the value of a local makes this
+value available to any computation deferred by a Future in the same thread. They are analagous to thread locals,
+except their scope is not a Java thread but a tree of "future threads". In
+
+	trait User {
+	  def name: String
+	  def incrCost(points: Int)
+	}
+	val user = new Local[User]
+
+	...
+
+	user() = currentUser
+	rpc() ensure {
+	  user().incrCost(10)
+	}
+
+.LP <code>user()</code> in the <code>ensure</code> block will refer to the value of the <code>user</code> local at the time the callback was added.
+
+As with thread locals, `Local`s can be very convenient, but should
+almost always be avoided: make sure the problem cannot be sufficiently
+solved by passing data around explicitly, even if it is somewhat
+burdensome.
+
+Locals are used effectively by core libraries for *very* common 
+concerns -- threading through RPC traces, propagating monitors,
+creating "stack traces" for future callbacks -- where any other solution
+would unduly burden the user. Locals are inappropriate in almost any
+other situation.
 
 <!--
   ### Offer/Broker
