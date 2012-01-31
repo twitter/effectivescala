@@ -1,9 +1,16 @@
 #!/bin/bash 
 
 if [ $# -eq 0 ]; then
-  echo 'you must have something to publish' >2
+  echo 'you must have something to publish' 1>&2
   exit 1
 fi
+
+for f; do
+  if [ ! -f $f ]; then
+    echo $f' is not a valid file!' 1>&2
+    exit 1
+  fi
+done
 
 root=$(
   cd $(dirname $0)

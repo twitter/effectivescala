@@ -4,7 +4,7 @@ MARKDOWN = peg-markdown --smart --notes
 all: effectivescala.html
 
 pub: all
-	cp effectivescala.html coll.png $d/Public
+	./publish.sh effectivescala.html coll.png
 
 %.html: %.mo
 	cat $< | bash proc.sh | bash toc.sh | bash fmt.sh | $(MARKDOWN) > $@
