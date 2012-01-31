@@ -95,6 +95,8 @@
 </style>
 </div>
 
+<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com</address>
 
@@ -1097,7 +1099,7 @@ instead.
 	// Not directly usable from Java
 	trait Animal {
 	  def eat(other: Animal)
-	  def eatMany(animals: Seq[Animal) = animals foreach(eat())
+	  def eatMany(animals: Seq[Animal) = animals foreach(eat(_))
 	}
 	
 	// But this is:
@@ -1164,34 +1166,66 @@ is necessarily also deferred; in
 
 .LP the function <code>{ i => i.toString }</code> is not invoked until the integer value becomes available, and the transformed collection <code>resultStr</code> is also unavailable until that time.
 
-`List[A]` defines `flatMap` with this signature:
+Lists can be flattened;
 
-	flatMap[B](f: A => List[B]): List[B]
-	
-.LP which is a lot like <code>map</code>, except the function must return <em>another list</em> of values, instead of just a single one. The result, <code>List[B]</code>, is all of the intermediate lists concatenated together. If give <code>Future[A]</code> the analagous signature, we would get
+	val listOfList: List[List[Int]] = ..
+	val list: List[Int] = listOfList.flatten
+
+.LP and this makes sense for futures, too:
+
+	val futureOfFuture: Future[Future[Int]] = ..
+	val future: Future[Int] = futureOfFuture.flatten
+
+.LP since futures are deferred, the implementation of <code>flatten</code> &mdash; it returns immediately &mdash; has to return a future that is the result of waiting for the completion of the outer future (<code><b>Future[</b>Future[Int]<b>]</b></code>) and after that the inner one (<code>Future[<b>Future[Int]</b>]</code>). If the outer future fails, the flattened future must also fail.
+
+Futures (like Lists) also define `flatMap`; `Future[A]` defines its signature as
 
 	flatMap[B](f: A => Future[B]): Future[B]
 	
-.LP and with analagous semantics: a lot like <code>map</code>, except the function must return <em>another future</em> of a value, instead of a bare value. The result, <code>Future[B]</code>, is the same as the future returned from that function. This seems strange, but recall that a future's value is deferred, but <code>flatMap</code> returns immediately. We have created a composite future that is the sequence of two futures. For example <code>f</code> in
+.LP which is like the combination of both <code>map</code> and <code>flatten</code>, and we could implement it that way:
 
-	val makeInt(): Future[Int]
-	val makeString(): Future[String]
-	
-	val f: Future[String] = makeInt() flatMap { ignore =>
-	  makeString()
+	def flatMap[B](f: A => Future[B]): Future[B] = {
+	  val mapped: Future[Future[B]] = this map f
+	  val flattened: Future[B] = mapped.flatten
+	  flattened
 	}
 
-.LP is a future that completes with the result of <code>makeString()</code> only after the outer <code>makeInt()</code> also completes; more interestingly:
+This is a powerful combination! With `flatMap` we can define a Future that
+is the result of two futures sequenced, the second future computed based
+on the result of the first one. Imagine we needed to do two RPCs in order
+to authenticate a user (id), we could define the composite operation in the
+following way:
 
-	val f: Future[(Int, String)] = makeInt() flatMap { theInt =>
-	  makeString() map { theString => (theInt, theString) }
-	}
+	def getUser(id: Int): Future[User]
+	def authenticate(user: User): Future[Boolean]
 	
-.LP is the future that first computes <code>makeInt()</code> then <code>makeString()</code>, returning a tuple of their results.
+	def isIdAuthed(id: Int): Future[Boolean] = 
+	  getUser(id) flatMap { user => authenticate(user) }
 
-### Offer/Broker
+.LP an additional benefit to this type of composition is that error handling is built-in: the future returned from <code>isAuthed(..)</code> will fail if either of <code>getUser(..)</code> or <code>authenticate(..)</code> does with no extra error handling code.
+<!--
+#### In practice
 
+Use 
 
+onSuccess
+onFailure
+ensure
+
+guarantees sequence
+
+collect(), join(), select()
+
+Futures also define concurrent composition primitives:
+
+cancellation-- but rarely actually the right thing.
+
+-->
+
+<!--
+  ### Offer/Broker
+
+-->
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
