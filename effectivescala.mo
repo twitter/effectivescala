@@ -1164,7 +1164,7 @@ is necessarily also deferred; in
 	val result: Future[Int]
 	val resultStr: Future[String] = result map { i => i.toString }
 
-.LP the function <code>{ i => i.toString }</code> is not invoked until the integer value becomes available, and the transformed collection <code>resultStr</code> is also unavailable until that time.
+.LP the function <code>{ i => i.toString }</code> is not invoked until the integer value becomes available, and the transformed collection <code>resultStr</code> is also in pending state until that time.
 
 Lists can be flattened;
 
