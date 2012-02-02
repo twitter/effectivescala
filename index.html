@@ -4,6 +4,7 @@
 <link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 -->
+
 <style> 
     body {
         font-family: times, serif;
@@ -109,9 +110,9 @@
 <li><strong><a href="#Types and Generics">Types and Generics</a></strong>: <em><a href="#Types and Generics-Return type annotations">Return type annotations</a></em>, <em><a href="#Types and Generics-Variance">Variance</a></em>, <em><a href="#Types and Generics-Type aliases">Type aliases</a></em>, <em><a href="#Types and Generics-Implicits">Implicits</a></em></li>
 <li><strong><a href="#Collections">Collections</a></strong>: <em><a href="#Collections-Hierarchy">Hierarchy</a></em>, <em><a href="#Collections-Use">Use</a></em>, <em><a href="#Collections-Style">Style</a></em>, <em><a href="#Collections-Performance">Performance</a></em></li>
 <li><strong><a href="#Concurrency">Concurrency</a></strong>: <em><a href="#Concurrency-Futures">Futures</a></em>, <em><a href="#Concurrency-Collections">Collections</a></em></li>
-<li><strong><a href="#Control structures">Control structures</a></strong>: <em><a href="#Control structures-Recursion">Recursion</a></em>, <em><a href="#Control structures-Returns">Returns</a></em>, <em><a href="#Control structures-`for` loops and comprehensions"><code>for</code> loops and comprehensions</a></em></li>
-<li><strong><a href="#Functional programming">Functional programming</a></strong>: <em><a href="#Functional programming-Case classes as algebraic data types">Case classes as algebraic data types</a></em>, <em><a href="#Functional programming-Options">Options</a></em>, <em><a href="#Functional programming-Pattern matching">Pattern matching</a></em>, <em><a href="#Functional programming-Destructuring bindings">Destructuring bindings</a></em>, <em><a href="#Functional programming-Lazyness">Lazyness</a></em>, <em><a href="#Functional programming-Call by name">Call by name</a></em></li>
-<li><strong><a href="#Object oriented programming">Object oriented programming</a></strong></li>
+<li><strong><a href="#Control structures">Control structures</a></strong>: <em><a href="#Control structures-Recursion">Recursion</a></em>, <em><a href="#Control structures-Returns">Returns</a></em>, <em><a href="#Control structures-`for` loops and comprehensions"><code>for</code> loops and comprehensions</a></em>, <em><a href="#Control structures-`require` and `assert`"><code>require</code> and <code>assert</code></a></em></li>
+<li><strong><a href="#Functional programming">Functional programming</a></strong>: <em><a href="#Functional programming-Case classes as algebraic data types">Case classes as algebraic data types</a></em>, <em><a href="#Functional programming-Options">Options</a></em>, <em><a href="#Functional programming-Pattern matching">Pattern matching</a></em>, <em><a href="#Functional programming-Partial functions">Partial functions</a></em>, <em><a href="#Functional programming-Destructuring bindings">Destructuring bindings</a></em>, <em><a href="#Functional programming-Lazyness">Lazyness</a></em>, <em><a href="#Functional programming-Call by name">Call by name</a></em>, <em><a href="#Functional programming-`flatMap`"><code>flatMap</code></a></em></li>
+<li><strong><a href="#Object oriented programming">Object oriented programming</a></strong>: <em><a href="#Object oriented programming-Dependency injection">Dependency injection</a></em>, <em><a href="#Object oriented programming-Traits">Traits</a></em>, <em><a href="#Object oriented programming-Visibility">Visibility</a></em>, <em><a href="#Object oriented programming-Structural typing">Structural typing</a></em></li>
 <li><strong><a href="#Garbage collection">Garbage collection</a></strong></li>
 <li><strong><a href="#Java compatibility">Java compatibility</a></strong></li>
 <li><strong><a href="#Twitter's standard libraries">Twitter&rsquo;s standard libraries</a></strong>: <em><a href="#Twitter's standard libraries-Futures">Futures</a></em></li>
@@ -377,6 +378,10 @@ annotations, authors of common libraries &mdash; especially collections &mdash;
 must be prolific annotators. Such annotations are important for the
 usability of shared code, but misapplication can be dangerous.</p>
 
+<p>Invariants are an advanced but necessary aspect of Scala&rsquo;s typesystem,
+and should be used widely (and correctly) as it aids the application
+of subtyping.</p>
+
 <p><em>Immutable collections should be covariant</em>. Methods that receive
 the contained type should &ldquo;downgrade&rdquo; the collection appropriately:</p>
 
@@ -415,6 +420,7 @@ mammals.add(new Cat{})
 
 <!--
   * when to use abstract type members?
+  * show contravariance trick?
 -->
 
 <p><a id="Types and Generics-Type aliases" /></p>
@@ -456,6 +462,9 @@ package object net {
   type SocketFactory = (SocketAddress) =&gt; Socket
 }
 </code></pre>
+
+<p>Note that type aliases are not new types &mdash; they are equivalent to
+the syntactically substituting the aliased name for its type.</p>
 
 <p><a id="Types and Generics-Implicits" /></p>
 
@@ -702,6 +711,7 @@ def collect() {
   }
 }
 
+collect()
 p onSuccess { results =&gt;
   printf(&quot;Got results %s\n&quot;, results.mkString(&quot;, &quot;))
 }
@@ -853,7 +863,20 @@ terminate early if we&rsquo;re at the end of the heap.</p>
 <p>Returns can be used to cut down on branching and establish invariants.
 This helps the reader by reducing nesting (how did I get here?) and
 making it easier to reason about the correctness of subsequent code
-(the array cannot be accessed out of bounds after this point).</p>
+(the array cannot be accessed out of bounds after this point). This is
+especially useful in &ldquo;guard&rdquo; clauses:</p>
+
+<pre><code>def compare(a: AnyRef, b: AnyRef): Int = {
+  if (a eq b)
+    return 0
+
+  val d = System.identityHashCode(a) compare System.identityHashCode(b)
+  if (d != 0)
+    return d
+
+  // slow path..
+}
+</code></pre>
 
 <p>Use <code>return</code>s to clarify and enhance readability, but not as you would
 in an imperative language; avoid using them to return the results of a
@@ -886,6 +909,18 @@ computation. Instead of</p>
 }
 </code></pre>
 
+<p>Note that returns can have hidden costs: when used inside of a closure,</p>
+
+<pre><code>seq foreach { elem =&gt;
+  if (elem.isLast)
+    return
+
+  // process...
+}
+</code></pre>
+
+<p class="LP">this is implemented in bytecode as an exception catching/throwing pair which, used in hot code, has performance implications.</p>
+
 <p><a id="Control structures-`for` loops and comprehensions" /></p>
 
 <h3><code>for</code> loops and comprehensions</h3>
@@ -906,6 +941,27 @@ semantics; for example</p>
 <p>For these reasons, it is often preferrable to call <code>foreach</code>,
 <code>flatMap</code>, <code>map</code>, and <code>filter</code> directly &mdash; but do use <code>for</code>s when they
 clarify.</p>
+
+<p><a id="Control structures-`require` and `assert`" /></p>
+
+<h3><code>require</code> and <code>assert</code></h3>
+
+<p><code>require</code> and <code>assert</code> both serve as executable documentation. Both are
+useful for situations in which the typesystem cannot express required
+invariants. <code>assert</code> is used for <em>invariants</em> that the code assumes (either
+internal or external), for example</p>
+
+<pre><code>val stream = getClass.getResourceAsStream(&quot;someclassdata&quot;)
+assert(stream != null)
+</code></pre>
+
+<p>Use <code>require</code> to express API contracts:</p>
+
+<pre><code>def fib(n: Int) = {
+  require(n &gt; 0)
+  ...
+}
+</code></pre>
 
 <p><a id="Functional programming" /></p>
 
@@ -1041,10 +1097,64 @@ that return <code>Option</code>s; avoid</p>
 
 <p class="LP">because</p>
 
-<pre><code>val x = list.firstOption getOrElse default
+<pre><code>val x = list.headOption getOrElse default
 </code></pre>
 
 <p>is both shorter and communicates purpose.</p>
+
+<p><a id="Functional programming-Partial functions" /></p>
+
+<h3>Partial functions</h3>
+
+<p>Scala provides syntactical shorthand for defining a <code>PartialFunction</code>:</p>
+
+<pre><code>val pf: PartialFunction[Int, String] = {
+  case i if i%2 == 0 =&gt; &quot;even&quot;
+}
+</code></pre>
+
+<p class="LP">and are composed with <code>orElse</code></p>
+
+<pre><code>val tf: (Int =&gt; String) = pf orElse { case _ =&gt; &quot;odd&quot;}
+
+tf(1) == &quot;odd&quot;
+tf(2) == &quot;even&quot;
+</code></pre>
+
+<p>Partial functions arise in many situations and are effectively
+encoded with <code>PartialFunction</code>, for example as arguments to
+methods</p>
+
+<pre><code>trait Publisher[T] {
+  def subscribe(f: PartialFunction[T, Unit])
+}
+
+val publisher: Publisher[Int] = ..
+publisher.subscribe {
+  case i if isPrime(i) =&gt; println(&quot;found prime&quot;, i)
+  case i if i%2 == 0 =&gt; count += 2
+  /* ignore the rest */
+}
+</code></pre>
+
+<p class="LP">or in situations that might otherwise call for returning an <code>Option</code>:</p>
+
+<pre><code>// Attempt to classify the the throwable for logging.
+type Classifier = Throwable =&gt; Option[java.util.logging.Level]
+</code></pre>
+
+<p class="LP">might be better expressed with a <code>PartialFunction</code></p>
+
+<pre><code>type Classifier = PartialFunction[Throwable, java.util.Logging.Level]
+</code></pre>
+
+<p class="LP">as it affords greater composability:</p>
+
+<pre><code>val classifier1: Classifier
+val classifier2: Classifier
+
+val classifier = classifier1 orElse classifier2 orElse { _ =&gt; java.util.Logging.Level.FINEST }
+</code></pre>
 
 <p><a id="Functional programming-Destructuring bindings" /></p>
 
@@ -1084,6 +1194,8 @@ def field = if (_theField.isDefined) _theField.get else {
 
 <p class="LP">i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.</p>
 
+<p>Lazy fields are thread safe.</p>
+
 <p><a id="Functional programming-Call by name" /></p>
 
 <h3>Call by name</h3>
@@ -1110,6 +1222,65 @@ when this computation is side effecting, use explicit functions:</p>
 
 <p class="LP">The intent remains obvious and caller is left without surprises.</p>
 
+<p><a id="Functional programming-`flatMap`" /></p>
+
+<h3><code>flatMap</code></h3>
+
+<p><code>flatMap</code> &mdash; the combination of <code>map</code> with <code>flatten</code> &mdash; deserves special
+attention, for it has subtle power and great utility. Like its brethren <code>map</code>, it is frequently
+available in nontraditional collections such as <code>Future</code> and <code>Option</code>. Its behavior
+is revealed by its signature; for some <code>Container[A]</code></p>
+
+<pre><code>flatMap[B](f: A =&gt; Container[B]): Container[B]
+</code></pre>
+
+<p><code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection
+producing a <em>new</em> collection, (all of) which are flattened into its
+result. For example, to get all permutations of two character strings:</p>
+
+<pre><code>val chars = 'a' until 'z'
+val perms = chars flatMap { a =&gt; 
+  chars flatMap { b =&gt; 
+    if (a != b) Seq(&quot;%c%c&quot;.format(a, b)) 
+    else Seq() 
+  }
+}
+</code></pre>
+
+<p class="LP">which is equivalent to the more concise for-comprehension (which is, roughly, syntactical sugar for the above):</p>
+
+<pre><code>val perms = for {
+  a &lt;- chars
+  b &lt;- chars
+  if a != b
+} yield &quot;%c%c&quot;.format(a, b)
+</code></pre>
+
+<p><code>flatMap</code> is frequently useful when dealing with <code>Options</code> &mdash; it will
+collapse chains of options down to one,</p>
+
+<pre><code>val host: Option[String] = ..
+val port: Option[Int] = ..
+
+val addr: Option[InetSocketAddress] =
+  host flatMap { h =&gt;
+    port flatMap { p =&gt;
+      new InetSocketAddress(h, p)
+    }
+  }
+</code></pre>
+
+<p class="LP">which is also made more succinct with <code>for</code></p>
+
+<pre><code>val addr: Option[InetSocketAddress] = for {
+  h &lt;- host
+  p &lt;- port
+} yield new InetSocketAddress(h, p)
+</code></pre>
+
+<p>The use of <code>flatMap</code> in <code>Future</code>s is discussed in the
+<a href="#Twitter's%20standard%20libraries-Futures">futures section</a>.</p>
+
 <p><a id="Object oriented programming" /></p>
 
 <h2>Object oriented programming</h2>
@@ -1126,19 +1297,51 @@ traditional dependency injection. The culmination of this &ldquo;component
 style&rdquo; of programming is <a href="http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html">the cake
 pattern</a>.</p>
 
-<p>In our use, however, we&rsquo;ve found that Scala itself removes so much of
-the syntactical overhead of &ldquo;classic&rdquo; DI that we&rsquo;d rather just use
-that: it is clearer, the dependencies are still encoded in the
-(constructor) type, and class construction is so syntactically trivial
-that it becomes a breeze. It&rsquo;s boring and simple and it works. <em>Use
-dependency injection for program modularization</em>, and in particular,
-<em>prefer composition over inheritance</em> &mdash; for this leads to more
-modular and testable programs. When encountering a situation requiring
-inheritance, ask yourself: how you structure the program if the
-language lacked support for inheritance? The answer may be compelling.</p>
+<p><a id="Object oriented programming-Dependency injection" /></p>
 
-<p>This does not at all imply not using common <em>interfaces</em>, or
-implementing common code in traits. In fact&mdash; the use of traits are
+<h3>Dependency injection</h3>
+
+<p>In our use, however, we&rsquo;ve found that Scala itself removes so much of
+the syntactical overhead of &ldquo;classic&rdquo; (constructor) dependency
+injection that we&rsquo;d rather just use that: it is clearer, the
+dependencies are still encoded in the (constructor) type, and class
+construction is so syntactically trivial that it becomes a breeze.
+It&rsquo;s boring and simple and it works. <em>Use dependency injection for
+program modularization</em>, and in particular, <em>prefer composition over
+inheritance</em> &mdash; for this leads to more modular and testable programs.
+When encountering a situation requiring inheritance, ask yourself: how
+you structure the program if the language lacked support for
+inheritance? The answer may be compelling.</p>
+
+<p>Dependency injection typically makes use of traits,</p>
+
+<pre><code>trait TweetStream {
+  def subscribe(f: Tweet =&gt; Unit)
+}
+class HosebirdStream extends TweetStream ...
+class FileStream extends TweetStream ..
+
+class TweetCounter(stream: TweetStream) {
+  stream.subscribe { tweet =&gt; count += 1 }
+}
+</code></pre>
+
+<p>It is common to inject <em>factories</em> &mdash; objects that produce other
+objects. In these cases, favor the use of simple functions instead
+of explicit types.</p>
+
+<pre><code>class FilteredTweetCounter(mkStream: Filter =&gt; TweetStream) {
+  mkStream(PublicTweets).subscribe { tweet =&gt; publicCount += 1 }
+  mkStream(DMs).subscribe { tweet =&gt; dmCount += 1 }
+}
+</code></pre>
+
+<p><a id="Object oriented programming-Traits" /></p>
+
+<h3>Traits</h3>
+
+<p>Dependency injection does not at all preclude the use of common <em>interfaces</em>, or
+the implemention of common code in traits. Quite contrary&mdash; the use of traits are
 highly encouraged for exactly this reason: multiple interfaces
 (traits) may be implemented by a concrete class, and common code can
 be reused across all such classes.</p>
@@ -1164,6 +1367,63 @@ trait Writer {
 </code></pre>
 
 <p class="LP">and mix them together to form what was an <code>IOer</code>: <code>new Reader with Writer</code>&hellip; Interface minimalism leads to greater orthogonality and cleaner modularization.</p>
+
+<p><a id="Object oriented programming-Visibility" /></p>
+
+<h3>Visibility</h3>
+
+<p>Scala has very expressive visibility modifiers. It&rsquo;s important to use
+these as it they define what constitutes the <em>public API</em>. Public APIs
+should be limited so users don&rsquo;t inadvertently rely on implementation
+details and limit the author&rsquo;s ability to change them: They are crucial
+to good modularity. As a rule, it&rsquo;s much easier to expand public APIs
+than to contract them. Poor annotations can also compromise backwards
+binary compatibility of your code.</p>
+
+<h4><code>private[this]</code></h4>
+
+<p>A class member marked <code>private</code>, </p>
+
+<pre><code>private val x: Int = ...
+</code></pre>
+
+<p class="LP">is visible to all <em>instances</em> of that class (but not their subclasses). In most cases, you want <code>private[this]</code>.</p>
+
+<pre><code>private[this] val: Int = ..
+</code></pre>
+
+<p class="LP">which limits visibilty to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.</p>
+
+<h4>Singleton class types</h4>
+
+<p>It&rsquo;s common in Scala to create singleton class types, for example</p>
+
+<pre><code>def foo() = new Foo with Bar with Baz {
+  ...
+}
+</code></pre>
+
+<p class="LP">In these situations, visibility can be constrained by declaring the returned type:</p>
+
+<pre><code>def foo(): Foo with Bar = new Foo with Bar with Baz {
+  ...
+}
+</code></pre>
+
+<p class="LP">where callers of <code>foo()</code> will see a restricted view (<code>Foo with Bar</code>) of the returned instance.</p>
+
+<p><a id="Object oriented programming-Structural typing" /></p>
+
+<h3>Structural typing</h3>
+
+<p>Do not use structural types in normal use. They are a convenient and
+powerful feature, but unfortunately do not have an efficient
+implementation on the JVM. However &mdash; due to an implemenation quirk &mdash;
+they provide a very nice shorthand for doing reflection.</p>
+
+<pre><code>val obj: AnyRef
+obj.asInstanceOf[{def close()}].close()
+</code></pre>
 
 <p><a id="Garbage collection" /></p>
 
