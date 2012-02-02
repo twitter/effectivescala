@@ -334,6 +334,10 @@ annotations, authors of common libraries -- especially collections --
 must be prolific annotators. Such annotations are important for the
 usability of shared code, but misapplication can be dangerous.
 
+Invariants are an advanced but necessary aspect of Scala's typesystem,
+and should be used widely (and correctly) as it aids the application
+of subtyping.
+
 *Immutable collections should be covariant*. Methods that receive
 the contained type should "downgrade" the collection appropriately:
 
@@ -367,6 +371,7 @@ is typically invalid with mutable collections. Consider
 
 <!--
   *	when to use abstract type members?
+  *	show contravariance trick?
 -->
 
 ### Type aliases
@@ -401,7 +406,10 @@ Don't use subclassing when an alias will do.
 	package object net {
 	  type SocketFactory = (SocketAddress) => Socket
 	}
-	
+
+Note that type aliases are not new types -- they are equivalent to
+the syntactically substituting the aliased name for its type.
+
 ### Implicits
 
 Implicits are a powerful type system feature, but they should be used
@@ -547,6 +555,7 @@ in order of most votes to least, we could write:
 	  ...
 	}
 
+
 ### Performance
 
 High level collections libraries (as with higher level constructs
@@ -644,7 +653,8 @@ sequence and then print the results:
 	    p.setException(t)
 	  }
 	}
-	
+
+	collect()
 	p onSuccess { results =>
 	  printf("Got results %s\n", results.mkString(", "))
 	}
@@ -787,7 +797,19 @@ terminate early if we're at the end of the heap.
 Returns can be used to cut down on branching and establish invariants.
 This helps the reader by reducing nesting (how did I get here?) and
 making it easier to reason about the correctness of subsequent code
-(the array cannot be accessed out of bounds after this point).
+(the array cannot be accessed out of bounds after this point). This is
+especially useful in "guard" clauses:
+
+	def compare(a: AnyRef, b: AnyRef): Int = {
+	  if (a eq b)
+	    return 0
+	
+	  val d = System.identityHashCode(a) compare System.identityHashCode(b)
+	  if (d != 0)
+	    return d
+	    
+	  // slow path..
+	}
 
 Use `return`s to clarify and enhance readability, but not as you would
 in an imperative language; avoid using them to return the results of a
@@ -817,6 +839,17 @@ computation. Instead of
 	  case _ => "th"
 	}
 
+Note that returns can have hidden costs: when used inside of a closure,
+
+	seq foreach { elem =>
+	  if (elem.isLast)
+	    return
+	  
+	  // process...
+	}
+	
+.LP this is implemented in bytecode as an exception catching/throwing pair which, used in hot code, has performance implications.
+
 ### `for` loops and comprehensions
 
 `for` provides both succinct and natural expression for looping and
@@ -834,6 +867,23 @@ semantics; for example
 For these reasons, it is often preferrable to call `foreach`,
 `flatMap`, `map`, and `filter` directly -- but do use `for`s when they
 clarify.
+
+### `require` and `assert`
+
+`require` and `assert` both serve as executable documentation. Both are
+useful for situations in which the typesystem cannot express required
+invariants. `assert` is used for *invariants* that the code assumes (either
+internal or external), for example
+
+	val stream = getClass.getResourceAsStream("someclassdata")
+	assert(stream != null)
+
+Use `require` to express API contracts:
+
+	def fib(n: Int) = {
+	  require(n > 0)
+	  ...
+	}
 
 ## Functional programming
 
@@ -951,9 +1001,56 @@ that return `Option`s; avoid
 
 .LP because
 
-	val x = list.firstOption getOrElse default
+	val x = list.headOption getOrElse default
 
 is both shorter and communicates purpose.
+
+### Partial functions
+
+Scala provides syntactical shorthand for defining a `PartialFunction`:
+
+	val pf: PartialFunction[Int, String] = {
+	  case i if i%2 == 0 => "even"
+	}
+	
+.LP and are composed with <code>orElse</code>
+
+	val tf: (Int => String) = pf orElse { case _ => "odd"}
+	
+	tf(1) == "odd"
+	tf(2) == "even"
+
+Partial functions arise in many situations and are effectively
+encoded with `PartialFunction`, for example as arguments to
+methods
+
+	trait Publisher[T] {
+	  def subscribe(f: PartialFunction[T, Unit])
+	}
+
+	val publisher: Publisher[Int] = ..
+	publisher.subscribe {
+	  case i if isPrime(i) => println("found prime", i)
+	  case i if i%2 == 0 => count += 2
+	  /* ignore the rest */
+	}
+
+.LP or in situations that might otherwise call for returning an <code>Option</code>:
+
+	// Attempt to classify the the throwable for logging.
+	type Classifier = Throwable => Option[java.util.logging.Level]
+
+.LP might be better expressed with a <code>PartialFunction</code>
+
+	type Classifier = PartialFunction[Throwable, java.util.Logging.Level]
+	
+.LP as it affords greater composability:
+
+	val classifier1: Classifier
+	val classifier2: Classifier
+
+	val classifier = classifier1 orElse classifier2 orElse { _ => java.util.Logging.Level.FINEST }
+
 
 ### Destructuring bindings
 
@@ -986,6 +1083,8 @@ are `private[this]`)
 
 .LP i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
 
+Lazy fields are thread safe.
+
 ### Call by name
 
 Method parameters may be specified by-name, meaning the parameter is
@@ -1009,6 +1108,58 @@ when this computation is side effecting, use explicit functions:
 	
 .LP The intent remains obvious and caller is left without surprises.
 
+### `flatMap`
+
+`flatMap` -- the combination of `map` with `flatten` -- deserves special
+attention, for it has subtle power and great utility. Like its brethren `map`, it is frequently
+available in nontraditional collections such as `Future` and `Option`. Its behavior
+is revealed by its signature; for some `Container[A]`
+
+	flatMap[B](f: A => Container[B]): Container[B]
+
+`flatMap` invokes the function `f` for the element(s) of the collection
+producing a *new* collection, (all of) which are flattened into its
+result. For example, to get all permutations of two character strings:
+
+	val chars = 'a' until 'z'
+	val perms = chars flatMap { a => 
+	  chars flatMap { b => 
+	    if (a != b) Seq("%c%c".format(a, b)) 
+	    else Seq() 
+	  }
+	}
+
+.LP which is equivalent to the more concise for-comprehension (which is, roughly, syntactical sugar for the above):
+
+	val perms = for {
+	  a <- chars
+	  b <- chars
+	  if a != b
+	} yield "%c%c".format(a, b)
+
+`flatMap` is frequently useful when dealing with `Options` -- it will
+collapse chains of options down to one,
+
+	val host: Option[String] = ..
+	val port: Option[Int] = ..
+	
+	val addr: Option[InetSocketAddress] =
+	  host flatMap { h =>
+	    port flatMap { p =>
+	      new InetSocketAddress(h, p)
+	    }
+	  }
+	  
+.LP which is also made more succinct with <code>for</code>
+
+	val addr: Option[InetSocketAddress] = for {
+	  h <- host
+	  p <- port
+	} yield new InetSocketAddress(h, p)
+
+The use of `flatMap` in `Future`s is discussed in the 
+<a href="#Twitter's%20standard%20libraries-Futures">futures section</a>.
+
 ## Object oriented programming
 
 Much of Scala's vastness lie in its object system. Scala is a *pure*
@@ -1023,19 +1174,45 @@ traditional dependency injection. The culmination of this "component
 style" of programming is [the cake
 pattern](http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html).
 
-In our use, however, we've found that Scala itself removes so much of
-the syntactical overhead of "classic" DI that we'd rather just use
-that: it is clearer, the dependencies are still encoded in the
-(constructor) type, and class construction is so syntactically trivial
-that it becomes a breeze. It's boring and simple and it works. *Use
-dependency injection for program modularization*, and in particular,
-*prefer composition over inheritance* -- for this leads to more
-modular and testable programs. When encountering a situation requiring
-inheritance, ask yourself: how you structure the program if the
-language lacked support for inheritance? The answer may be compelling.
+### Dependency injection
 
-This does not at all imply not using common *interfaces*, or
-implementing common code in traits. In fact-- the use of traits are
+In our use, however, we've found that Scala itself removes so much of
+the syntactical overhead of "classic" (constructor) dependency
+injection that we'd rather just use that: it is clearer, the
+dependencies are still encoded in the (constructor) type, and class
+construction is so syntactically trivial that it becomes a breeze.
+It's boring and simple and it works. *Use dependency injection for
+program modularization*, and in particular, *prefer composition over
+inheritance* -- for this leads to more modular and testable programs.
+When encountering a situation requiring inheritance, ask yourself: how
+you structure the program if the language lacked support for
+inheritance? The answer may be compelling.
+
+Dependency injection typically makes use of traits,
+
+	trait TweetStream {
+	  def subscribe(f: Tweet => Unit)
+	}
+	class HosebirdStream extends TweetStream ...
+	class FileStream extends TweetStream ..
+	
+	class TweetCounter(stream: TweetStream) {
+	  stream.subscribe { tweet => count += 1 }
+	}
+
+It is common to inject *factories* -- objects that produce other
+objects. In these cases, favor the use of simple functions instead
+of explicit types.
+
+	class FilteredTweetCounter(mkStream: Filter => TweetStream) {
+	  mkStream(PublicTweets).subscribe { tweet => publicCount += 1 }
+	  mkStream(DMs).subscribe { tweet => dmCount += 1 }
+	}
+
+### Traits
+
+Dependency injection does not at all preclude the use of common *interfaces*, or
+the implemention of common code in traits. Quite contrary-- the use of traits are
 highly encouraged for exactly this reason: multiple interfaces
 (traits) may be implemented by a concrete class, and common code can
 be reused across all such classes.
@@ -1059,6 +1236,54 @@ imagine you have an something that can do IO:
 	}
 	
 .LP and mix them together to form what was an <code>IOer</code>: <code>new Reader with Writer</code>&hellip; Interface minimalism leads to greater orthogonality and cleaner modularization.
+
+### Visibility
+
+Scala has very expressive visibility modifiers. It's important to use
+these as it they define what constitutes the *public API*. Public APIs
+should be limited so users don't inadvertently rely on implementation
+details and limit the author's ability to change them: They are crucial
+to good modularity. As a rule, it's much easier to expand public APIs
+than to contract them. Poor annotations can also compromise backwards
+binary compatibility of your code.
+
+#### `private[this]`
+
+A class member marked `private`, 
+
+	private val x: Int = ...
+	
+.LP is visible to all <em>instances</em> of that class (but not their subclasses). In most cases, you want <code>private[this]</code>.
+
+	private[this] val: Int = ..
+
+.LP which limits visibilty to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.
+
+#### Singleton class types
+
+It's common in Scala to create singleton class types, for example
+
+	def foo() = new Foo with Bar with Baz {
+	  ...
+	}
+
+.LP In these situations, visibility can be constrained by declaring the returned type:
+
+	def foo(): Foo with Bar = new Foo with Bar with Baz {
+	  ...
+	}
+
+.LP where callers of <code>foo()</code> will see a restricted view (<code>Foo with Bar</code>) of the returned instance.
+
+### Structural typing
+
+Do not use structural types in normal use. They are a convenient and
+powerful feature, but unfortunately do not have an efficient
+implementation on the JVM. However -- due to an implemenation quirk -- 
+they provide a very nice shorthand for doing reflection.
+
+	val obj: AnyRef
+	obj.asInstanceOf[{def close()}].close()
 
 ## Garbage collection
 
