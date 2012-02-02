@@ -22,13 +22,8 @@ out=/tmp/effectivescala.$$
 
 trap "rm -fr $out" 0 1 2
 
-git clone $root/.git $out
-cd $out
-git remote set-url origin git@github.com:twitter/effectivescala.git
-git fetch
-git co gh-pages
-cd $root
-cp $* $out/
+git clone -b gh-pages git@github.com:twitter/effectivescala.git $out
+cp $* $out
 cd $out
 git add .
 git commit -am"publish by $USER"
