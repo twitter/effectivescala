@@ -113,7 +113,7 @@
 
 ## Introduction
 
-[Scala][Scala] is one of the chief application programming languages
+[Scala][Scala] is one of the main application programming languages
 used at Twitter. Much of our infrastructure is written in Scala and
 [we have several large libraries](http://github.com/twitter/)
 supporting our use. While highly effective, Scala is also a large language,
@@ -135,7 +135,7 @@ also deliver the opposite effect: After correctness, think always of
 the reader.
 
 Above all, *program in Scala*. You are not writing Java, nor Haskell,
-nor OCaml; a Scala program is unlike one written in any of these. In
+nor Python; a Scala program is unlike one written in any of these. In
 order to use the language effectively, you must phrase your problems
 in its terms. There's no use coercing a Java program into Scala, for
 it will be inferior in most ways to its original.
@@ -149,10 +149,11 @@ is familiar with the language. Some resources for learning Scala are:
 
 ## Formatting
 
-The specifics of code *formatting* - so long as they are practical -
+The specifics of code *formatting* -- so long as they are practical --
 are of little consequence. By definition style cannot be inherently
-good or bad, but almost everybody differs in
-preferences. The use of a *consistent* style however will almost always enhance
+good or bad and almost everybody differs in personal
+preference. However the *consistent* application of the same 
+formatting rules will almost always enhance
 readability. A reader already familiar with a particular style does
 not have to grasp yet another set of local conventions, or decipher
 yet another corner of the language grammar.
