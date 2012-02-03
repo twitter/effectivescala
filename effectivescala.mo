@@ -4,6 +4,7 @@
 <link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 -->
+
 <style>	
 	body {
 		font-family: times, serif;
@@ -110,12 +111,15 @@
 [Scala][Scala] is one of the chief application programming languages
 used at Twitter. Much of our infrastructure is written in Scala and
 [we have several large libraries](http://github.com/twitter/)
-supporting it. While highly effective, Scala is also a large language,
-and experience has taught us to practice great care in its
-application. This guide attempts to distill this experience into short
-essays, providing a guide of *best practices*. Our experience is in
-creating high volume services that form distributed systems (and our
-advice is thus biased), but most of the advice herein should translate
+supporting our use. While highly effective, Scala is also a large language,
+and our experiences have taught us to practice great care in its
+application. What are its pitfalls? Which features do we embrace,
+which do we eschew? When do we employ "purely functional style", and when
+do we avoid it? In other words: what have we found to be an effective
+use of the language?  This guide attempts to distill our experience into short
+essays, providing a set of *best practices*. Our use of Scala is mainly for
+creating high volume services that form distributed systems -- and our
+advice is thus biased -- but most of the advice herein should translate
 naturally to other domains. This is not the law, but deviation should
 be well justified.
 
@@ -127,12 +131,11 @@ the reader.
 
 Above all, *program in Scala*. You are not writing Java, nor Haskell,
 nor OCaml; a Scala program is unlike one written in any of these. In
-order to use the language effectively, you must phrase the problems
-with the tool and constructions provided to you. There's no use
-coercing a Java program into Scala, for it will be inferior in most
-ways to its original.
+order to use the language effectively, you must phrase your problems
+in its terms. There's no use coercing a Java program into Scala, for
+it will be inferior in most ways to its original.
 
-This is not an introduction to Scala. We assume the reader
+This is not an introduction to Scala; we assume the reader
 is familiar with the language. Some resources for learning Scala are:
 
 * [Scala School](http://twitter.github.com/scala_school/)
@@ -143,8 +146,8 @@ is familiar with the language. Some resources for learning Scala are:
 
 The specifics of code *formatting* - so long as they are practical -
 are of little consequence. By definition style cannot be inherently
-good or bad, and in our experience almost everybody differs in
-preferences. *Consistent* application of style, however, enhances
+good or bad, but almost everybody differs in
+preferences. The use of a *consistent* style however will almost always enhance
 readability. A reader already familiar with a particular style does
 not have to grasp yet another set of local conventions, or decipher
 yet another corner of the language grammar.
@@ -208,7 +211,7 @@ no more information than <code>User.get</code>.
 ### Imports
 
 <dl class="rules">
-<dt>Sort imports alphabetically</dt>
+<dt>Sort import lines alphabetically</dt>
 <dd>This makes it easy to examine visually, and is simple to automate.</dd>
 <dt>Use braces when importing several names from a package</dt>
 <dd><code>import com.twitter.concurrent.{Offer, Broker}</code></dd>
@@ -245,7 +248,7 @@ expressions; write
 
 ### Pattern matching
 
-Use pattern matching directly in function definitions when applicable;
+Use pattern matching directly in function definitions whenever applicable;
 instead of
 
 	list map { item =>
@@ -292,7 +295,7 @@ The primary objective of a type system is to detect programming
 errors. The type system effectively provides a limited form of static
 verification, allowing us to express certain kinds of invariants about
 our code that the compiler can verify. Type systems provide other
-benefits too of course, but error checking is by far the greatest.
+benefits too of course, but error checking is its Raison d&#146;&Ecirc;tre.
 
 Our use of the type system should reflect this goal, but we must
 remain mindful of the reader: judicious use of types can serve to
@@ -317,7 +320,7 @@ in:
 	trait Service
 	def make() = new Service{}
 
-.LP does <em>not</em> have a return type of <code>Service</code>. This is achieved with an explicit annotation:
+.LP does <em>not</em> have a return type of <code>Service</code> (the compiler creates a singleton type). Instead use an explicit annotation:
 
 	def make(): Service = new Service{}
 
@@ -438,7 +441,7 @@ and expects their application.
 
 ## Collections
 
-Scala has a very generic, rich, powerful and composable collections
+Scala has a very generic, rich, powerful, and composable collections
 library; collections are high level and expose a large set of
 operations. Many collection manipulations and transformations can be
 expressed succinctly and readbly, but careless application of its
@@ -453,7 +456,7 @@ Always use the simplest collection that meets your needs.
 ### Hierarchy
 
 The collections library is large: in addition to an elaborate
-hierarchy (at the root of which is `Traversable[T]`), there are
+hierarchy -- the root of which being `Traversable[T]` -- there are
 `immutable` and `mutable` variants for most collections. Whatever
 the complexity, the following diagram contains the important 
 distinctions (for both `immutable` and `mutable` hierarchies)
@@ -563,7 +566,7 @@ generally) make reasoning about performance more difficult: the
 further you stray from instructing the computer directly -- in other
 words, imperative style -- the harder it is to predict the exact
 performance implications of a piece of code. Reasoning about
-correctness however, is typically easier, and readability is also
+correctness however, is typically easier; readability is also
 enhanced. With Scala the picture is further complicated by the Java
 runtime; Scala hides boxing/unboxing operations from you, which can
 incur severe performance or space penalties.
@@ -609,7 +612,7 @@ have a high degree of fan-out: each incoming request results in a
 multitude of requests to yet another tier of systems. In these
 systems, thread pools must be managed so that they are balanced
 according to the ratios of requests in each tier: mismanagement of one
-thread pool bleeds into another.
+thread pool bleeds into another. 
 
 Robust systems must also consider timeouts and cancellation, both of
 which require the introduction of yet more "control" threads,
@@ -617,6 +620,8 @@ complicating the problem further. Note that if threads were cheap
 these problems would be diminished: no pooling would be required,
 timed out threads could be discarded, and no additional resource
 management would be required.
+
+Thus resource management compromises modularity.
 
 ### Futures
 
@@ -743,7 +748,7 @@ is commonplace.
 tail-recursive (which can be checked by the `@tailrec` annotation), the 
 compiler will even translate your code into a regular loop.
 
-Consider the standard imperative version of a heap <span
+Consider a fairly standard imperative version of heap <span
 class="algo">fix-down</span>:
 
 	def fixDown(heap: Array[T], m: Int, n: Int): Unit = {
@@ -764,7 +769,10 @@ class="algo">fix-down</span>:
 Every time the while loop is entered, we're working with state dirtied
 by the previous iteration. The value of each variable is a function of
 which branches were taken, and it returns in the middle of the loop
-when the correct position was found. Here's a (tail) recursive
+when the correct position was found (The keen reader will find similar
+arguments in Dijkstra's ["Go To Statement Considered Harmful"](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html)).
+
+Consider a (tail) recursive
 implementation^[From [Finagle's heap
 balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41)]:
 
@@ -779,7 +787,7 @@ balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/s
 	  }
 	}
 
-.LP here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells; invariants abound. It&rsquo;s much easier to reason about, and easier to read as well.
+.LP here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells: invariants abound. It&rsquo;s much easier to reason about, and easier to read as well.
 
 <!--
 elaborate..
@@ -871,7 +879,7 @@ clarify.
 ### `require` and `assert`
 
 `require` and `assert` both serve as executable documentation. Both are
-useful for situations in which the typesystem cannot express required
+useful for situations in which the type system cannot express the required
 invariants. `assert` is used for *invariants* that the code assumes (either
 internal or external), for example
 
@@ -893,7 +901,7 @@ emphasizes the transformation of values over stateful mutation,
 yielding code that is referentially transparent, providing stronger
 invariants and thus also easier to reason about. Case classes, pattern
 matching, destructuring bindings, type inference, and lightweight
-closure and method creation syntax are the tools of this craft.
+closure and method creation syntax are the tools of this trade.
 
 ### Case classes as algebraic data types
 
@@ -905,11 +913,11 @@ stronger static guarantees.
 
 Use the following pattern when encoding ADTs with case classes:
 
-	sealed abstract class Tree[T]
+	sealed abstract trait Tree[T]
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
 	
-.LP the type <code>Tree[T]</code> has two constructors <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed abstract</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
+.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed abstract</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
 both succinct "obviously correct":
@@ -919,8 +927,8 @@ both succinct "obviously correct":
 	  case Leaf(value) => value
 	}
 
-While recursive structures like trees are classic applications of
-ADTs, their domain is much larger. Disjoint unions in particular are
+While recursive structures like trees constitute classic applications of
+ADTs, their domain of usefulness is much larger. Disjoint unions in particular are
 readily modelled with ADTs; these occur frequently in state machines.
 
 ### Options
@@ -957,8 +965,7 @@ pattern matching:
 	operate(opt getOrElse defaultValue)
 	
 Do not overuse  `Option`: if there is a sensible
-default -- a *Null Object* -- use that instead ([Null object
-pattern](http://en.wikipedia.org/wiki/Null_Object_pattern))
+default -- a [*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern) -- use that instead.
 
 ### Pattern matching
 
@@ -966,7 +973,7 @@ Pattern matches (`x match { ...`) are pervasive in well written Scala
 code: they conflate conditional execution, destructuring, and casting
 into one construct. Used well they enhance both clarity and safety.
 
-Use pattern matching for type switches:
+Use pattern matching to implement type switches:
 
 	obj match {
 	  case str: String => ...
@@ -1003,7 +1010,7 @@ that return `Option`s; avoid
 
 	val x = list.headOption getOrElse default
 
-is both shorter and communicates purpose.
+.LP is both shorter and communicates purpose.
 
 ### Partial functions
 
@@ -1013,7 +1020,7 @@ Scala provides syntactical shorthand for defining a `PartialFunction`:
 	  case i if i%2 == 0 => "even"
 	}
 	
-.LP and are composed with <code>orElse</code>
+.LP and they may be composed with <code>orElse</code>
 
 	val tf: (Int => String) = pf orElse { case _ => "odd"}
 	
@@ -1117,9 +1124,7 @@ is revealed by its signature; for some `Container[A]`
 
 	flatMap[B](f: A => Container[B]): Container[B]
 
-`flatMap` invokes the function `f` for the element(s) of the collection
-producing a *new* collection, (all of) which are flattened into its
-result. For example, to get all permutations of two character strings:
+.LP <code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings:
 
 	val chars = 'a' until 'z'
 	val perms = chars flatMap { a => 
@@ -1129,7 +1134,7 @@ result. For example, to get all permutations of two character strings:
 	  }
 	}
 
-.LP which is equivalent to the more concise for-comprehension (which is, roughly, syntactical sugar for the above):
+.LP which is equivalent to the more concise for-comprehension (which is &mdash; roughly &mdash; syntactical sugar for the above):
 
 	val perms = for {
 	  a <- chars
@@ -1164,7 +1169,7 @@ The use of `flatMap` in `Future`s is discussed in the
 
 Much of Scala's vastness lie in its object system. Scala is a *pure*
 language in the sense that *all values* are objects; there is no
-distinction between primitive types or container with composite ones.
+distinction between primitive types and composite ones.
 Scala also features mixins allowing for more orthogonal and piecemeal
 construction of modules that can be flexibly put together at compile
 time with all the benefits of static type checking.
@@ -1201,8 +1206,8 @@ Dependency injection typically makes use of traits,
 	}
 
 It is common to inject *factories* -- objects that produce other
-objects. In these cases, favor the use of simple functions instead
-of explicit types.
+objects. In these cases, favor the use of simple functions over specialized
+factory types.
 
 	class FilteredTweetCounter(mkStream: Filter => TweetStream) {
 	  mkStream(PublicTweets).subscribe { tweet => publicCount += 1 }
@@ -1240,7 +1245,7 @@ imagine you have an something that can do IO:
 ### Visibility
 
 Scala has very expressive visibility modifiers. It's important to use
-these as it they define what constitutes the *public API*. Public APIs
+these as they define what constitutes the *public API*. Public APIs
 should be limited so users don't inadvertently rely on implementation
 details and limit the author's ability to change them: They are crucial
 to good modularity. As a rule, it's much easier to expand public APIs
@@ -1335,8 +1340,8 @@ instead.
 The most important standard libraries at Twitter are
 [Util](http://github.com/twitter/util) and
 [Finagle](https://github.com/twitter/finagle). Util should be
-considered an extension to the Scala and Java standard libraries that
-provides missing functionality or more appropriate implementations. Finagle
+considered an extension to the Scala and Java standard libraries, 
+providing missing functionality or more appropriate implementations. Finagle
 is our RPC system; the kernel distributed systems components.
 
 ### Futures
@@ -1474,7 +1479,7 @@ scatter-gather operation).
 
 #### Cancellation
 
-Futures implement a weak for of cancellation. Invoking `Future#cancel`
+Futures implement a weak form of cancellation. Invoking `Future#cancel`
 does not directly terminate the computation but instead propagates a
 level triggered *signal* that may be queried by whichever process
 ultimately satisfies the future. Cancellation flows in the opposite
