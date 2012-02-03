@@ -968,7 +968,7 @@ internal or external), for example</p>
 assert(stream != null)
 </code></pre>
 
-<p>Use <code>require</code> to express API contracts:</p>
+<p>Whereas <code>require</code> is used to express API contracts:</p>
 
 <pre><code>def fib(n: Int) = {
   require(n &gt; 0)
@@ -1061,6 +1061,13 @@ pattern matching:</p>
 
 <p>Do not overuse <code>Option</code>: if there is a sensible
 default &mdash; a <a href="http://en.wikipedia.org/wiki/Null_Object_pattern"><em>Null Object</em></a> &mdash; use that instead.</p>
+
+<p><code>Option</code> also comes with a handy constructor for wrapping nullable values:</p>
+
+<pre><code>Option(getClass.getResourceAsStream(&quot;foo&quot;))
+</code></pre>
+
+<p class="LP">is an <code>Option[InputStream]</code> that assumes a value of <code>None</code> should <code>getResourceAsStream</code> return <code>null</code>.</p>
 
 <p><a id="Functional programming-Pattern matching" /></p>
 
@@ -1246,7 +1253,7 @@ is revealed by its signature; for some <code>Container[A]</code></p>
 <pre><code>flatMap[B](f: A =&gt; Container[B]): Container[B]
 </code></pre>
 
-<p class="LP"><code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings:</p>
+<p class="LP"><code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings that aren't the same character repeated twice:</p>
 
 <pre><code>val chars = 'a' until 'z'
 val perms = chars flatMap { a =&gt; 
@@ -1274,7 +1281,7 @@ val port: Option[Int] = ..
 
 val addr: Option[InetSocketAddress] =
   host flatMap { h =&gt;
-    port flatMap { p =&gt;
+    port map { p =&gt;
       new InetSocketAddress(h, p)
     }
   }
