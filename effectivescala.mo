@@ -93,6 +93,11 @@
 		margin-top: 0px;
 		font-style: normal;
 	}
+	
+	.footer {
+		font-style: oblique;
+		font-size: small;
+	}
 </style>
 </div>
 
@@ -1532,3 +1537,4 @@ other situation.
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
 [Util]: http://github.com/twitter/util
+

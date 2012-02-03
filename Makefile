@@ -1,10 +1,12 @@
 #MARKDOWN = $(HOME)/Library/Haskell/bin/pandoc  -f markdown -t html
 MARKDOWN = peg-markdown --smart --notes
 
-all: effectivescala.html
+all: index.html
+
+index.html: effectivescala.html footer.html.inc
+	cat $^ > $@
 
 pub: all
-	cp effectivescala.html index.html
 	./publish.sh index.html coll.png
 
 %.html: %.mo
