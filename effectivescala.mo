@@ -465,7 +465,7 @@ The collections library is large: in addition to an elaborate
 hierarchy -- the root of which being `Traversable[T]` -- there are
 `immutable` and `mutable` variants for most collections. Whatever
 the complexity, the following diagram contains the important 
-distinctions (for both `immutable` and `mutable` hierarchies)
+distinctions for both `immutable` and `mutable` hierarchies
 
 <img src="coll.png" style="margin-left: 3em;" />
 .cmd
