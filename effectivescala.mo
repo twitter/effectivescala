@@ -159,7 +159,7 @@ Above all, be always aware of the trade offs you make. A sophisticated
 language requires a complex implementation, and complexity begets
 complexity: of reasoning, of semantics, of interaction between
 features, and of the understanding of your collaborators. Thus complexity
-is the tax of sophistication -- you must always ensure always that its utility exceeds its cost.
+is the tax of sophistication -- you must always ensure that its utility exceeds its cost.
 
 And have fun.
 
