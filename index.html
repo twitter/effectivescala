@@ -5,6 +5,8 @@
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 -->
 
+<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
 <style> 
     body {
         font-family: times, serif;
@@ -35,9 +37,9 @@
     }
     
     code {
-        font-family: Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
-        font-size: 0.75em;
-/*      font-size: 0.90em;*/
+        font-family: 'Inconsolata', Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+/*      font-size: 0.75em;*/
+        font-size: 0.95em;
     }
     
     address {
@@ -105,7 +107,7 @@
 
 <h1 class="header">Effective Scala</h1>
 
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com</address>
+<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
 
 <h2>Table of Contents</h2>
 
@@ -121,6 +123,7 @@
 <li><strong><a href="#Garbage collection">Garbage collection</a></strong></li>
 <li><strong><a href="#Java compatibility">Java compatibility</a></strong></li>
 <li><strong><a href="#Twitter's standard libraries">Twitter&rsquo;s standard libraries</a></strong>: <em><a href="#Twitter's standard libraries-Futures">Futures</a></em></li>
+<li><strong><a href="#Acknowledgments">Acknowledgments</a></strong></li>
 </ul>
 
 <p><a id="Introduction" /></p>
@@ -463,7 +466,20 @@ IntMaker
 <pre><code>trait SocketFactory extends (SocketAddress) =&gt; Socket
 </code></pre>
 
-<p class="LP">a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a trait here makes it impossible use a function literal to provide a <code>SockeFactory</code>. If a trait is introduced because it allows a toplevel name, use a package object instead.</p>
+<p class="LP">a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a type alias</p>
+
+<pre><code>type SocketFactory = SocketAddress =&gt; Socket
+</code></pre>
+
+<p class="LP">is better. We may now provide function literals for values of type <code>SocketFactory</code> and also use function composition:</p>
+
+<pre><code>val addrToInet: SocketAddress =&gt; Long
+val inetToSocket: Long =&gt; Socket
+
+val factory: SocketFactory = addrToInet andThen inetToSocket
+</code></pre>
+
+<p>Type aliases are bound to toplevel names by using package objects:</p>
 
 <pre><code>package com.twitter
 package object net {
@@ -813,9 +829,9 @@ is commonplace.</p>
 
 <h3>Recursion</h3>
 
-<p><em>Phrasing your problem in recursive terms often simplifies,</em> and if
-tail-recursive (which can be checked by the <code>@tailrec</code> annotation), the
-compiler will even translate your code into a regular loop.</p>
+<p><em>Phrasing your problem in recursive terms often simplifies it,</em> and if
+the tail call optimization applies (which can be checked by the <code>@tailrec</code>
+annotation), the compiler will even translate your code into a regular loop.</p>
 
 <p>Consider a fairly standard imperative version of heap <span
 class="algo">fix-down</span>:</p>
@@ -857,7 +873,7 @@ final def fixDown(heap: Array[T], i: Int, j: Int) {
 }
 </code></pre>
 
-<p class="LP">here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells: invariants abound. It&rsquo;s much easier to reason about, and easier to read as well.</p>
+<p class="LP">here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells: invariants abound. It&rsquo;s much easier to reason about, and easier to read as well. There is also no performance penalty: since the method is tail-recursive, the compiler translates this into a standard imperative loop.</p>
 
 <!--
 elaborate..
@@ -1029,6 +1045,22 @@ readily modelled with ADTs; these occur frequently in state machines.</p>
 and should be used in their stead whenever possible. They are a
 collection (of at most one item) and they are embellished with
 collection operations &mdash; use them!</p>
+
+<p>Write</p>
+
+<pre><code>var username: Option[String] = None
+...
+username = Some(&quot;foobar&quot;)
+</code></pre>
+
+<p class="LP">instead of</p>
+
+<pre><code>var username: String = null
+...
+username = &quot;foobar&quot;
+</code></pre>
+
+<p class="LP">since the former is safer: the <code>Option</code> type statically enforces that <code>username</code> must be checked for emptyness.</p>
 
 <p>Conditional execution on an <code>Option</code> value should be done with
 <code>foreach</code>; instead of</p>
@@ -1698,6 +1730,16 @@ other situation.</p>
   ### Offer/Broker
 
 -->
+
+<p><a id="Acknowledgments" /></p>
+
+<h2>Acknowledgments</h2>
+
+<p>The lessons herein are those of Twitter&rsquo;s Scala community &mdash; I hope
+I&rsquo;ve been faithful chronicler.</p>
+
+<p>Blake Matheny, Nick Kallen, and Steve Gury provided much helpful
+guidance and many excellent suggestions.</p>
 
 <hr/>
 <ol id="notes">
