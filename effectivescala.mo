@@ -1585,7 +1585,7 @@ other situation.
 ## Acknowledgments
 
 The lessons herein are those of Twitter's Scala community -- I hope
-I've been faithful a chronicler.
+I've been a faithful chronicler.
 
 Blake Matheny, Nick Kallen, and Steve Gury provided much helpful
 guidance and many excellent suggestions.
