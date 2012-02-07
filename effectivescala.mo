@@ -3,8 +3,9 @@
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Droid+Serif' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
--->
 
+
+-->
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 
 <style>	
@@ -37,7 +38,7 @@
 	}
 	
 	code {
-		font-family: 'Inconsolata', Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+		font-family: 'Inconsolata', monospace;
 /*		font-size: 0.75em;*/
 		font-size: 0.95em;
 	}
