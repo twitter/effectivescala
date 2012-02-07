@@ -5,6 +5,8 @@
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 -->
 
+<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
 <style>	
 	body {
 		font-family: times, serif;
@@ -35,9 +37,9 @@
 	}
 	
 	code {
-		font-family: Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
-		font-size: 0.75em;
-/*		font-size: 0.90em;*/
+		font-family: 'Inconsolata', Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+/*		font-size: 0.75em;*/
+		font-size: 0.95em;
 	}
 	
 	address {
@@ -104,7 +106,7 @@
 <a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com</address>
+<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
 
 <h2>Table of Contents</h2>
 
@@ -409,7 +411,18 @@ Don't use subclassing when an alias will do.
 
 	trait SocketFactory extends (SocketAddress) => Socket
 	
-.LP a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a trait here makes it impossible use a function literal to provide a <code>SockeFactory</code>. If a trait is introduced because it allows a toplevel name, use a package object instead.
+.LP a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a type alias
+
+	type SocketFactory = SocketAddress => Socket
+
+.LP is better. We may now provide function literals for values of type <code>SocketFactory</code> and also use function composition:
+
+	val addrToInet: SocketAddress => Long
+	val inetToSocket: Long => Socket
+
+	val factory: SocketFactory = addrToInet andThen inetToSocket
+
+Type aliases are bound to toplevel names by using package objects:
 
 	package com.twitter
 	package object net {
@@ -750,9 +763,9 @@ is commonplace.
 
 ### Recursion
 
-*Phrasing your problem in recursive terms often simplifies,* and if
-tail-recursive (which can be checked by the `@tailrec` annotation), the 
-compiler will even translate your code into a regular loop.
+*Phrasing your problem in recursive terms often simplifies it,* and if
+the tail call optimization applies (which can be checked by the `@tailrec`
+annotation), the compiler will even translate your code into a regular loop.
 
 Consider a fairly standard imperative version of heap <span
 class="algo">fix-down</span>:
@@ -793,7 +806,7 @@ balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/s
 	  }
 	}
 
-.LP here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells: invariants abound. It&rsquo;s much easier to reason about, and easier to read as well.
+.LP here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells: invariants abound. It&rsquo;s much easier to reason about, and easier to read as well. There is also no performance penalty: since the method is tail-recursive, the compiler translates this into a standard imperative loop.
 
 <!--
 elaborate..
@@ -892,7 +905,7 @@ internal or external), for example
 	val stream = getClass.getResourceAsStream("someclassdata")
 	assert(stream != null)
 
-Use `require` to express API contracts:
+Whereas `require` is used to express API contracts:
 
 	def fib(n: Int) = {
 	  require(n > 0)
@@ -945,6 +958,20 @@ and should be used in their stead whenever possible. They are a
 collection (of at most one item) and they are embellished with 
 collection operations -- use them!
 
+Write
+
+	var username: Option[String] = None
+	...
+	username = Some("foobar")
+	
+.LP instead of
+
+	var username: String = null
+	...
+	username = "foobar"
+	
+.LP since the former is safer: the <code>Option</code> type statically enforces that <code>username</code> must be checked for emptyness.
+
 Conditional execution on an `Option` value should be done with
 `foreach`; instead of
 
@@ -972,6 +999,12 @@ pattern matching:
 	
 Do not overuse  `Option`: if there is a sensible
 default -- a [*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern) -- use that instead.
+
+`Option` also comes with a handy constructor for wrapping nullable values:
+
+	Option(getClass.getResourceAsStream("foo"))
+	
+.LP is an <code>Option[InputStream]</code> that assumes a value of <code>None</code> should <code>getResourceAsStream</code> return <code>null</code>.
 
 ### Pattern matching
 
@@ -1130,7 +1163,7 @@ is revealed by its signature; for some `Container[A]`
 
 	flatMap[B](f: A => Container[B]): Container[B]
 
-.LP <code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings:
+.LP <code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings that aren't the same character repeated twice:
 
 	val chars = 'a' until 'z'
 	val perms = chars flatMap { a => 
@@ -1156,11 +1189,11 @@ collapse chains of options down to one,
 	
 	val addr: Option[InetSocketAddress] =
 	  host flatMap { h =>
-	    port flatMap { p =>
+	    port map { p =>
 	      new InetSocketAddress(h, p)
 	    }
 	  }
-	  
+
 .LP which is also made more succinct with <code>for</code>
 
 	val addr: Option[InetSocketAddress] = for {
@@ -1534,6 +1567,14 @@ other situation.
   ### Offer/Broker
 
 -->
+
+## Acknowledgments
+
+The lessons herein are those of Twitter's Scala community -- I hope
+I've been faithful chronicler.
+
+Blake Matheny, Nick Kallen, and Steve Gury provided much helpful
+guidance and many excellent suggestions.
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
