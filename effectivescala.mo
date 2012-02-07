@@ -150,6 +150,19 @@ is familiar with the language. Some resources for learning Scala are:
 * [Learning Scala](http://www.scala-lang.org/node/1305)
 * [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
 
+This is a living document that will change to reflect our current
+"best practices," but its core ideas are unlikely to change: Always
+favor readability; write generic code but not at the expensive of
+clarity; take advantage of simple language features that afford great
+power but avoid the esoteric ones (especially in the type system).
+Above all, be always aware of the trade offs you make. A sophisticated
+language requires a complex implementation, and complexity begets
+complexity: of reasoning, of semantics, of interaction between
+features, and of the understanding of your collaborators. Thus complexity
+is the tax of sophistication -- you must always ensure always that its utility exceeds its cost.
+
+And have fun.
+
 ## Formatting
 
 The specifics of code *formatting* -- so long as they are practical --
