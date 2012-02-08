@@ -16,7 +16,7 @@
 
 <style>	
 	body {
-		font-family: 'garamond-premier-pro-caption', serif;
+		font-family: times, serif;
 		margin: 0 1.0in 0 1.0in;
 /*		line-height: 1.3em;*/
 	}
@@ -46,7 +46,7 @@
 	code {
 		font-family: "inconsolata", monospace;
 /*		font-size: 0.75em;*/
-		font-size: 0.80em;
+/*		font-size: 0.90em;*/
 	}
 	
 	address {
