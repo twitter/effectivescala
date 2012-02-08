@@ -1,4 +1,4 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+﻿<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
@@ -8,7 +8,9 @@
 .TOC
 
 
-## Introduction
+## 序章 (Introduction)
+
+[Scala][Scala]は、Twitterで主に使われているプログラミング言語の一つだ。TwitterのほとんどのインフラはScalaで書かれているし、我々の業務を支える[いくつかの大規模ライブラリ](http://github.com/twitter/)を持っている。Scalaは極めて効率的だが、一方で大規模な言語でもある。我々の経験は教えている、Scalaの適用には細心の注意が必要だと。Scalaの落とし穴は何か？ どの機能を採用し、どれを避けるべきか？ いつ「純粋関数型スタイル」を用い、いつ控えるべきか？ つまり、我々が見つけた「Scalaの効果的(effective)な使い方」とは何か？ このガイドは、我々の経験を短いエッセイとして抽出し、一連の*ベストプラクティス*を提供しようとする試みだ。TwitterはScalaを、主に分散システムを構成する大容量サービスの作成に利用している。だから、我々の助言にはバイアスがかかっている。しかし、ここにあるアドバイスのほとんどは、他のドメインへも自然に置き換えることができるはずだ。これは法律じゃない、だから逸脱は正当化されるべきだ。
 
 [Scala][Scala] is one of the main application programming languages
 used at Twitter. Much of our infrastructure is written in Scala and
@@ -25,11 +27,15 @@ advice is thus biased -- but most of the advice herein should translate
 naturally to other domains. This is not the law, but deviation should
 be well justified.
 
+Scalaは、簡潔な表現を可能にする数多くのツールを提供している。タイピングが少なければ、読む量も少なくなり、読む量が少なくなれば、大抵はより早く読める。故に、簡潔さは明瞭さを高めるのだ。しかし、簡潔さはまた、正反対の影響をもたらす切れ味の悪いツールともなりうる。正しさの後に、いつも読み手のことを考えよう。
+
 Scala provides many tools that enable succinct expression. Less typing
 is less reading, and less reading is often faster reading, and thus
 brevity enhances clarity. However brevity is a blunt tool that can
 also deliver the opposite effect: After correctness, think always of
 the reader.
+
+何よりも、*これはScalaだ*。君が書いているのはJavaではないし、Haskellでも、Pythonでもない。Scalaのプログラムは、いずれで書かれたものとも似ていない。Scalaを効果的に使うには、君の問題をScalaの用語で表現しなけりゃならない。JavaのプログラムをScalaへと強要しても無駄だ。ほとんどのやり方で、オリジナルより劣ったものになるだろう。
 
 Above all, *program in Scala*. You are not writing Java, nor Haskell,
 nor Python; a Scala program is unlike one written in any of these. In
@@ -37,12 +43,16 @@ order to use the language effectively, you must phrase your problems
 in its terms. There's no use coercing a Java program into Scala, for
 it will be inferior in most ways to its original.
 
+これは、Scalaの入門じゃない。読者は、Scalaに慣れ親しんでいることを前提としている。Scalaを学びたい人は、以下のサイトを参照するといいだろう:
+
 This is not an introduction to Scala; we assume the reader
 is familiar with the language. Some resources for learning Scala are:
 
 * [Scala School](http://twitter.github.com/scala_school/)
 * [Learning Scala](http://www.scala-lang.org/node/1305)
 * [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
+
+これは生きたドキュメントであり、我々の現在の「ベストプラクティス」が反映されていくだろう。けれども、核となるアイデアは変わらない。常に可読性を優先せよ。一般的なコードを書き、しかし明瞭さを犠牲にするな。シンプルな言語機能を利用せよ。それは偉大な力を与え、難解さを防ぐ（型システムにおいては特に）。とりわけ、トレードオフを常に意識すべきだ。洗練された言語は複雑な実装を必要とし、複雑さは複雑さを生む。それは論理において、意味論において、機能間の相互作用において、そして君の協力者への理解において。つまり、複雑さは洗練の税金なのだ。君は常に、効用がコストを上回っていることを確認しなければならない。
 
 This is a living document that will change to reflect our current
 "best practices," but its core ideas are unlikely to change: Always
@@ -55,9 +65,13 @@ complexity: of reasoning, of semantics, of interaction between
 features, and of the understanding of your collaborators. Thus complexity
 is the tax of sophistication -- you must always ensure that its utility exceeds its cost.
 
+では、楽しんで。
+
 And have fun.
 
-## Formatting
+## 整形 (Formatting)
+
+コード*整形*の詳細は（それが実際的である限りは）重要じゃない。当然ながら、スタイルに本質的な良し悪しはないし、ほとんど全ての人の個人的嗜好は異なる。だけど、同じ整形ルールを*一貫して*適用することは、ほぼ全ての場合で可読性を高める。特定のスタイルに馴染んだ読み手は、さらに他のローカルな習慣を理解したり、言語文法の片隅を解読したりする必要がない。
 
 The specifics of code *formatting* -- so long as they are practical --
 are of little consequence. By definition style cannot be inherently
@@ -68,6 +82,8 @@ readability. A reader already familiar with a particular style does
 not have to grasp yet another set of local conventions, or decipher
 yet another corner of the language grammar.
 
+これは文法の重複度が高いScalaにおいては特に重要だ。メソッド呼び出しを例に挙げよう。メソッドは、"`.`"を付けても、ホワイトスペースを付けても呼び出せる。同様に、ゼロまたは一つの引数を取るメソッドではカッコを付けても良いし、付けなくても良い、といった具合に。さらに、様々なスタイルのメソッド呼び出しは、文法において様々な曖昧さをさらけ出す！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとって、多くの曖昧さを解決できるのは間違いない。
+
 This is of particular importance to Scala, as its grammar has a high
 degree of overlap. One telling example is method invocation: Methods
 can be invoked with "`.`", with whitespace, without parenthesis for
@@ -77,15 +93,47 @@ different ambiguities in its grammar! Surely the consistent
 application of a carefully chosen set of formatting rules will resolve
 a great deal of ambiguity for both man and machine.
 
+我々は、[Scala style guide](http://docs.scala-lang.org/style/)を遵守すると同時に、以下のルールを追加した。
+
 We adhere to the [Scala style
 guide](http://docs.scala-lang.org/style/) plus the following rules.
 
-### Whitespace
+### ホワイトスペース (Whitespace)
+
+ホワイトスペース2文字でインデントする。100カラムを超える行は避けよう。メソッドやクラス、オブジェクトの定義の間は一行空ける。
 
 Indent by two spaces. Try to avoid lines greater than 100 columns in
 length. Use one blank line between method, class, and object definitions.
 
-### Naming
+### 命名 (Naming)
+
+<dl class="rules">
+<dt>小さなスコープでは、短い名前を使う</dt>
+<dd> <code>i</code>や<code>j</code>や<code>k</code>は、ループ内ではほとんど期待される。</dd>
+<dt>より大きなスコープでは、より長い名前を使う</dt>
+<dd>外部APIには、それに意味を与えるような、より長く説明的な名前を付けるべきだ。<code>Future.all</code>ではなく<code>Future.collect</code>のような。
+</dd>
+<dt>一般的な略語を使い、難解な略語を避ける</dt>
+<dd>誰でも<code>ok</code>や<code>err</code>、<code>defn</code>が何を指すか知っている。一方で、<code>sfri</code>はそれほど一般的じゃない。</dd>
+<dt>用法が異なるのに名前を再利用しない</dt>
+<dd><code>val</code>を使おう。</dd>
+<dt><code>`</code>を使って予約名をオーバーロードするのは避ける</dt>
+<dd><code>`type</code>`の代わりに、<code>typ</code>とする。</dd>
+<dt>副作用を伴う操作には動作を表す名前を付ける（訳注：能動態？）</dt>
+<dd><code>user.setActive()</code>ではなく、<code>user.activate()</code>とする。</dd>
+<dt>値を返すメソッドの名前は説明的に</dt>
+<dd><code>src.defined</code>ではなく、<code>src.isDefined</code>とする。</dd>
+<dt>getterの接頭に<code>get</code>を付けない</dt>
+<dd>以前のルールの通り、これは冗長だ。<code>site.getCount</code>ではなく、<code>site.count</code>とする。</dd>
+<dt>パッケージやオブジェクト内で既にカプセル化されている名前を繰り返さない</dt>
+<dd><pre><code>object User {
+  def getUser(id: Int): Option[User]
+}</code></pre>よりも、
+<pre><code>object User {
+  def get(id: Int): Option[User]
+}</code></pre>とする。<code>User.get</code>に比べて、<code>User.getUser</code>は何も情報を提供しないし、使用時に冗長だ。
+</dd>
+</dl>
 
 <dl class="rules">
 <dt>Use short names for small scopes</dt>
@@ -135,7 +183,7 @@ no more information than <code>User.get</code>.
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />Don't apply this blindly: some packages export too many names</dd>
 <dt>When using collections, qualify names by importing 
-<code>scala.collection.immutable</code> and/or <code>scala.collection.mutable</code></dt>
+<code>scala.collections.immutable</code> and/or <code>scala.collections.mutable</code></dt>
 <dd>Mutable and immutable collections have dual names. 
 Qualifiying the names makes is obvious to the reader which variant is being used (e.g. "<code>immutable.Map</code>")</dd>
 <dt>Do not use relative imports from other packages</dt>
@@ -362,7 +410,11 @@ a way to achieve the same thing without their help.
 Do not use implicits to do automatic conversions between similar
 datatypes (for example, converting a list to a stream); these are
 better done explicitly because the types have different semantics, and
-the reader should beware of these implications.
+the reader should beware of these implications. A common exception
+to this rule is the use of the standard library's `JavaConversions`. These
+are carefully chosen to retain semantics and don't result in unexpected
+behavior -- they are also idiomatic; the reader knows how they work,
+and expects their application.
 
 ## Collections
 
@@ -418,9 +470,9 @@ circumstances, and make programs easier to reason about since they are
 referentially transparent and are thus also threadsafe by default.
 
 *Use the `mutable` namespace explicitly.* Don't import
-`scala.collection.mutable._` and refer to `Set`, instead
+`scala.collections.mutable._` and refer to `Set`, instead
 
-	import scala.collection.mutable
+	import scala.collections.mutable
 	val set = mutable.Set()
 
 .LP makes it clear that the mutable variant is being used.
@@ -516,18 +568,6 @@ instead of lists for large sequences (the immutable `Vector`
 collections provides a referentially transparent interface to arrays);
 and use buffers instead of direct sequence construction when
 performance matters.
-
-### Java Collections
-
-Use `scala.collection.JavaConverters` to interoperate with Java collections.
-These are a set of implicits that add conversion `asJava` and `asScala` conversion
-methods. The use of these ensures that such conversions are explicit, aiding
-the reader:
-
-	import scala.collection.JavaConverters._
-	
-	val list: java.util.List[Int] = Seq(1,2,3,4).asJava
-	val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
 
 ## Concurrency
 
@@ -850,11 +890,11 @@ stronger static guarantees.
 
 Use the following pattern when encoding ADTs with case classes:
 
-	sealed trait Tree[T]
+	sealed abstract trait Tree[T]
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
 	
-.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
+.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed abstract</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
 both succinct "obviously correct":
@@ -1083,7 +1123,7 @@ is revealed by its signature; for some `Container[A]`
 
 .LP <code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings that aren't the same character repeated twice:
 
-	val chars = 'a' to 'z'
+	val chars = 'a' until 'z'
 	val perms = chars flatMap { a => 
 	  chars flatMap { b => 
 	    if (a != b) Seq("%c%c".format(a, b)) 

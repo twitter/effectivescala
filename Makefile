@@ -3,7 +3,7 @@ MARKDOWN = peg-markdown --smart --notes
 
 all: index.html
 
-index.html: header.html.inc effectivescala.html footer.html.inc
+index.html: header.html.inc effectivescala-ja.html footer.html.inc
 	cat $^ > $@
 
 pub: all
