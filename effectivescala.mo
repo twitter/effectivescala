@@ -340,9 +340,11 @@ the scala compiler creates singleton types for these. For example, `make`
 in:
 
 	trait Service
-	def make() = new Service{}
+	def make() = new Service {
+	  def getId = 123
+	}
 
-.LP does <em>not</em> have a return type of <code>Service</code> (the compiler creates a singleton type). Instead use an explicit annotation:
+.LP does <em>not</em> have a return type of <code>Service</code>; the compiler creates the refinement type <code>Object with Service{def getId: Int}</code>. Instead use an explicit annotation:
 
 	def make(): Service = new Service{}
 
