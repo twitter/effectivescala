@@ -1,4 +1,4 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+﻿<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
@@ -8,7 +8,9 @@
 .TOC
 
 
-## Introduction
+## 序章 (Introduction)
+
+[Scala][Scala]は、Twitterで主に使われているプログラミング言語の一つだ。TwitterのほとんどのインフラはScalaで書かれているし、我々の業務を支える[いくつかの大規模ライブラリ](http://github.com/twitter/)を持っている。Scalaは極めて効率的だが、一方で大規模な言語でもある。我々の経験は教えている、Scalaの適用には細心の注意が必要だと。Scalaの落とし穴は何か？ どの機能を採用し、どれを避けるべきか？ いつ「純粋関数型スタイル」を用い、いつ控えるべきか？ つまり、我々が見つけた「Scalaの効果的(effective)な使い方」とは何か？ このガイドは、我々の経験を短いエッセイとして抽出し、一連の*ベストプラクティス*を提供しようとする試みだ。TwitterはScalaを、主に分散システムを構成する大容量サービスの作成に利用している。だから、我々の助言にはバイアスがかかっている。しかし、ここにあるアドバイスのほとんどは、他のドメインへも自然に置き換えることができるはずだ。これは法律じゃない、だから逸脱は正当化されるべきだ。
 
 [Scala][Scala] is one of the main application programming languages
 used at Twitter. Much of our infrastructure is written in Scala and
@@ -25,11 +27,15 @@ advice is thus biased -- but most of the advice herein should translate
 naturally to other domains. This is not the law, but deviation should
 be well justified.
 
+Scalaは、簡潔な表現を可能にする数多くのツールを提供している。タイピングが少なければ、読む量も少なくなり、読む量が少なくなれば、大抵はより早く読める。だから、簡潔さは明瞭さを高めるのだ。しかし、簡潔さはまた、正反対の影響をもたらす切れ味の悪いツールともなりうる。正しさの後に、いつも読者のことを考えよう。
+
 Scala provides many tools that enable succinct expression. Less typing
 is less reading, and less reading is often faster reading, and thus
 brevity enhances clarity. However brevity is a blunt tool that can
 also deliver the opposite effect: After correctness, think always of
 the reader.
+
+何よりも、*これはScalaだ*。君が書いているのはJavaではないし、Haskellでも、Pythonでもない。Scalaのプログラムは、いずれで書かれたものとも似ていない。Scalaを効果的に使うには、君の問題をScalaの用語で表現しなけりゃならない。JavaのプログラムをScalaへと強要しても無駄だ。ほとんどのやり方で、オリジナルより劣ったものになるだろう。
 
 Above all, *program in Scala*. You are not writing Java, nor Haskell,
 nor Python; a Scala program is unlike one written in any of these. In
@@ -37,12 +43,16 @@ order to use the language effectively, you must phrase your problems
 in its terms. There's no use coercing a Java program into Scala, for
 it will be inferior in most ways to its original.
 
+これは、Scalaの入門じゃない。読者は、Scalaに慣れ親しんでいることを前提としている。Scalaを学びたい人は、以下のサイトを参照するといいだろう:
+
 This is not an introduction to Scala; we assume the reader
 is familiar with the language. Some resources for learning Scala are:
 
 * [Scala School](http://twitter.github.com/scala_school/)
 * [Learning Scala](http://www.scala-lang.org/node/1305)
 * [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
+
+これは生きたドキュメントであり、我々の現在の「ベストプラクティス」が反映されていくだろう。けれども、核となるアイデアは変わらない。常にリーダビリティを優先せよ。一般的なコードを書け、しかし明瞭さを犠牲にするな。シンプルな言語機能を利用せよ、それは偉大な力を与え、難解さを防ぐ（型システムにおいては特に）。とりわけ、トレードオフを常に意識すべきだ。洗練された言語は複雑な実装を必要とし、複雑さは複雑さを生む。それは論理において、意味論において、機能間の相互作用において、そして君の協力者への理解において。つまり、複雑さは洗練の税金なのだ。君は常に、効用がコストを上回っていることを確認しなければならない。
 
 This is a living document that will change to reflect our current
 "best practices," but its core ideas are unlikely to change: Always
@@ -54,6 +64,8 @@ language requires a complex implementation, and complexity begets
 complexity: of reasoning, of semantics, of interaction between
 features, and of the understanding of your collaborators. Thus complexity
 is the tax of sophistication -- you must always ensure that its utility exceeds its cost.
+
+では、楽しんで。
 
 And have fun.
 
