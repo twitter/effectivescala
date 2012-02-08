@@ -1075,7 +1075,7 @@ is revealed by its signature; for some `Container[A]`
 
 .LP <code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings that aren't the same character repeated twice:
 
-	val chars = 'a' until 'z'
+	val chars = 'a' to 'z'
 	val perms = chars flatMap { a => 
 	  chars flatMap { b => 
 	    if (a != b) Seq("%c%c".format(a, b)) 
