@@ -11,7 +11,7 @@
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 -->
 
-
+<link href='http://fonts.googleapis.com/css?family=Cousine' rel='stylesheet' type='text/css'>
 <script type="text/javascript" src="http://use.typekit.com/bub8efs.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
@@ -45,9 +45,9 @@
 	}
 	
 	code {
-		font-family: "inconsolata", monospace;
+		font-family: "Cousine", monospace;
 /*		font-size: 0.75em;*/
-/*		font-size: 0.90em;*/
+		font-size: 0.90em;
 	}
 	
 	address {
@@ -1040,12 +1040,12 @@ stronger static guarantees.</p>
 
 <p>Use the following pattern when encoding ADTs with case classes:</p>
 
-<pre><code>sealed abstract trait Tree[T]
+<pre><code>sealed trait Tree[T]
 case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 case class Leaf[T](value: T) extends Tree[T]
 </code></pre>
 
-<p class="LP">the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed abstract</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.</p>
+<p class="LP">the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.</p>
 
 <p>Together with pattern matching, such modelling results in code that is
 both succinct &ldquo;obviously correct&rdquo;:</p>
