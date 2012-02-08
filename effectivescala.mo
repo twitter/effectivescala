@@ -130,7 +130,7 @@ no more information than <code>User.get</code>.
 <dt>Sort import lines alphabetically</dt>
 <dd>This makes it easy to examine visually, and is simple to automate.</dd>
 <dt>Use braces when importing several names from a package</dt>
-<dd><code>import com.twitter.concurrent.{Offer, Broker}</code></dd>
+<dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
 <dt>Use wildcards when more than six names are imported</dt>
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />Don't apply this blindly: some packages export too many names</dd>
