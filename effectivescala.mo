@@ -842,11 +842,11 @@ stronger static guarantees.
 
 Use the following pattern when encoding ADTs with case classes:
 
-	sealed abstract trait Tree[T]
+	sealed trait Tree[T]
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
 	
-.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed abstract</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
+.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
 both succinct "obviously correct":
