@@ -16,7 +16,7 @@
 
 <style>	
 	body {
-		font-family: 'chaparral-pro', serif;
+		font-family: 'garamond-premier-pro-caption', serif;
 		margin: 0 1.0in 0 1.0in;
 /*		line-height: 1.3em;*/
 	}
