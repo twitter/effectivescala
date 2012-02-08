@@ -27,7 +27,7 @@ advice is thus biased -- but most of the advice herein should translate
 naturally to other domains. This is not the law, but deviation should
 be well justified.
 
-Scalaは、簡潔な表現を可能にする数多くのツールを提供している。タイピングが少なければ、読む量も少なくなり、読む量が少なくなれば、大抵はより早く読める。だから、簡潔さは明瞭さを高めるのだ。しかし、簡潔さはまた、正反対の影響をもたらす切れ味の悪いツールともなりうる。正しさの後に、いつも読者のことを考えよう。
+Scalaは、簡潔な表現を可能にする数多くのツールを提供している。タイピングが少なければ、読む量も少なくなり、読む量が少なくなれば、大抵はより早く読める。故に、簡潔さは明瞭さを高めるのだ。しかし、簡潔さはまた、正反対の影響をもたらす切れ味の悪いツールともなりうる。正しさの後に、いつも読み手のことを考えよう。
 
 Scala provides many tools that enable succinct expression. Less typing
 is less reading, and less reading is often faster reading, and thus
@@ -52,7 +52,7 @@ is familiar with the language. Some resources for learning Scala are:
 * [Learning Scala](http://www.scala-lang.org/node/1305)
 * [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
 
-これは生きたドキュメントであり、我々の現在の「ベストプラクティス」が反映されていくだろう。けれども、核となるアイデアは変わらない。常にリーダビリティを優先せよ。一般的なコードを書け、しかし明瞭さを犠牲にするな。シンプルな言語機能を利用せよ、それは偉大な力を与え、難解さを防ぐ（型システムにおいては特に）。とりわけ、トレードオフを常に意識すべきだ。洗練された言語は複雑な実装を必要とし、複雑さは複雑さを生む。それは論理において、意味論において、機能間の相互作用において、そして君の協力者への理解において。つまり、複雑さは洗練の税金なのだ。君は常に、効用がコストを上回っていることを確認しなければならない。
+これは生きたドキュメントであり、我々の現在の「ベストプラクティス」が反映されていくだろう。けれども、核となるアイデアは変わらない。常に可読性を優先せよ。一般的なコードを書き、しかし明瞭さを犠牲にするな。シンプルな言語機能を利用せよ。それは偉大な力を与え、難解さを防ぐ（型システムにおいては特に）。とりわけ、トレードオフを常に意識すべきだ。洗練された言語は複雑な実装を必要とし、複雑さは複雑さを生む。それは論理において、意味論において、機能間の相互作用において、そして君の協力者への理解において。つまり、複雑さは洗練の税金なのだ。君は常に、効用がコストを上回っていることを確認しなければならない。
 
 This is a living document that will change to reflect our current
 "best practices," but its core ideas are unlikely to change: Always
@@ -69,7 +69,9 @@ is the tax of sophistication -- you must always ensure that its utility exceeds 
 
 And have fun.
 
-## Formatting
+## 整形 (Formatting)
+
+コード*整形*の詳細は（それが実際的である限りは）重要じゃない。当然ながら、スタイルに本質的な良し悪しはないし、ほとんど全ての人の個人的嗜好は異なる。だけど、同じ整形ルールを*一貫して*適用することは、ほぼ全ての場合で可読性を高める。特定のスタイルに馴染んだ読み手は、さらに他のローカルな習慣を理解したり、言語文法の片隅を解読したりする必要がない。
 
 The specifics of code *formatting* -- so long as they are practical --
 are of little consequence. By definition style cannot be inherently
@@ -80,6 +82,8 @@ readability. A reader already familiar with a particular style does
 not have to grasp yet another set of local conventions, or decipher
 yet another corner of the language grammar.
 
+これは文法の重複度が高いScalaにおいては特に重要だ。メソッド呼び出しを例に挙げよう。メソッドは、"`.`"を付けても、ホワイトスペースを付けても呼び出せる。同様に、ゼロまたは一つの引数を取るメソッドではカッコを付けても良いし、付けなくても良い、といった具合に。さらに、様々なスタイルのメソッド呼び出しは、文法において様々な曖昧さをさらけ出す！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとって、多くの曖昧さを解決できるのは間違いない。
+
 This is of particular importance to Scala, as its grammar has a high
 degree of overlap. One telling example is method invocation: Methods
 can be invoked with "`.`", with whitespace, without parenthesis for
@@ -89,15 +93,47 @@ different ambiguities in its grammar! Surely the consistent
 application of a carefully chosen set of formatting rules will resolve
 a great deal of ambiguity for both man and machine.
 
+我々は、[Scala style guide](http://docs.scala-lang.org/style/)を遵守すると同時に、以下のルールを追加した。
+
 We adhere to the [Scala style
 guide](http://docs.scala-lang.org/style/) plus the following rules.
 
-### Whitespace
+### ホワイトスペース (Whitespace)
+
+ホワイトスペース2文字でインデントする。100カラムを超える行は避けよう。メソッドやクラス、オブジェクトの定義の間は一行空ける。
 
 Indent by two spaces. Try to avoid lines greater than 100 columns in
 length. Use one blank line between method, class, and object definitions.
 
-### Naming
+### 命名 (Naming)
+
+<dl class="rules">
+<dt>小さなスコープでは、短い名前を使う</dt>
+<dd> <code>i</code>や<code>j</code>や<code>k</code>は、ループ内ではほとんど期待される。</dd>
+<dt>より大きなスコープでは、より長い名前を使う</dt>
+<dd>外部APIには、それに意味を与えるような、より長く説明的な名前を付けるべきだ。<code>Future.all</code>ではなく<code>Future.collect</code>のような。
+</dd>
+<dt>一般的な略語を使い、難解な略語を避ける</dt>
+<dd>誰でも<code>ok</code>や<code>err</code>、<code>defn</code>が何を指すか知っている。一方で、<code>sfri</code>はそれほど一般的じゃない。</dd>
+<dt>用法が異なるのに名前を再利用しない</dt>
+<dd><code>val</code>を使おう。</dd>
+<dt><code>`</code>を使って予約名をオーバーロードするのは避ける</dt>
+<dd><code>`type</code>`の代わりに、<code>typ</code>とする。</dd>
+<dt>副作用を伴う操作には動作を表す名前を付ける（訳注：能動態？）</dt>
+<dd><code>user.setActive()</code>ではなく、<code>user.activate()</code>とする。</dd>
+<dt>値を返すメソッドの名前は説明的に</dt>
+<dd><code>src.defined</code>ではなく、<code>src.isDefined</code>とする。</dd>
+<dt>getterの接頭に<code>get</code>を付けない</dt>
+<dd>以前のルールの通り、これは冗長だ。<code>site.getCount</code>ではなく、<code>site.count</code>とする。</dd>
+<dt>パッケージやオブジェクト内で既にカプセル化されている名前を繰り返さない</dt>
+<dd><pre><code>object User {
+  def getUser(id: Int): Option[User]
+}</code></pre>よりも、
+<pre><code>object User {
+  def get(id: Int): Option[User]
+}</code></pre>とする。<code>User.get</code>に比べて、<code>User.getUser</code>は何も情報を提供しないし、使用時に冗長だ。
+</dd>
+</dl>
 
 <dl class="rules">
 <dt>Use short names for small scopes</dt>
