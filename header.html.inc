@@ -11,7 +11,7 @@
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 -->
 
-
+<link href='http://fonts.googleapis.com/css?family=Cousine' rel='stylesheet' type='text/css'>
 <script type="text/javascript" src="http://use.typekit.com/bub8efs.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
@@ -45,9 +45,9 @@
 	}
 	
 	code {
-		font-family: "inconsolata", monospace;
+		font-family: "Cousine", monospace;
 /*		font-size: 0.75em;*/
-/*		font-size: 0.90em;*/
+		font-size: 0.90em;
 	}
 	
 	address {
