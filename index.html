@@ -1311,7 +1311,7 @@ is revealed by its signature; for some <code>Container[A]</code></p>
 
 <p class="LP"><code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings that aren't the same character repeated twice:</p>
 
-<pre><code>val chars = 'a' until 'z'
+<pre><code>val chars = 'a' to 'z'
 val perms = chars flatMap { a =&gt; 
   chars flatMap { b =&gt; 
     if (a != b) Seq(&quot;%c%c&quot;.format(a, b)) 
