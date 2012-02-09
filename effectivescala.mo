@@ -362,11 +362,7 @@ a way to achieve the same thing without their help.
 Do not use implicits to do automatic conversions between similar
 datatypes (for example, converting a list to a stream); these are
 better done explicitly because the types have different semantics, and
-the reader should beware of these implications. A common exception
-to this rule is the use of the standard library's `JavaConversions`. These
-are carefully chosen to retain semantics and don't result in unexpected
-behavior -- they are also idiomatic; the reader knows how they work,
-and expects their application.
+the reader should beware of these implications.
 
 ## Collections
 
@@ -520,6 +516,18 @@ instead of lists for large sequences (the immutable `Vector`
 collections provides a referentially transparent interface to arrays);
 and use buffers instead of direct sequence construction when
 performance matters.
+
+### Java Collections
+
+Use `scala.collection.JavaConverters` to interoperate with Java collections.
+These are a set of implicits that add conversion `asJava` and `asScala` conversion
+methods. The use of these ensures that such conversions are explicit, aiding
+the reader:
+
+	import scala.collection.JavaConverters._
+	
+	val list: java.util.List[Int] = Seq(1,2,3,4).asJava
+	val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
 
 ## Concurrency
 
