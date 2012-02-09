@@ -124,7 +124,7 @@
 <li><strong><a href="#Introduction">Introduction</a></strong></li>
 <li><strong><a href="#Formatting">Formatting</a></strong>: <em><a href="#Formatting-Whitespace">Whitespace</a></em>, <em><a href="#Formatting-Naming">Naming</a></em>, <em><a href="#Formatting-Imports">Imports</a></em>, <em><a href="#Formatting-Braces">Braces</a></em>, <em><a href="#Formatting-Pattern matching">Pattern matching</a></em>, <em><a href="#Formatting-Comments">Comments</a></em></li>
 <li><strong><a href="#Types and Generics">Types and Generics</a></strong>: <em><a href="#Types and Generics-Return type annotations">Return type annotations</a></em>, <em><a href="#Types and Generics-Variance">Variance</a></em>, <em><a href="#Types and Generics-Type aliases">Type aliases</a></em>, <em><a href="#Types and Generics-Implicits">Implicits</a></em></li>
-<li><strong><a href="#Collections">Collections</a></strong>: <em><a href="#Collections-Hierarchy">Hierarchy</a></em>, <em><a href="#Collections-Use">Use</a></em>, <em><a href="#Collections-Style">Style</a></em>, <em><a href="#Collections-Performance">Performance</a></em></li>
+<li><strong><a href="#Collections">Collections</a></strong>: <em><a href="#Collections-Hierarchy">Hierarchy</a></em>, <em><a href="#Collections-Use">Use</a></em>, <em><a href="#Collections-Style">Style</a></em>, <em><a href="#Collections-Performance">Performance</a></em>, <em><a href="#Collections-Java Collections">Java Collections</a></em></li>
 <li><strong><a href="#Concurrency">Concurrency</a></strong>: <em><a href="#Concurrency-Futures">Futures</a></em>, <em><a href="#Concurrency-Collections">Collections</a></em></li>
 <li><strong><a href="#Control structures">Control structures</a></strong>: <em><a href="#Control structures-Recursion">Recursion</a></em>, <em><a href="#Control structures-Returns">Returns</a></em>, <em><a href="#Control structures-`for` loops and comprehensions"><code>for</code> loops and comprehensions</a></em>, <em><a href="#Control structures-`require` and `assert`"><code>require</code> and <code>assert</code></a></em></li>
 <li><strong><a href="#Functional programming">Functional programming</a></strong>: <em><a href="#Functional programming-Case classes as algebraic data types">Case classes as algebraic data types</a></em>, <em><a href="#Functional programming-Options">Options</a></em>, <em><a href="#Functional programming-Pattern matching">Pattern matching</a></em>, <em><a href="#Functional programming-Partial functions">Partial functions</a></em>, <em><a href="#Functional programming-Destructuring bindings">Destructuring bindings</a></em>, <em><a href="#Functional programming-Lazyness">Lazyness</a></em>, <em><a href="#Functional programming-Call by name">Call by name</a></em>, <em><a href="#Functional programming-`flatMap`"><code>flatMap</code></a></em></li>
@@ -538,11 +538,7 @@ a way to achieve the same thing without their help.</p>
 <p>Do not use implicits to do automatic conversions between similar
 datatypes (for example, converting a list to a stream); these are
 better done explicitly because the types have different semantics, and
-the reader should beware of these implications. A common exception
-to this rule is the use of the standard library&rsquo;s <code>JavaConversions</code>. These
-are carefully chosen to retain semantics and don&rsquo;t result in unexpected
-behavior &mdash; they are also idiomatic; the reader knows how they work,
-and expects their application.</p>
+the reader should beware of these implications.</p>
 
 <p><a id="Collections" /></p>
 
@@ -689,6 +685,21 @@ instead of lists for large sequences (the immutable <code>Vector</code>
 collections provides a referentially transparent interface to arrays);
 and use buffers instead of direct sequence construction when
 performance matters.</p>
+
+<p><a id="Collections-Java Collections" /></p>
+
+<h3>Java Collections</h3>
+
+<p>Use <code>scala.collection.JavaConverters</code> to interoperate with Java collections.
+These are a set of implicits that add conversion <code>asJava</code> and <code>asScala</code> conversion
+methods. The use of these ensures that such conversions are explicit, aiding
+the reader:</p>
+
+<pre><code>import scala.collection.JavaConverters._
+
+val list: java.util.List[Int] = Seq(1,2,3,4).asJava
+val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
+</code></pre>
 
 <p><a id="Concurrency" /></p>
 
