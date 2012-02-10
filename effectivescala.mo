@@ -8,6 +8,10 @@
 .TOC
 
 
+<h2>Other languages</h2>
+<a href="index-ja.html">日本語</a>
+
+
 ## Introduction
 
 [Scala][Scala] is one of the main application programming languages
