@@ -151,28 +151,22 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 Scalaの強力な型システムは、共通の学術的な探求と実践に基づいている(eg. [Type level programming in
 Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/))。これらのテクニックは学術的に興味深いトピックだが、プロダクションコードでの応用において有用であることは稀だ。避けるべきだろう。
 
-### Return type annotations
+### 戻り型アノテーション
 
-While Scala allows these to be omitted, such annotations provide good
-documentation: this is especially important for public methods. Where a
-method is not exposed and its return type obvious, omit them.
+Scalaでは戻り型アノテーションを省略できるが、一方でそれらは良いドキュメンテーションであり、publicメソッドでは特に重要だ。露出していないメソッドで、戻り型が明白な場合は省略しよう。
 
-This is especially important when instantiating objects with mixins as
-the scala compiler creates singleton types for these. For example, `make`
-in:
+これは、Scalaコンパイラが生成するシングルトン型をミックスインするオブジェクトをインスタンス化する場合は特に重要だ。例えば、`make` 関数が:
 
 	trait Service
 	def make() = new Service {
 	  def getId = 123
 	}
 
-.LP does <em>not</em> have a return type of <code>Service</code>; the compiler creates the refinement type <code>Object with Service{def getId: Int}</code>. Instead use an explicit annotation:
+.LP <code>Service</code> という戻り型を<em>持たない</em>場合、コンパイラは細別型(refinement type)である <code>Object with Service{def getId: Int}</code> を生成する。代わりに、明示的なアノテーションを使うと:
 
 	def make(): Service = new Service{}
 
-Now the author is free to mix in more traits without changing the
-public type of `make`, making it easier to manage backwards
-compatibility.
+`make` の公開型を変更することなく、さらに好きなだけtraitをミックスできるから、後方互換性の管理が容易になる。
 
 ### Variance
 
