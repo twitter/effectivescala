@@ -105,10 +105,9 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 	
 .LP と書きたいと思うかもしれない。しかし、最初の記法の方が、乱雑さが少なく読みやすい。明確にするのが目的でないなら、<em>構文的な儀礼</em>は避けよう。
 
-### Pattern matching
+### パターンマッチ
 
-Use pattern matching directly in function definitions whenever applicable;
-instead of
+適用できる場合は、関数定義の中ではパターンマッチを直接使おう。
 
 	list map { item =>
 	  item match {
@@ -117,14 +116,14 @@ instead of
 	  }
 	}
 	
-.LP collapse the match
+.LP とする代わりに、matchを折り畳んで
 
 	list map {
 	  case Some(x) => x
 	  case None => default
 	}
 
-.LP it's clear that the list items are being mapped over &mdash; the extra indirection does not elucidate.
+.LP と書くと、リストの要素がmapされることが分かりやすい &mdash; the extra indirection does not elucidate.（？）
 
 ### Comments
 
