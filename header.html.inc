@@ -12,9 +12,7 @@
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 -->
 
-
-<script type="text/javascript" src="http://use.typekit.com/bub8efs.js"></script>
-<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 
 <style>	
 	body {
@@ -46,9 +44,9 @@
 	}
 	
 	code {
-		font-family: "inconsolata", monospace;
+		font-family: "Droid Sans Mono'", monospace;
 /*		font-size: 0.75em;*/
-/*		font-size: 0.90em;*/
+		font-size: 0.80em;
 	}
 	
 	address {
