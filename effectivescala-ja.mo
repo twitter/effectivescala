@@ -259,7 +259,7 @@ Scalaでは戻り型アノテーション(return type annotation)を省略でき
 
 * Scalaスタイルのコレクションを拡張したり、追加したりするとき
 * オブジェクトを適合(adapt)させたり、拡張したりするとき（"pimp my library"パターン）
-* 制約エビデンスを提供することで、*型安全を強化*するために使うとき
+* [制約エビデンス](http://www.ne.jp/asahi/hishidama/home/tech/scala/generics.html#h_generalized_type_constraints)を提供することで、*型安全を強化*するために使うとき
 * 型エビデンス（型クラス）を提供するため
 * `Manifest`のため
 
