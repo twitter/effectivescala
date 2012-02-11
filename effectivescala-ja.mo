@@ -253,27 +253,19 @@ Scalaでは戻り型アノテーションを省略できるが、一方でそれ
 
 なお、型エイリアスは、型に対する別名の構文的な代わりとなるものであり、新しい型ではないことに留意しよう。
 
-### Implicits
+### 暗黙
 
-Implicits are a powerful type system feature, but they should be used
-sparingly. They have complicated resolution rules and make it
-difficult -- by simple lexical examination -- to grasp what is actually
-happening. It's definitely OK to use implicits in the following
-situations:
+暗黙(implicits)は、型システムの強力な機能だが、慎重に使うべきだ。それらの解決ルールは複雑で、シンプルな字句検査においてさえ、実際に何が起きているか把握するのを困難にする。暗黙を間違いなく使ってもいいのは、以下の場面だ:
 
-* Extending or adding a Scala-style collection
-* Adapting or extending an object ("pimp my library" pattern)
-* Use to *enhance type safety* by providing constraint evidence
-* To provide type evidence (typeclassing)
-* For `Manifest`s
+* Scalaスタイルのコレクションを拡張したり、追加したりするとき
+* オブジェクトを適合(adapt)させたり、拡張したりするとき（"pimp my library"パターン）
+* 制約エビデンスを提供することで、*型安全を強化*するために使うとき
+* 型エビデンス（型クラス）を提供するため
+* `Manifest`のため
 
-If you do find yourself using implicits, always ask yourself if there is
-a way to achieve the same thing without their help.
+暗黙を使う場合は、暗黙を使わずに同じことを達成する方法がないか、常に自問自答しよう。
 
-Do not use implicits to do automatic conversions between similar
-datatypes (for example, converting a list to a stream); these are
-better done explicitly because the types have different semantics, and
-the reader should beware of these implications.
+似通ったデータ型同士を、自動的に変換するのに暗黙を使うのはやめよう（例えば、リストをストリームに変換する等）。型はそれぞれ異なった動作をするので、読み手は、暗黙によって型が変換されていないか気をつける必要がある。明示的に変換するべきだ。
 
 ## Collections
 
