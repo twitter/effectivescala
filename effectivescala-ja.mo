@@ -273,13 +273,9 @@ Scalaが持つコレクションライブラリは、非常に総称的で、機
 
 常に、君のニーズを最もシンプルに満たすコレクションを使おう。
 
-### Hierarchy
+### 階層
 
-The collections library is large: in addition to an elaborate
-hierarchy -- the root of which being `Traversable[T]` -- there are
-`immutable` and `mutable` variants for most collections. Whatever
-the complexity, the following diagram contains the important 
-distinctions for both `immutable` and `mutable` hierarchies
+コレクションライブラリは巨大だ。`Traversable[T]`を基底とする精密な階層に加えて、ほとんどのコレクションに`immutable`と`mutable`のバリエーションがある。複雑さはともかく、以下の図は、`immutable`と`mutable`の双方の階層にとって重要な区別を含んでいる。
 
 <img src="coll.png" style="margin-left: 3em;" />
 .cmd
@@ -304,7 +300,7 @@ arrow from Iterable.s to Map.nw
 EOF
 .endcmd
 
-.LP <code>Iterable[T]</code> is any collection that may be iterated over, they provides an <code>iterator</code> method (and thus <code>foreach</code>). <code>Seq[T]</code>s are collections that are <em>ordered</em>, <code>Set[T]</code>s are mathematical sets (unordered collections of unique items), and <code>Map[T]</code>s are associative arrays, also unordered.
+.LP <code>Iterable[T]</code>はイテレートできるコレクションで、<code>iterator</code>(と<code>foreach</code>)メソッドを提供する。<code>Seq[T]</code>は<em>順序付けされた</em>コレクション、<code>Set[T]</code>は数学的集合（要素が一意な順序の無いコレクション）、そして<code>Map[T]</code>は順序の無い連想配列だ。
 
 ### Use
 
