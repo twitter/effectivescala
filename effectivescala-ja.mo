@@ -267,19 +267,11 @@ Scalaでは戻り型アノテーション(return type annotation)を省略でき
 
 似通ったデータ型同士を、自動的に変換するのに暗黙を使うのはやめよう（例えば、リストをストリームに変換する等）。型はそれぞれ異なった動作をするので、読み手は、暗黙によって型が変換されていないか気をつける必要がある。明示的に変換するべきだ。
 
-## Collections
+## コレクション
 
-Scala has a very generic, rich, powerful, and composable collections
-library; collections are high level and expose a large set of
-operations. Many collection manipulations and transformations can be
-expressed succinctly and readbly, but careless application of its
-features can often lead to the opposite result. Every Scala programmer
-should read the [collections design
-document](http://www.scala-lang.org/docu/files/collections-api/collections.html);
-it provides great insight and motivation for Scala collections
-library.
+Scalaが持つコレクションライブラリは、非常に総称的で、機能豊富で、強力で、組み合わせが容易だ。コレクションは高水準であり、多数の操作を提供している。多数のコレクション操作と変換を簡潔かつ読みやすく表現できるが、それらの機能を不注意に適用すると、しばしば正反対の結果を招く。全てのScalaプログラマは、[collections design document](http://www.scala-lang.org/docu/files/collections-api/collections.html)を読むべきだ。このドキュメントは、Scalaのコレクションライブラリに対する優れた洞察と意欲をもたらしてくれる。
 
-Always use the simplest collection that meets your needs.
+常に、君のニーズを最もシンプルに満たすコレクションを使おう。
 
 ### Hierarchy
 
