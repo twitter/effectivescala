@@ -168,49 +168,40 @@ Scalaでは戻り型アノテーションを省略できるが、一方でそれ
 
 `make` の公開型を変更することなく、さらに好きなだけtraitをミックスできるから、後方互換性の管理が容易になる。
 
-### Variance
+### 変位
 
-Variance arises when generics are combined with subtyping. They define
-how subtyping of the *contained* type relate to subtyping of the
-*container* type. Because Scala has declaration site variance
-annotations, authors of common libraries -- especially collections --
-must be prolific annotators. Such annotations are important for the
-usability of shared code, but misapplication can be dangerous.
+変位は、ジェネリクスが派生型と結びつく時に現れる。変位は、*コンテナ（含む）型*の派生型と、コンテナ型に*含まれる型*の派生型がどう関連するかを定義する。Scalaでは変位アノテーションを宣言できるから、コレクションに代表される共通ライブラリの作者は、多数のアノテーションを扱う必要がある。変位アノテーションは、共用コードの使い勝手を高める上で重要だが、誤用すると危険なものとなりうる。
 
-Invariants are an advanced but necessary aspect of Scala's typesystem,
-and should be used widely (and correctly) as it aids the application
-of subtyping.
+変位は、Scalaの型システムにおいて高度だが必須の特徴で、アプリケーションの派生型を補助する際に、広く（そして正しく）使われるべきだ。
 
-*Immutable collections should be covariant*. Methods that receive
-the contained type should "downgrade" the collection appropriately:
+*不変コレクションは共変であるべきだ*。要素型を受け取るメソッドは、コレクションを適切に"格下げ"すべきだ:
 
 	trait Collection[+T] {
 	  def add[U >: T](other: U): Collection[U]
 	}
 
-*Mutable collections should be invariant*. Covariance
-is typically invalid with mutable collections. Consider
+*可変コレクションは不変であるべきだ*。一般的に、可変コレクションにおいて共変は無効だ。この
 
 	trait HashSet[+T] {
 	  def add[U >: T](item: U)
 	}
 
-.LP and the following type hierarchy:
+.LP と、以下の型階層を見てほしい:
 
 	trait Mammal
 	trait Dog extends Mammal
 	trait Cat extends Mammal
 
-.LP If I now have a hash set of dogs
+.LP もし今、犬(Dog)のハッシュセットがあるなら、
 
 	val dogs: HashSet[Dog]
 
-.LP treat it as a set of Mammals and add a cat.
+.LP それを哺乳類(Mammal)の集合として扱ったり、猫(Cat)を追加したりできる。
 
 	val mammals: HashSet[Mammal] = dogs
 	mammals.add(new Cat{})
 
-.LP This is no longer a HashSet of dogs!
+.LP これはもはや、犬のHashSetではない！
 
 <!--
   *	when to use abstract type members?
