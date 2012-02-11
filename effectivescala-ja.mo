@@ -91,22 +91,19 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 <dd>読み手が、全てのインポートを一箇所で参照できるようにしよう。</dd>
 </dl>
 
-### Braces
+### 中カッコ
 
-Braces are used to create compound expressions (they serve other uses
-in the "module language"), where the value of the compound expression
-is the last expression in the list. Avoid using braces for simple
-expressions; write
+中カッコは、複合式を作るのに使われる（"モジュール言語"では他の用途にも使われる）。そして、複合式の値は、リスト中の最後の式となる。単純な式に中カッコを使うのは避けよう。例えば、
 
 	def square(x: Int) = x*x
 	
-.LP but not
+.LP と書く代わりに、構文的にメソッドの本体を見分けやすい
 
 	def square(x: Int) = {
 	  x * x
 	}
 	
-.LP even though it may be tempting to distinguish the method body syntactically. The first alternative has less clutter and is easier to read. <em>Avoid syntactical ceremony</em> unless it clarifies.
+.LP と書きたいと思うかもしれない。しかし、最初の記法の方が、乱雑さが少なく読みやすい。明確にするのが目的でないなら、<em>構文的な儀礼</em>は避けよう。
 
 ### Pattern matching
 
