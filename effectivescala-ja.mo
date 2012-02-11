@@ -302,34 +302,26 @@ EOF
 
 .LP <code>Iterable[T]</code>はイテレートできるコレクションで、<code>iterator</code>(と<code>foreach</code>)メソッドを提供する。<code>Seq[T]</code>は<em>順序付けされた</em>コレクション、<code>Set[T]</code>は数学的集合（要素が一意な順序の無いコレクション）、そして<code>Map[T]</code>は順序の無い連想配列だ。
 
-### Use
+### 利用
 
-*Prefer using immutable collections.* They are applicable in most
-circumstances, and make programs easier to reason about since they are
-referentially transparent and are thus also threadsafe by default.
+*不変(immutable)コレクションを利用する。*不変コレクションは、ほとんどの状況に適用できると同時に参照透過なので、プログラムがデフォルトでスレッドセーフであると判断しやすくなる。
 
-*Use the `mutable` namespace explicitly.* Don't import
-`scala.collections.mutable._` and refer to `Set`, instead
+*`mutable`名前空間は明示的に使う。*`scala.collections.mutable._`をインポートして`Set`を参照する代わりに、
 
 	import scala.collections.mutable
 	val set = mutable.Set()
 
-.LP makes it clear that the mutable variant is being used.
+.LP とすることで、可変な`Set`を使っていることが分かりやすくなる。
 
-*Use the default constructor for the collection type.* Whenever you
-need an ordered sequence (and not necessarily linked list semantics),
-use the `Seq()` constructor, and so on:
+*コレクション型のデフォルトコンストラクタを使う。*例えば、順序付きの（かつ連結リストの動作が必要ない）シーケンスが欲しい場合は、いつでも`Seq()`コンストラクタを使おう:
 
 	val seq = Seq(1, 2, 3)
 	val set = Set(1, 2, 3)
 	val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
 
-.LP This style separates the semantics of the collection from its implementation, letting the collections library uses the most appropriate type: you need a <code>Map</code>, not necessarily a Red-Black Tree. Furthermore, these default constructors will often use specialized representations: for example, <code>Map()</code> will use a 3-field object for maps with 3 keys.
+.LP このスタイルでは、コレクションの動作をその実装と切り離して、最も適切な型をコレクションライブラリに使わせることができる。君に必要なのは<code>Map</code>であって、必ずしも[赤黒木](http://ja.wikipedia.org/wiki/%E8%B5%A4%E9%BB%92%E6%9C%A8)じゃない。さらに、これらのデフォルトコンストラクタは、しばしば特殊な表現を用いる。例えば<code>Map()</code>は、3つのフィールド・オブジェクトから、3つのキーを持つマップを作り出す。
 
-The corrolary to the above is: in your own methods and constructors, *receive the most generic collection
-type appropriate*. This typically boils down to one of the above:
-`Iterable`, `Seq`, `Set`, or `Map`. If your method needs a sequence,
-use `Seq[T]`, not `List[T]`.
+以上の当然の帰結として、君自身のメソッドやコンストラクタでは、*最も総称的で適切なコレクション型を受け取ろう*。これは詰まるところ、通常は上記の`Iterable`、`Seq`、`Set`あるいは`Map`のうち、どれか一つである。もしメソッドがシーケンスを必要とする場合は、`List[T]`ではなく`Seq[T]`を使おう。
 
 <!--
 something about buffers for construction?
