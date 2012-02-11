@@ -8,104 +8,40 @@
 .TOC
 
 
+<h2>他の言語</h2>
+<a href="index.html">English</a>
+
 ## 序章 (Introduction)
 
-[Scala][Scala]は、Twitterで主に使われているプログラミング言語の一つだ。TwitterのほとんどのインフラはScalaで書かれているし、我々の業務を支える[いくつかの大規模ライブラリ](http://github.com/twitter/)を持っている。Scalaは極めて効率的だが、一方で大規模な言語でもある。我々の経験は教えている、Scalaの適用には細心の注意が必要だと。Scalaの落とし穴は何か？ どの機能を採用し、どれを避けるべきか？ いつ「純粋関数型スタイル」を用い、いつ控えるべきか？ つまり、我々が見つけた「Scalaの効果的(effective)な使い方」とは何か？ このガイドは、我々の経験を短いエッセイとして抽出し、一連の*ベストプラクティス*を提供しようとする試みだ。TwitterはScalaを、主に分散システムを構成する大容量サービスの作成に利用している。だから、我々の助言にはバイアスがかかっている。しかし、ここにあるアドバイスのほとんどは、他のドメインへも自然に置き換えることができるはずだ。これは法律じゃない、だから逸脱は正当化されるべきだ。
+[Scala][Scala]は、Twitterで使われている主なアプリケーションプログラミング言語の一つだ。TwitterのインフラのほとんどはScalaで書かれているし、我々の業務を支える[大規模ライブラリ](http://github.com/twitter/)をいくつか持っている。Scalaは極めて効率的だが、一方で大きな言語でもある。我々の経験上、Scalaの適用には細心の注意が必要だ。Scalaの落とし穴は何か？ どの機能を採用し、どれを避けるべきか？ いつ"純粋関数型スタイル"を用い、いつ控えるべきか？ つまり、我々が見出した"Scalaの効果的(effective)な使い方"とは何か？ このガイドは、我々の経験を抽出し、一連の*ベストプラクティス*を提供する小論文にまとめようとするものだ。Twitterは、Scalaを、主に分散システムを構成する大容量サービスの作成に利用している。だから、我々の助言にはバイアスがかかっている。しかし、ここにあるアドバイスのほとんどは、他の問題領域へも自然に置き換えることができるはずだ。これは法律じゃない、だから逸脱は正当化されるべきだ。
 
-[Scala][Scala] is one of the main application programming languages
-used at Twitter. Much of our infrastructure is written in Scala and
-[we have several large libraries](http://github.com/twitter/)
-supporting our use. While highly effective, Scala is also a large language,
-and our experiences have taught us to practice great care in its
-application. What are its pitfalls? Which features do we embrace,
-which do we eschew? When do we employ "purely functional style", and when
-do we avoid it? In other words: what have we found to be an effective
-use of the language?  This guide attempts to distill our experience into short
-essays, providing a set of *best practices*. Our use of Scala is mainly for
-creating high volume services that form distributed systems -- and our
-advice is thus biased -- but most of the advice herein should translate
-naturally to other domains. This is not the law, but deviation should
-be well justified.
+Scalaは、簡潔な表現を可能にする数多くのツールを提供している。タイピングが少なければ、読む量も少なくなり、読む量が少なくなれば、大抵はより早く読める。故に、簡潔さは明瞭さを高める。しかし、簡潔さはまた、正反対の効果をもたらす使い勝手の悪い道具ともなりえる。正確さに続いて、いつも読み手のことを考えよう。
 
-Scalaは、簡潔な表現を可能にする数多くのツールを提供している。タイピングが少なければ、読む量も少なくなり、読む量が少なくなれば、大抵はより早く読める。故に、簡潔さは明瞭さを高めるのだ。しかし、簡潔さはまた、正反対の影響をもたらす切れ味の悪いツールともなりうる。正しさの後に、いつも読み手のことを考えよう。
+何よりも、*これはScalaだ*。君が書いているのはJavaではないし、Haskellでも、Pythonでもない。Scalaのプログラムは、それらのうちのいずれの言語で書かれたものとも違っている。Scalaを効果的に使うには、君の問題をScalaの用語で表現しなければならない。Javaのプログラムを、無理矢理にScalaにしても仕方がない。ほとんどのやり方では、それはオリジナルより劣ったものになるだろう。
 
-Scala provides many tools that enable succinct expression. Less typing
-is less reading, and less reading is often faster reading, and thus
-brevity enhances clarity. However brevity is a blunt tool that can
-also deliver the opposite effect: After correctness, think always of
-the reader.
-
-何よりも、*これはScalaだ*。君が書いているのはJavaではないし、Haskellでも、Pythonでもない。Scalaのプログラムは、いずれで書かれたものとも似ていない。Scalaを効果的に使うには、君の問題をScalaの用語で表現しなけりゃならない。JavaのプログラムをScalaへと強要しても無駄だ。ほとんどのやり方で、オリジナルより劣ったものになるだろう。
-
-Above all, *program in Scala*. You are not writing Java, nor Haskell,
-nor Python; a Scala program is unlike one written in any of these. In
-order to use the language effectively, you must phrase your problems
-in its terms. There's no use coercing a Java program into Scala, for
-it will be inferior in most ways to its original.
-
-これは、Scalaの入門じゃない。読者は、Scalaに慣れ親しんでいることを前提としている。Scalaを学びたい人は、以下のサイトを参照するといいだろう:
-
-This is not an introduction to Scala; we assume the reader
-is familiar with the language. Some resources for learning Scala are:
+これは、Scalaの入門じゃない。読者は、Scalaに慣れ親しんでいることを前提としている。これからScalaを学びたい人は、以下のサイトを参照するといいだろう:
 
 * [Scala School](http://twitter.github.com/scala_school/)
 * [Learning Scala](http://www.scala-lang.org/node/1305)
 * [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
 
-これは生きたドキュメントであり、我々の現在の「ベストプラクティス」が反映されていくだろう。けれども、核となるアイデアは変わらない。常に可読性を優先せよ。一般的なコードを書き、しかし明瞭さを犠牲にするな。シンプルな言語機能を利用せよ。それは偉大な力を与え、難解さを防ぐ（型システムにおいては特に）。とりわけ、トレードオフを常に意識すべきだ。洗練された言語は複雑な実装を必要とし、複雑さは複雑さを生む。それは論理において、意味論において、機能間の相互作用において、そして君の協力者への理解において。つまり、複雑さは洗練の税金なのだ。君は常に、効用がコストを上回っていることを確認しなければならない。
+このガイドは生きたドキュメントであり、現在の「ベストプラクティス」が反映されていく。けれども、核となるアイデアは変わらない。常に可読性を優先せよ。一般的なコードを書き、しかし明瞭さを犠牲にするな。シンプルな言語機能を利用せよ。それは偉大な力を与え、難解さを防ぐ（型システムでは特に）。とりわけ、トレードオフを常に意識すべきだ。洗練された言語は複雑な実装を必要とし、複雑さは複雑さを生む。それは推論において、意味論において、機能間の相互作用において、そして、君の協力者を理解する上で。つまり、複雑さは洗練の税金なのだ。効用がコストを上回っていることを、常に確認しなければならない。
 
-This is a living document that will change to reflect our current
-"best practices," but its core ideas are unlikely to change: Always
-favor readability; write generic code but not at the expensive of
-clarity; take advantage of simple language features that afford great
-power but avoid the esoteric ones (especially in the type system).
-Above all, be always aware of the trade offs you make. A sophisticated
-language requires a complex implementation, and complexity begets
-complexity: of reasoning, of semantics, of interaction between
-features, and of the understanding of your collaborators. Thus complexity
-is the tax of sophistication -- you must always ensure that its utility exceeds its cost.
+では、楽しんでほしい。
 
-では、楽しんで。
+## 整形
 
-And have fun.
+コード*整形*の詳細は、（それが実際的である限りは）重要じゃない。当然だが、スタイルに本質的な良し悪しはないし、たいていは人それぞれの個人的嗜好は異なる。だけど、同じ整形ルールを*一貫して*適用することは、ほぼ全ての場合で可読性を高める。特定のスタイルに馴染んだ読み手は、さらに他のローカルな習慣を理解したり、言語文法の隅っこを解読したりする必要がない。
 
-## 整形 (Formatting)
+これは文法の重複度が高いScalaにおいては特に重要だ。メソッド呼び出しを例に挙げよう。メソッドは、"`.`"を付けても、ホワイトスペースを付けても呼び出せる。同様に、ゼロまたは一つの引数を取るメソッドではカッコを付けても良いし、付けなくても良い、といった風に。さらに、異なるスタイルのメソッド呼び出しは、異なる文法上の曖昧さを露呈する！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとって、多くの曖昧さを解決できるのは間違いない。
 
-コード*整形*の詳細は（それが実際的である限りは）重要じゃない。当然ながら、スタイルに本質的な良し悪しはないし、ほとんど全ての人の個人的嗜好は異なる。だけど、同じ整形ルールを*一貫して*適用することは、ほぼ全ての場合で可読性を高める。特定のスタイルに馴染んだ読み手は、さらに他のローカルな習慣を理解したり、言語文法の片隅を解読したりする必要がない。
+我々は、[Scala style guide](http://docs.scala-lang.org/style/)を遵守すると同時に、以下に示すルールを追加した。
 
-The specifics of code *formatting* -- so long as they are practical --
-are of little consequence. By definition style cannot be inherently
-good or bad and almost everybody differs in personal
-preference. However the *consistent* application of the same 
-formatting rules will almost always enhance
-readability. A reader already familiar with a particular style does
-not have to grasp yet another set of local conventions, or decipher
-yet another corner of the language grammar.
+### ホワイトスペース
 
-これは文法の重複度が高いScalaにおいては特に重要だ。メソッド呼び出しを例に挙げよう。メソッドは、"`.`"を付けても、ホワイトスペースを付けても呼び出せる。同様に、ゼロまたは一つの引数を取るメソッドではカッコを付けても良いし、付けなくても良い、といった具合に。さらに、様々なスタイルのメソッド呼び出しは、文法において様々な曖昧さをさらけ出す！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとって、多くの曖昧さを解決できるのは間違いない。
+インデントはホワイトスペース2個。100カラムを超える行は避けよう。メソッドやクラス、オブジェクトの定義の間は一行空ける。
 
-This is of particular importance to Scala, as its grammar has a high
-degree of overlap. One telling example is method invocation: Methods
-can be invoked with "`.`", with whitespace, without parenthesis for
-nullary or unary methods, with parenthesis for these, and so on.
-Furthermore, the different styles of method invocations expose
-different ambiguities in its grammar! Surely the consistent
-application of a carefully chosen set of formatting rules will resolve
-a great deal of ambiguity for both man and machine.
-
-我々は、[Scala style guide](http://docs.scala-lang.org/style/)を遵守すると同時に、以下のルールを追加した。
-
-We adhere to the [Scala style
-guide](http://docs.scala-lang.org/style/) plus the following rules.
-
-### ホワイトスペース (Whitespace)
-
-ホワイトスペース2文字でインデントする。100カラムを超える行は避けよう。メソッドやクラス、オブジェクトの定義の間は一行空ける。
-
-Indent by two spaces. Try to avoid lines greater than 100 columns in
-length. Use one blank line between method, class, and object definitions.
-
-### 命名 (Naming)
+### 命名
 
 <dl class="rules">
 <dt>小さなスコープでは、短い名前を使う</dt>
@@ -117,7 +53,7 @@ length. Use one blank line between method, class, and object definitions.
 <dd>誰でも<code>ok</code>や<code>err</code>、<code>defn</code>が何を指すか知っている。一方で、<code>sfri</code>はそれほど一般的じゃない。</dd>
 <dt>用法が異なるのに名前を再利用しない</dt>
 <dd><code>val</code>を使おう。</dd>
-<dt><code>`</code>を使って予約名をオーバーロードするのは避ける</dt>
+<dt>予約名を<code>`</code>を使ってオーバーロードするのは避ける</dt>
 <dd><code>`type</code>`の代わりに、<code>typ</code>とする。</dd>
 <dt>副作用を伴う操作には動作を表す名前を付ける（訳注：能動態？）</dt>
 <dd><code>user.setActive()</code>ではなく、<code>user.activate()</code>とする。</dd>
@@ -131,43 +67,7 @@ length. Use one blank line between method, class, and object definitions.
 }</code></pre>よりも、
 <pre><code>object User {
   def get(id: Int): Option[User]
-}</code></pre>とする。<code>User.get</code>に比べて、<code>User.getUser</code>は何も情報を提供しないし、使用時に冗長だ。
-</dd>
-</dl>
-
-<dl class="rules">
-<dt>Use short names for small scopes</dt>
-<dd> <code>i</code>s, <code>j</code>s and <code>k</code>s are all but expected
-in loops. </dd>
-<dt>Use longer names for larger scopes</dt>
-<dd>External APIs should have longer and explanatory names that confer meaning.
-<code>Future.collect</code> not <code>Future.all</code>.
-</dd>
-<dt>Use common abbreviations but eschew esoteric ones</dt>
-<dd>
-Everyone
-knows <code>ok</code>, <code>err</code> or <code>defn</code> 
-whereas <code>sfri</code> is not so common.
-</dd>
-<dt>Don't rebind names for different uses</dt>
-<dd>Use <code>val</code>s</dd>
-<dt>Avoid using <code>`</code>s to overload reserved names.</dt>
-<dd><code>typ</code> instead of <code>`type</code>`</dd>
-<dt>Use active names for operations with side effects</dt>
-<dd><code>user.activate()</code> not <code>user.setActive()</code></dd>
-<dt>Use descriptive names for methods that return values</dt>
-<dd><code>src.isDefined</code> not <code>src.defined</code></dd>
-<dt>Don't prefix getters with <code>get</code></dt>
-<dd>As per the previous rule, it's redundant: <code>site.count</code> not <code>site.getCount</code></dd>
-<dt>Don't repeat names that are already encapsulated in package or object name</dt>
-<dd>Prefer:
-<pre><code>object User {
-  def get(id: Int): Option[User]
-}</code></pre> to
-<pre><code>object User {
-  def getUser(id: Int): Option[User]
-}</code></pre>They are redundant in use: <code>User.getUser</code> provides
-no more information than <code>User.get</code>.
+}</code></pre>とする。<code>User.get</code>に比べて、<code>User.getUser</code>は何も情報を提供しないし、使うときに冗長だ。
 </dd>
 </dl>
 
