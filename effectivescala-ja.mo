@@ -123,29 +123,24 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 	  case None => default
 	}
 
-.LP と書くと、リストの要素がmapされることが分かりやすい &mdash; the extra indirection does not elucidate.（？）
+.LP と書くと、リストの要素がmapされることが分かりやすい &mdash; the extra indirection does not elucidate. （←？）
 
-### Comments
+### コメント
 
-Use [ScalaDoc](https://wiki.scala-lang.org/display/SW/Scaladoc) to
-provide API documentation. Use the following style:
+[ScalaDoc](https://wiki.scala-lang.org/display/SW/Scaladoc)を使ってAPIドキュメントを提供しよう。以下のように書く:
 
 	/**
 	 * ServiceBuilder builds services 
 	 * ...
 	 */
 	 
-.LP but <em>not</em> the standard ScalaDoc style:
+.LP しかし、以下は標準のScalaDocスタイル<em>ではない</em>:
 
 	/** ServiceBuilder builds services
 	 * ...
 	 */
 
-Do not resort to ASCII art or other visual embellishments. Document
-APIs but do not add unecessary comments. If you find yourself adding
-comments to explain the behavior of your code, ask first if it can be
-restructured so that it becomes obvious what it does. Prefer
-"obviously it works" to "it works, obviously" (with apologies to Hoare).
+アスキーアートや視覚的な装飾に頼ってはいけない。また、APIではなく不必要なコメントをドキュメント化してはいけない。もし、自分のコードの挙動を説明するためにコメントを追加しているのに気づいたら、まず、それが何をするか明白になるように再構成できないか自問してみよう。「それは動く、明らかに (it works, obviously)」よりも「明らかにそれは動く(obviously it works)」の方が良い（[ホーア](http://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%B3%E3%83%88%E3%83%8B%E3%83%BC%E3%83%BB%E3%83%9B%E3%83%BC%E3%82%A2)には申し訳ないけど）。
 
 ## Types and Generics
 
