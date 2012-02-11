@@ -208,19 +208,18 @@ Scalaでは戻り型アノテーションを省略できるが、一方でそれ
   *	show contravariance trick?
 -->
 
-### Type aliases
+### 型エイリアス
 
-Use type aliases when they provide convenient naming or clarify
-purpose, but do not alias types that are self-explanatory.
+型エイリアスは、簡便な名前を提供したり、意味を明瞭にするために使う。しかし、一目瞭然な型はエイリアスしない。
 
 	() => Int
 
-.LP is clearer than
+.LP は、簡潔かつ一般的な型を使っているので、
 
 	type IntMaker = () => Int
 	IntMaker
 
-.LP since it is both short and uses a common type. However
+.LP よりも明瞭だ。しかし、
 
 	class ConcurrentPool[K, V] {
 	  type Queue = ConcurrentLinkedQueue[V]
@@ -228,32 +227,31 @@ purpose, but do not alias types that are self-explanatory.
 	  ...
 	}
 
-.LP is helpful since it communicates purpose and enhances brevity.
+.LP は、意思疎通が目的で、簡潔さを高めたい場合に有用だ。
 
-Don't use subclassing when an alias will do.
+エイリアスが使える場合は、サブクラスを使ってはいけない。
 
 	trait SocketFactory extends (SocketAddress) => Socket
 	
-.LP a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a type alias
+.LP <code>SocketFactory</code>は、<code>Socket</code>を生成する<em>関数</em>だ。型エイリアス
 
 	type SocketFactory = SocketAddress => Socket
 
-.LP is better. We may now provide function literals for values of type <code>SocketFactory</code> and also use function composition:
+.LP を使う方がいい。今や、<code>SocketFactory</code>型の値のための関数リテラルが与えられているので、関数合成を使うことができる:
 
 	val addrToInet: SocketAddress => Long
 	val inetToSocket: Long => Socket
 
 	val factory: SocketFactory = addrToInet andThen inetToSocket
 
-Type aliases are bound to toplevel names by using package objects:
+パッケージオブジェクトを使うと、型エイリアスをトップレベル名に結びつけられる:
 
 	package com.twitter
 	package object net {
 	  type SocketFactory = (SocketAddress) => Socket
 	}
 
-Note that type aliases are not new types -- they are equivalent to
-the syntactically substituting the aliased name for its type.
+なお、型エイリアスは、型に対する別名の構文的な代わりとなるものであり、新しい型ではないことに留意しよう。
 
 ### Implicits
 
