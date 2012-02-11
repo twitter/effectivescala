@@ -142,23 +142,14 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 
 アスキーアートや視覚的な装飾に頼ってはいけない。また、APIではなく不必要なコメントをドキュメント化してはいけない。もし、自分のコードの挙動を説明するためにコメントを追加しているのに気づいたら、まず、それが何をするか明白になるように再構成できないか自問してみよう。「それは動く、明らかに (it works, obviously)」よりも「明らかにそれは動く(obviously it works)」の方が良い（[ホーア](http://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%B3%E3%83%88%E3%83%8B%E3%83%BC%E3%83%BB%E3%83%9B%E3%83%BC%E3%82%A2)には申し訳ないけど）。
 
-## Types and Generics
+## 型とジェネリクス
 
-The primary objective of a type system is to detect programming
-errors. The type system effectively provides a limited form of static
-verification, allowing us to express certain kinds of invariants about
-our code that the compiler can verify. Type systems provide other
-benefits too of course, but error checking is its Raison d&#146;&Ecirc;tre.
+型システムの主な目的は、プログラミングの誤りを検出することだ。型システムは、静的検査の制限された方式を効果的に提供する。これにより、コンパイラが検証できるコードにおいて、ある種の不変条件を表現できる。型システムがもたらす恩恵はもちろん他にもあるが、エラーチェックこそ、その存在理由（レーゾンデートル）だ。
 
-Our use of the type system should reflect this goal, but we must
-remain mindful of the reader: judicious use of types can serve to
-enhance clarity, being unduly clever only obfuscates.
+我々が型システムを使う場合はこの目的を踏まえるべきだが、一方で、読み手にも気を配り続けなきゃいけない。型を慎重に使うことでコードの明瞭さを高められるが、過剰に巧妙な使い方はコードを読みにくくするだけだ。
 
-Scala's powerful type system is a common source of academic
-exploration and exercise (eg. [Type level programming in
-Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)).
-While a fascinating academic topic, these techniques rarely find
-useful application in production code. They are to be avoided.
+Scalaの強力な型システムは、共通の学術的な探求と実践に基づいている(eg. [Type level programming in
+Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/))。これらのテクニックは学術的に興味深いトピックだが、プロダクションコードでの応用において有用であることは稀だ。避けるべきだろう。
 
 ### Return type annotations
 
