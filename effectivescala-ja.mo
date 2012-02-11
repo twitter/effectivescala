@@ -33,7 +33,7 @@ Scalaは、簡潔な表現を可能にする数多くのツールを提供して
 
 コード*整形*の詳細は、（それが実際的である限りは）重要じゃない。当然だが、スタイルに本質的な良し悪しはないし、たいていは人それぞれの個人的嗜好は異なる。だけど、同じ整形ルールを*一貫して*適用することは、ほぼ全ての場合で可読性を高める。特定のスタイルに馴染んだ読み手は、さらに他のローカルな習慣を理解したり、言語文法の隅っこを解読したりする必要がない。
 
-これは文法の重複度が高いScalaにおいては特に重要だ。メソッド呼び出しを例に挙げよう。メソッドは、"`.`"を付けても、ホワイトスペースを付けても呼び出せる。同様に、ゼロまたは一つの引数を取るメソッドではカッコを付けても良いし、付けなくても良い、といった風に。さらに、異なるスタイルのメソッド呼び出しは、異なる文法上の曖昧さを露呈する！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとって、多くの曖昧さを解決できるのは間違いない。
+これは文法の重複度が高いScalaにおいては特に重要だ。メソッド呼び出しを例に挙げよう。メソッドは、"`.`"を付けても、ホワイトスペースを付けても呼び出せる。同様に、ゼロまたは一つの引数を取るメソッドでは丸カッコを付けても良いし、付けなくても良い、といった風に。さらに、異なるスタイルのメソッド呼び出しは、異なる文法上の曖昧さを露呈する！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとって、多くの曖昧さを解決できるのは間違いない。
 
 我々は、[Scala style guide](http://docs.scala-lang.org/style/)を遵守すると同時に、以下に示すルールを追加した。
 
@@ -53,7 +53,7 @@ Scalaは、簡潔な表現を可能にする数多くのツールを提供して
 <dd>誰でも<code>ok</code>や<code>err</code>、<code>defn</code>が何を指すか知っている。一方で、<code>sfri</code>はそれほど一般的じゃない。</dd>
 <dt>用法が異なるのに名前を再利用しない</dt>
 <dd><code>val</code>を使おう。</dd>
-<dt>予約名を<code>`</code>を使ってオーバーロードするのは避ける</dt>
+<dt>予約名を <code>`</code> を使ってオーバーロードするのは避ける</dt>
 <dd><code>`type</code>`の代わりに、<code>typ</code>とする。</dd>
 <dt>副作用を伴う操作には動作を表す名前を付ける（訳注：能動態？）</dt>
 <dd><code>user.setActive()</code>ではなく、<code>user.activate()</code>とする。</dd>
@@ -72,25 +72,23 @@ Scalaは、簡潔な表現を可能にする数多くのツールを提供して
 </dl>
 
 
-### Imports
+### インポート
 
 <dl class="rules">
-<dt>Sort import lines alphabetically</dt>
-<dd>This makes it easy to examine visually, and is simple to automate.</dd>
-<dt>Use braces when importing several names from a package</dt>
+<dt>インポート行はアルファベット順にソートする</dt>
+<dd>こうすることで、視覚的に調べやすいし自動化もしやすい。</dd>
+<dt>同じパッケージから複数の名前をインポートするときは中カッコを使う</dt>
 <dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
-<dt>Use wildcards when more than six names are imported</dt>
+<dt>6つより多くの名前をインポートするときはワイルドカードを使う</dt>
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
-<br />Don't apply this blindly: some packages export too many names</dd>
-<dt>When using collections, qualify names by importing 
-<code>scala.collections.immutable</code> and/or <code>scala.collections.mutable</code></dt>
-<dd>Mutable and immutable collections have dual names. 
-Qualifiying the names makes is obvious to the reader which variant is being used (e.g. "<code>immutable.Map</code>")</dd>
-<dt>Do not use relative imports from other packages</dt>
-<dd>Avoid <pre><code>import com.twitter
-import concurrent</code></pre> in favor of the unambiguous <pre><code>import com.twitter.concurrent</code></pre></dd>
-<dt>Put imports at the top of the file</dt>
-<dd>The reader can refer to all imports in one place.</dd>
+<br />ワイルドカードをやみくもに適用しないこと。一部のパッケージは、大量の名前をエクスポートする。</dd>
+<dt>コレクションを使う時は、<code>scala.collections.immutable</code> あるいは <code>scala.collections.mutable</code> をインポートして名前を修飾する</dt>
+<dd>可変(mutable)および不変(immutable)コレクションは、二重に名前を持っている。読み手のために、名前を修飾してどちらのコレクションを使っているのか明らかにしよう。 (e.g. "<code>immutable.Map</code>")</dd>
+<dt>他のパッケージからの相対指定でインポートしない</dt>
+<dd><pre><code>import com.twitter
+import concurrent</code></pre>のようには書かず、以下のように曖昧さの無い書き方をしよう。<pre><code>import com.twitter.concurrent</code></pre></dd>
+<dt>インポートはファイルの先頭に置く</dt>
+<dd>読み手が、全てのインポートを一箇所で参照できるようにしよう。</dd>
 </dl>
 
 ### Braces
