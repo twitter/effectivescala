@@ -330,16 +330,9 @@ something about buffers for construction?
 anything about streams?
 -->
 
-### Style
+### スタイル
 
-Functional programming encourages pipelining transformations of an
-immutable collection to shape it to its desired result. This often
-leads to very succinct solutions, but can also be confusing to the
-reader -- it is often difficult to discern the author's intent, or keep
-track of all the intermediate results that are only implied. For example,
-let's say we wanted to aggregate votes for different programming 
-languages from a sequence of (language, num votes), showing them
-in order of most votes to least, we could write:
+関数型プログラミングは、不変コレクションをパイプライン方式で、望みの結果へと変換する手法を推奨している。大抵は、これにより問題をとても簡潔に解決できるが、同時に読み手を困惑させることもある。つまり、しばしば作者の意図を理解するのが困難になるので、暗黙的にしか示されていない途中結果を全て追跡する羽目になる。例えば、様々なプログラミング言語に対する投票結果である (language, num votes) のシーケンスを集計して、票数の最も多い言語から順番に表示するコードは、以下のように書ける:
 	
 	val votes = Seq(("scala", 1), ("java", 4), ("scala", 10), ("scala", 1), ("python", 10))
 	val orderedVotes = votes
@@ -350,7 +343,7 @@ in order of most votes to least, we could write:
 	  .sortBy(_._2)
 	  .reverse
 
-.LP this is both succinct and correct, but nearly every reader will have a difficult time recovering the original intent of the author. A strategy that often serves to clarify is to <em>name intermediate results and parameters</em>:
+.LP このコードは、簡潔でかつ正しい。しかし、ほとんど全ての読み手は、作者の元の意図を把握するのに苦労するだろう。<em>途中結果とパラメータに名前を付ける</em>のは、作者の意図をはっきりさせるのに大抵役立つ戦略の一つだ:
 
 	val votesByLang = votes groupBy { case (lang, _) => lang }
 	val sumByLang = votesByLang map { case (lang, counts) =>
@@ -361,7 +354,7 @@ in order of most votes to least, we could write:
 	  .sortBy { case (_, count) => count }
 	  .reverse
 
-.LP the code is nearly as succinct, but much more clearly expresses both the transformations take place (by naming intermediate values), and the structure of the data being operated on (by naming parameters). If you worry about namespace pollution with this style, group expressions with <code>{}</code>:
+.LP このコードでは、施される変換の種類を中間値に命名し、操作されるデータ構造をパラメータに名付けている。これにより、以前と同じくらい簡潔であるだけでなく、作者の意図の表現がいっそう明瞭になった。もし、このスタイルを使うことで名前区間の汚染が心配なら、式を<code>{}</code>でグループ化すると良い:
 
 	val orderedVotes = {
 	  val votesByLang = ...
