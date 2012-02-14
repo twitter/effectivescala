@@ -362,38 +362,15 @@ anything about streams?
 	}
 
 
-### Performance
+### 性能
 
-High level collections libraries (as with higher level constructs
-generally) make reasoning about performance more difficult: the
-further you stray from instructing the computer directly -- in other
-words, imperative style -- the harder it is to predict the exact
-performance implications of a piece of code. Reasoning about
-correctness however, is typically easier; readability is also
-enhanced. With Scala the picture is further complicated by the Java
-runtime; Scala hides boxing/unboxing operations from you, which can
-incur severe performance or space penalties.
+高水準コレクションライブラリは、（高水準な構築物が一般的にそうであるように）性能の推測が難しい。コンピュータに直接指示するやり方、つまり命令型スタイルから遠ざかるほど、あるコード片が性能に与える影響を厳密に予測するのは困難になる。一方で、正確さを判断することは概して容易だし、読みやすさも向上する。Scalaの場合、Javaランタイムが事態をさらに複雑にしている。Scalaでは、ボクシング操作やアンボクシング操作がユーザから隠されており、性能やメモリ使用量の面で重大なペナルティを被ることがある。
 
-Before focusing on low level details, make sure you are using a
-collection appropriate for your use. Make sure your datastructure
-doesn't have unexpected asymptotic complexity. The complexities of the
-various Scala collections are described
-[here](http://www.scala-lang.org/docu/files/collections-api/collections_40.html).
+低レベルの詳細に焦点を当てる前に、君のコレクションの使い方が適切かどうか確認しよう。また、データ構造に予期しない漸近的な複雑さがないか確かめよう。Scalaのさまざまなコレクションの複雑さについては、[こちら](http://www.scala-lang.org/docu/files/collections-api/collections_40.html)で述べられている。
 
-The first rule of optimizing for performance is to understand *why*
-your application is slow. Do not operate without data;
-profile^[[Yourkit](http://yourkit.com) is a good profiler] your
-application before proceeding. Focus first on hot loops and large data
-structures. Excessive focus on optimization is typically wasted
-effort. Remember Knuth's maxim: "Premature optimisation is the root of
-all evil."
+性能最適化の第一法則は、君のアプリケーションが*なぜ*遅いのかを理解することだ。最適化を始める前に、君のアプリケーションをプロファイル^[[Yourkit](http://yourkit.com)は良いプロファイラだ。]してデータを取ろう。最初に注目するのは、回数の多いループや巨大なデータ構造だ。最適化への過度な取り組みは、たいてい無駄な努力に終わる。クヌースの「時期尚早な最適化は諸悪の根源」という格言を思い出そう。
 
-It is often approriate to use lower level collections in situations
-that require better performance or space efficiency. Use arrays
-instead of lists for large sequences (the immutable `Vector`
-collections provides a referentially transparent interface to arrays);
-and use buffers instead of direct sequence construction when
-performance matters.
+性能やメモリ使用効率の良さが要求される場面では、多くの場合、低レベルコレクションを使うのが妥当だ。巨大なシーケンスには、リストより配列を使おう（不変の`Vector`コレクションは、配列への参照透過なインタフェースを提供する）。また、性能が重要な場合は、シーケンスを直接生成せずにバッファを使おう。
 
 ### Java Collections
 
