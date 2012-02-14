@@ -372,12 +372,9 @@ anything about streams?
 
 性能やメモリ使用効率の良さが要求される場面では、多くの場合、低レベルコレクションを使うのが妥当だ。巨大なシーケンスには、リストより配列を使おう（不変の`Vector`コレクションは、配列への参照透過なインタフェースを提供する）。また、性能が重要な場合は、シーケンスを直接生成せずにバッファを使おう。
 
-### Java Collections
+### Javaコレクション
 
-Use `scala.collection.JavaConverters` to interoperate with Java collections.
-These are a set of implicits that add conversion `asJava` and `asScala` conversion
-methods. The use of these ensures that such conversions are explicit, aiding
-the reader:
+Javaコレクションとの相互運用のために、`scala.collection.JavaConverters`を使おう。`JavaConverters`は、暗黙変換を行う`asJava`メソッドと`asScala`メソッドを追加する。読み手を助けるために、これらの変換は明示的に行うようにしよう:
 
 	import scala.collection.JavaConverters._
 	
