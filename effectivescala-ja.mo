@@ -1,4 +1,4 @@
-﻿<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by Yuta Okamoto (<a href="http://twitter.com/okapies">@okapies</a>)]</address>
@@ -974,175 +974,125 @@ collapse chains of options down to one,
 The use of `flatMap` in `Future`s is discussed in the 
 <a href="#Twitter's%20standard%20libraries-Futures">futures section</a>.
 
-## Object oriented programming
+## オブジェクト指向プログラミング
 
-Much of Scala's vastness lie in its object system. Scala is a *pure*
-language in the sense that *all values* are objects; there is no
-distinction between primitive types and composite ones.
-Scala also features mixins allowing for more orthogonal and piecemeal
-construction of modules that can be flexibly put together at compile
-time with all the benefits of static type checking.
+Scala の広大さの多くはオブジェクト機構にある。Scala は、*すべての値が*オブジェクトであるという意味で、*純粋な* 言語である。プリミティブな型と混合型の間に違いはない。 Scala はミックスインの機能もあり、静的型チェックの利益をすべて享受しつつ、もっと直行して別々なモジュールをコンパイル時に柔軟に一緒に組立てができる。
 
-A motivation behind the mixin system was to obviate the need for 
-traditional dependency injection. The culmination of this "component
-style" of programming is [the cake
-pattern](http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html).
+ミックスイン機構の背景ある動機は、伝統的な依存性注入の必要性を不要にするためにある。その"コンポーネントスタイル"のプログラミングの最高点は、[ Cake
+パターン](http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html) である。
 
-### Dependency injection
+### 依存性注入
 
-In our use, however, we've found that Scala itself removes so much of
-the syntactical overhead of "classic" (constructor) dependency
-injection that we'd rather just use that: it is clearer, the
-dependencies are still encoded in the (constructor) type, and class
-construction is so syntactically trivial that it becomes a breeze.
-It's boring and simple and it works. *Use dependency injection for
-program modularization*, and in particular, *prefer composition over
-inheritance* -- for this leads to more modular and testable programs.
-When encountering a situation requiring inheritance, ask yourself: how
-you structure the program if the language lacked support for
-inheritance? The answer may be compelling.
+私たちの利用では、しかし、Scala それ自身が、”クラシックな”(コンストラクタによる)依存性注入の多くの構文上のオーバーヘッドは、むしろそれを使う。それはより明快であり、依存性は(コンストラクタの)型でまだエンコードされ、クラスの組立は、とても構文的に些細であり、そよ風くらいになる。
 
-Dependency injection typically makes use of traits,
+それは退屈でシンプルだが動作する。*プログラムのモジュール化のために依存性注入を使うこと*。特に、*継承より合成を選択すること* 。 これにより、もっとモジュール化が進みテスト可能なプログラムになる。継承が必要な状況に遭遇した時、自分自身に問うのだ：もし言語が継承をサポートしていなかったら、どのように構造化するだろう、と。この答えは強いることができるかもしれない。
 
-	trait TweetStream {
-	  def subscribe(f: Tweet => Unit)
-	}
-	class HosebirdStream extends TweetStream ...
-	class FileStream extends TweetStream ..
-	
-	class TweetCounter(stream: TweetStream) {
-	  stream.subscribe { tweet => count += 1 }
-	}
+依存性注入は典型的にはトレイトを利用する。
 
-It is common to inject *factories* -- objects that produce other
-objects. In these cases, favor the use of simple functions over specialized
-factory types.
+     trait TweetStream {
+       def subscribe(f: Tweet => Unit)
+     }
+     class HosebirdStream extends TweetStream ...
+     class FileStream extends TweetStream ..
 
-	class FilteredTweetCounter(mkStream: Filter => TweetStream) {
-	  mkStream(PublicTweets).subscribe { tweet => publicCount += 1 }
-	  mkStream(DMs).subscribe { tweet => dmCount += 1 }
-	}
+     class TweetCounter(stream: TweetStream) {
+       stream.subscribe { tweet => count += 1 }
+     }
 
-### Traits
+*ファクトリー*(オブジェクトを生成するオブジェクト)を注入することは一般的である。これら(下記のような？？)のケースでは、特化したファクトリー型よりはシンプルな関数の利用を好むようにする。
 
-Dependency injection does not at all preclude the use of common *interfaces*, or
-the implemention of common code in traits. Quite contrary-- the use of traits are
-highly encouraged for exactly this reason: multiple interfaces
-(traits) may be implemented by a concrete class, and common code can
-be reused across all such classes.
+     class FilteredTweetCounter(mkStream: Filter => TweetStream) {
+       mkStream(PublicTweets).subscribe { tweet => publicCount += 1 }
+       mkStream(DMs).subscribe { tweet => dmCount += 1 }
+     }
 
-Keep traits short and orthogonal: don't lump separable functionality
-into a trait, think of the smallest related ideas that fit together. For example,
-imagine you have an something that can do IO:
+### トレイト
 
-	trait IOer {
-	  def write(bytes: Array[Byte])
-	  def read(n: Int): Array[Byte]
-	}
-	
-.LP separate the two behaviors:
+依存性注入は、一般的な*インターフェイス*の利用や、トレイトで共通のコードを実装することを妨げるものでは全くない。全く反対なのだが、トレイトの利用は次の理由で強く推奨されている：複数のインターフェイス(トレイト)は、具象クラスで実装されるかもしれないし、共通コードはすべてのそれらのクラス群に横断的に再利用されるかもしれない。
 
-	trait Reader {
-	  def read(n: Int): Array[Byte]
-	}
-	trait Writer {
-	  def write(bytes: Array[Byte])
-	}
-	
-.LP and mix them together to form what was an <code>IOer</code>: <code>new Reader with Writer</code>&hellip; Interface minimalism leads to greater orthogonality and cleaner modularization.
+トレイトは短くて直交するように保つことだ。分割可能な機能をひとつのトレイトの塊にしてしまってはいけない。最も小さな関連するアイデアだけを一緒にすることを考えるようにする。たとえば、IOをする何かを想像してみるといい。
 
-### Visibility
+     trait IOer {
+       def write(bytes: Array[Byte])
+       def read(n: Int): Array[Byte]
+     }
 
-Scala has very expressive visibility modifiers. It's important to use
-these as they define what constitutes the *public API*. Public APIs
-should be limited so users don't inadvertently rely on implementation
-details and limit the author's ability to change them: They are crucial
-to good modularity. As a rule, it's much easier to expand public APIs
-than to contract them. Poor annotations can also compromise backwards
-binary compatibility of your code.
+.LP これを２つの振る舞いに分離する。
+
+     trait Reader {
+       def read(n: Int): Array[Byte]
+     }
+     trait Writer {
+       def write(bytes: Array[Byte])
+     }
+
+.LP そして、もともと<code>IOer</code> だったこれらをミックスしてみる: <code>new Reader with Writer</code>&hellip;  インターフェイスの最小化は、よりよい直交性とよりよりモジュール化につながる。
+
+### 可視性
+
+Scala は非常に表現豊かな可視性の修飾子を持つ。修飾子は、何を*公開API*として構成するかを定義するのに重要である。公開APIは限定されるべきであり、それにより利用者は不注意に実装の詳細に依存することはなく、また、作者のAPIを変更する力を制限する。このことは、良いモジュール性にとって決定的に重要である。ルールとして、公開APIを拡張することは、彼らと契約するよりもかなり簡単である。貧相なアノテーションは、君のコードの後方バイナリ互換性を汚すこともできるようにもなる。
+
 
 #### `private[this]`
 
-A class member marked `private`, 
+`private` にしたクラスメンバーは、
 
-	private val x: Int = ...
-	
-.LP is visible to all <em>instances</em> of that class (but not their subclasses). In most cases, you want <code>private[this]</code>.
+     private val x: Int = ...
 
-	private[this] val: Int = ..
+.LP そのクラスの(しかし、サブクラスは含まずに)すべての<em>インスタンス</em>から見える。殆どの場合、君は<code>private[this]</code>としたいだろう。
 
-.LP which limits visibilty to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.
+     private[this] val: Int = ..
 
-#### Singleton class types
+.LP これは特定のインスタンスに可視性を制限する。Scala コンパイラーは、<code>private[this]</code> を(アクセスが静的に定義されたクラスに限られるから)シンプルなフィールドアクセッサに変換することもでき、それは時々、性能を最適化することに寄与する。
 
-It's common in Scala to create singleton class types, for example
+#### シングルトンクラス型(？正確な訳？)
 
-	def foo() = new Foo with Bar with Baz {
-	  ...
-	}
+Scala では、シングルトンクラス型を生成するのは一般的である。例えば、
 
-.LP In these situations, visibility can be constrained by declaring the returned type:
+     def foo() = new Foo with Bar with Baz {
+       ...
+     }
 
-	def foo(): Foo with Bar = new Foo with Bar with Baz {
-	  ...
-	}
+.LP このような状況では、戻り型を宣言することで可視性は限定される。
 
-.LP where callers of <code>foo()</code> will see a restricted view (<code>Foo with Bar</code>) of the returned instance.
+     def foo(): Foo with Bar = new Foo with Bar with Baz {
+       ...
+     }
 
-### Structural typing
+.LP <code>foo()</code> の呼び出し側は、戻されたインスタンスの限定されたビュー(<code>Foo with Bar</code>) が参照できる
 
-Do not use structural types in normal use. They are a convenient and
-powerful feature, but unfortunately do not have an efficient
-implementation on the JVM. However -- due to an implemenation quirk -- 
-they provide a very nice shorthand for doing reflection.
+### 構造的型(？正確な訳？)
 
-	val obj: AnyRef
-	obj.asInstanceOf[{def close()}].close()
+通常の使用では構造的型は使わない。構造的型は、便利で強力な機能であるが、残念あんことにJVM上では効率的な実装手段はない。しかし、ある運命のいたずらともいうべき実装によって、リフレクションをするためのとても良い速記法を提供する。
 
-## Garbage collection
+     val obj: AnyRef
+     obj.asInstanceOf[{def close()}].close()
 
-We spend a lot of time tuning garbage collection in production. The
-garbage collection concerns are largely similar to those of Java
-though idiomatic Scala code tends to generate more (short-lived)
-garbage than idiomatic Java code -- a byproduct of the functional
-style. Hotspot's generational garbage collection typically makes this
-a nonissue as short lived garbage effectively free in most circumstances
+## ガベージコレクション
 
-Before tackling GC performance issues, watch
-[this](http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter)
-presentation by Attila that illustrates some of our experiences with
-GC tuning.
+我々は、運用時にガベージコレクションのチューニングに多くの時間を費やす。
+ガベージコレクションの考慮事項はかなりJavaのそれに似ているが、典型的な Scala コードの場合は 典型的な Java コードより多くの(生存時間の短い)ガベージを生成する。これは関数スタイルの副作用なのである。HotSpot の世代別ガベージコレクションは、ほとんどの環境では生存時間の短いガベージを効果的に解放するので、概してこれは問題にならない。
 
-In Scala proper, your only tool to mitigate GC problems is to generate
-less garbage; but do not act without data! Unless you are doing
-something obviously degenerate, use the various Java profiling tools
--- our own include
-[heapster](https://github.com/mariusaeriksen/heapster) and
-[gcprof](https://github.com/twitter/jvmgcprof).
+GCの性能問題に取り組む前に、Attila が発表した我々のGCチューニングに関する経験のいくつかに関する[プレゼンテーション](http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter)を見て欲しい。
 
-## Java compatibility
 
-When we write code in Scala that is used from Java, we ensure
-that usage from Java remains idiomatic. Oftentimes this requires
-no extra effort -- classes and pure traits are exactly equivalent
-to their Java counterpart -- but sometimes separate Java APIs
-need to be provided. A good way to get a feel for your library's Java
-API is to write a unittest in Java (just for compilation); this also ensures
-that the Java-view of your library remains stable over time as the Scala
-compiler can be volatile in this regard.
+Scala 固有で、GC問題を軽減する唯一のツールは、ガベージの生成をより少なくすることである。しかし、データなしで行動してはならない！もし、明らかに悪化させる何かをしているわけではないのであれば、我々の提供する [heapster](https://github.com/mariusaeriksen/heapster) や
+[gcprof](https://github.com/twitter/jvmgcprof) を含む、Java の様々なプロファイルツールを使うことだ。
 
-Traits that contain implementation are not directly
-usable from Java: extend an abstract class with the trait
-instead.
+## Java 互換性
 
-	// Not directly usable from Java
-	trait Animal {
-	  def eat(other: Animal)
-	  def eatMany(animals: Seq[Animal) = animals foreach(eat(_))
-	}
-	
-	// But this is:
-	abstract class JavaAnimal extends Animal
+我々は、Scala コードをJavaで利用するとき、Javaでの使い方を慣用的に残して良いものか確かめるようにしている。大体は余計な努力は必要ない。クラス群と実装を含まないトレイトはJava に正確に等価に対応される。しかし、時々、別にJava APIを提供する必要がある。あなたのライブラリのJava API の感じをつかむ良い方法は単体テストをJavaで書くことである(ただコンパイルが通れば良い)。この点については Scala コンパイラーは不安定であるのだが、このテストによって、あなたのライブラリの Java 視点は安定さを維持できる。
+
+実装を含むトレイトは直接 Java から利用できない。代わりに抽象クラスをトレイトと共に拡張する必要がある。
+
+     // 直接 Java から利用できない
+     trait Animal {
+       def eat(other: Animal)
+       def eatMany(animals: Seq[Animal) = animals foreach(eat(_))
+     }
+
+     // しかし、これはできる
+     abstract class JavaAnimal extends Animal
 
 ## Twitter's standard libraries
 
