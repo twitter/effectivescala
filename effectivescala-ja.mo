@@ -381,36 +381,17 @@ Javaコレクションとの相互運用のために、`scala.collection.JavaCon
 	val list: java.util.List[Int] = Seq(1,2,3,4).asJava
 	val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
 
-## Concurrency
+## 並行性
 
-Modern services are highly concurrent -- it is common for servers to
-coordinate 10s-100s of thousands of simultaneous operations -- and
-handling the implied complexity is a central theme in authoring robust
-systems software.
+現代のサービスは、サーバへの何万何十万もの同時操作を調整するため、高い並行性を備えている。そして、隠れた複雑性への対処は、堅固なシステムソフトウェアを記述する上で中心的なテーマだ。
 
-*Threads* provide a means of expressing concurrency: they give you
-independent, heap-sharing execution contexts that are scheduled by the
-operating system. However, thread creation is expensive in Java and is
-a resource that must be managed, typically with the use of pools. This
-creates additional complexity for the programmer, and also a high
-degree of coupling: it's difficult to divorce application logic from
-their use of the underlying resources.
+*スレッド*は、並行性を表現する一つの手段だ。スレッドからは、OSがスケジュールする、ヒープを共有する独立した実行コンテクストを利用できる。しかし、Javaにおいてスレッド生成はコストが高い。そのため、主にスレッドプールを使って、リソースとして管理する必要がある。これは、プログラマにとってさらなる複雑さを生み出す。また、アプリケーションロジックとそれが使用する潜在的なリソースを分離するのが難しくなり、結合度を高めてしまう。
 
-This complexity is especially apparent when creating services that
-have a high degree of fan-out: each incoming request results in a
-multitude of requests to yet another tier of systems. In these
-systems, thread pools must be managed so that they are balanced
-according to the ratios of requests in each tier: mismanagement of one
-thread pool bleeds into another. 
+この複雑さは、出力の大きいサービスの製作において、とりわけ明らかになる。それぞれの受信リクエストからは、システムのまた別の階層に対する多数のリクエストが生じる。それらのシステムにおいて、スレッドプールは、各階層でのリクエストの割合によってバランスするよう管理されなきゃならない。あるスレッドプールで管理に失敗すると、その影響は他のスレッドプールにも広がってしまう。
 
-Robust systems must also consider timeouts and cancellation, both of
-which require the introduction of yet more "control" threads,
-complicating the problem further. Note that if threads were cheap
-these problems would be diminished: no pooling would be required,
-timed out threads could be discarded, and no additional resource
-management would be required.
+また、堅固なシステムは、タイムアウトとキャンセルについても検討する必要がある。どちらに対処するにも、さらなる「制御スレッド」の導入が必要で、そのことが問題をさらに複雑にする。ちなみに、もしスレッドのコストが安いなら、こうした問題は少なくなる。なぜなら、スレッドプールが必要とされず、タイムアウトスレッドを切り捨てることができ、追加のリソース管理も必要ないからだ。
 
-Thus resource management compromises modularity.
+このように、リソース管理はモジュール性を危うくするのだ。
 
 ### Futures
 
