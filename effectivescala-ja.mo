@@ -393,27 +393,13 @@ Javaコレクションとの相互運用のために、`scala.collection.JavaCon
 
 このように、リソース管理はモジュール性を危うくするのだ。
 
-### Futures
+### Future
 
-Use Futures to manage concurrency. They decouple
-concurrent operations from resource management: for example, [Finagle][Finagle]
-multiplexes concurrent operations onto few threads in an efficient
-manner. Scala has lightweight closure literal syntax, so Futures
-introduce little syntactic overhead, and they become second nature to
-most programmers.
+Futureを使って並行性を管理しよう。Futureは、並行操作とリソース管理を疎結合にする。例えば、[Finagle][Finagle]は、並行操作をわずかなスレッド数で効率的に多重化する。Scalaには、軽量なクロージャリテラルの構文がある。だから、Futureは構文上の負担が小さく、ほとんどのプログラマが身に付けることができる。
 
-Futures allow the programmer to express concurrent computation in a
-declarative style, are composable, and have principled handling of
-failure. These qualities has convinced us that they are especially
-well suited for use in functional programming languages, where this is
-the encouraged style.
+Futureは、プログラマが並行計算を宣言的なスタイルで表現できるようにする。Futureは組み立て可能で、また計算の失敗を原則に沿って処理できる。こうした性質から、Futureは関数型プログラミング言語にとても適しており、推奨されるスタイルだと確信している。
 
-*Prefer transforming futures over creating your own.* Future
-transformations ensure that failures are propagated, that
-cancellations are signalled, and frees the programmer from thinking
-about the implications of the Java memory model. Even a careful
-programmer might write the following to issue an RPC 10 times in
-sequence and then print the results:
+*生成したFutureを変換しよう。*Futureの変換を使うと、失敗の伝播やキャンセルの通知が行われることを保証できる。また、プログラマは、Javaメモリモデルの影響を検討する必要がなくなる。RPCを順番に10回発行して結果を表示するとき、注意深いプログラマでさえ、以下のように書いてしまうかもしれない:
 
 	val p = new Promise[List[Result]]
 	var results: List[Result] = Nil
@@ -434,12 +420,7 @@ sequence and then print the results:
 	  printf("Got results %s\n", results.mkString(", "))
 	}
 
-The programmer had to ensure that RPC failures are propagated,
-interspersing the code with control flow; worse, the code is wrong!
-Without declaring `results` volatile, we cannot ensure that `results`
-holds the previous value in each iteration. The Java memory model is a
-subtle beast, but luckily we can avoid all of these pitfalls by using
-the declarative style:
+RPCの失敗が確実に伝播するように、プログラマは、コードに制御フローをいくつも挿入する必要がある。さらに悪いことに、上記のコードは間違っている！ `results`を`volatile`として宣言していないので、各繰り返しにおいて、`results`が一つ前の値を保持していることを保証できない。Javaのメモリモデルは、油断ならない獣だ。しかし幸いにして、宣言的スタイルを使えば、これらの落とし穴を全て避けることができる:
 
 	def collect(results: List[Result] = Nil): Future[List[Result]] =
 	  doRpc() flatMap { result =>
@@ -453,14 +434,9 @@ the declarative style:
 	  printf("Got results %s\n", results.mkString(", "))
 	}
 
-We use `flatMap` to sequence operations and prepend the result onto
-the list as we proceed. This is a common functional programming idiom
-translated to Futures. This is correct, requires less boilerplate, is
-less error prone, and also reads better.
+順列の操作に`flatMap`を使うと、処理が進むにつれて、リストの先頭に結果を追加できる。これは、関数型プログラミングの一般的なイディオムを、Futureに置き換えたものだ。これは正しく動作するだけでなく、必要な「おまじない」を少なくでき、間違いの元を減らすことができる。そして、読みやすい。
 
-*Use the Future combinators*. `Future.select`, `Future.join`, and
-`Future.collect` codify common patterns when operating over
-multiple futures that should be combined.
+*Futureの結合子(combinator)を使おう。*`Future.select`や`Future.join`、そして`Future.collect`は、複数のFutureを結合して操作する際の一般的なパターンを体系化している。
 
 ### Collections
 
