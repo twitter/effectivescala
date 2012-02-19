@@ -438,31 +438,13 @@ RPCの失敗が確実に伝播するように、プログラマは、コード�
 
 *Futureの結合子(combinator)を使おう。*`Future.select`や`Future.join`、そして`Future.collect`は、複数のFutureを結合して操作する際の一般的なパターンを体系化している。
 
-### Collections
+### コレクション
 
-The subject of concurrent collections is fraught with opinions,
-subtleties, dogma and FUD. In most practical situations they are a
-nonissue: Always start with the simplest, most boring, and most
-standard collection that serves the purpose. Don't reach for a
-concurrent collection before you *know* that a synchronized one won't
-do: the JVM has sophisticated machinery to make synchronization cheap,
-so their efficacy may surprise you.
+並行コレクションの話題は、私見と、機微と、教義と、FUDに満ちている。それらは、多くの場合、実践において取るに足らない問題だ。いつでも、目的を果たす上で、最も単純で、最も退屈で、最も標準的なコレクションから始めよう。同期化コレクションでうまくいかないのが*分かる*前に、並行コレクションに手を伸ばしてはいけない。JVMは、同期を低コストで実現する洗練された機構を持っている。その有効性に、君は驚くはずだ。
 
-If an immutable collection will do, use it -- they are referentially
-transparent, so reasoning about them in a concurrent context is
-simple. Mutations in immutable collections are typically handled by
-updating a reference to the current value (in a `var` cell or an
-`AtomicReference`). Care must be taken to apply these correctly:
-atomics must be retried, and `vars` must be declared volatile in order
-for them to be published to other threads.
+それで目的を果たせるなら、不変(immutable)コレクションを使おう。不変コレクションは参照透過なので、並行コンテキストにおいて判断がシンプルになる。不変コレクションを変更する処理は、主に（`var`セルや`AtomicReference`が指す）現在の値への参照を更新することで行う。不変コレクションの変更を適用する際は、注意を払う必要がある。他のスレッドへ不変コレクションを公開する場合、`AtomicReference`には再試行が必要だし、`var`変数は`volatile`として宣言しなきゃいけない。
 
-Mutable concurrent collections have complicated semantics, and make
-use of subtler aspects of the Java memory model, so make sure you
-understand the implications -- especially with respect to publishing
-updates -- before you use them. Synchronized collections also compose
-better: operations like `getOrElseUpdate` cannot be implemented
-correctly by concurrent collections, and creating composite
-collections is especially error prone.
+可変(mutable)な並行コレクションは複雑な動作をするだけでなく、Javaメモリモデルの微妙な部分を利用する。だから、可変並行コレクションが更新を公開する方法など、暗黙的な挙動について理解しておこう。また、コレクションの合成には同期化コレクションを使おう。並行コレクションでは、`getOrElseUpdate`のような操作は正しく実装することができないし、特に、合成コレクションの作成はエラーの温床だ。
 
 <!--
 
