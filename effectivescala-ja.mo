@@ -459,16 +459,9 @@ Async*?
 -->
 
 
-## Control structures
+## 制御構造
 
-Programs in the functional style tends to require fewer traditional
-control structure, and read better when written in the declarative
-style. This typically implies breaking your logic up into several
-small methods or functions, and gluing them together with `match`
-expressions. Functional programs also tend to be more
-expression-oriented: branches of conditionals compute values of
-the same type, `for (..) yield` computes comprehensions, and recursion
-is commonplace.
+関数型スタイルで書くプログラムは、宣言型スタイルで書く場合より伝統的な制御構造が少なく済むことが多く、また読みやすい。関数型スタイルとは、典型的には、ロジックをいくつかの小さなメソッドや関数に分解し、それらを互いに`match`式で貼り合わせることを意味する。また、関数型プログラムは、より式指向となる傾向がある。つまり、条件式の分岐で同じ型の値を計算し、`for (..) yield`で包含(comprehension)を計算する。また、再帰を一般的に利用する。
 
 ### Recursion
 
