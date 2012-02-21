@@ -134,7 +134,7 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 	 * ...
 	 */
 	 
-.LP しかし、以下は標準のScalaDocスタイル<em>ではない</em>:
+.LP でも標準のScalaDocスタイルは<em>使わない</em>ように:
 
 	/** ServiceBuilder builds services
 	 * ...
