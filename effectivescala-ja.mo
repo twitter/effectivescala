@@ -463,14 +463,11 @@ Async*?
 
 関数型スタイルで書くプログラムは、宣言型スタイルで書く場合より伝統的な制御構造が少なく済むことが多く、また読みやすい。関数型スタイルとは、典型的には、ロジックをいくつかの小さなメソッドや関数に分解し、それらを互いに`match`式で貼り合わせることを意味する。また、関数型プログラムは、より式指向となる傾向がある。つまり、条件式の分岐で同じ型の値を計算し、`for (..) yield`で包含(comprehension)を計算する。また、再帰を一般的に利用する。
 
-### Recursion
+### 再帰
 
-*Phrasing your problem in recursive terms often simplifies it,* and if
-the tail call optimization applies (which can be checked by the `@tailrec`
-annotation), the compiler will even translate your code into a regular loop.
+*再帰表現を使うと、問題をしばしば簡潔に記述できる。*そしてコンパイラは、末尾呼び出しの最適化が適用できるコードを、正規のループに置き換える（末尾最適化が適用されるかは`@tailrec`アノテーションで確認できる）。
 
-Consider a fairly standard imperative version of heap <span
-class="algo">fix-down</span>:
+ヒープの<span class="algo">fix-down</span>を、極めて標準的な命令型で実装したバージョンを検討しよう:
 
 	def fixDown(heap: Array[T], m: Int, n: Int): Unit = {
 	  var k: Int = m
@@ -487,15 +484,10 @@ class="algo">fix-down</span>:
 	  }
 	}
 
-Every time the while loop is entered, we're working with state dirtied
-by the previous iteration. The value of each variable is a function of
-which branches were taken, and it returns in the middle of the loop
-when the correct position was found (The keen reader will find similar
-arguments in Dijkstra's ["Go To Statement Considered Harmful"](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html)).
+このコードでは、whileループに入るたび、一つ前の反復で変更された状態を参照する。各変数の値は、どの分岐を取るかに依存する。また、正しい位置が見つかると、関数はループの中盤で`return`する（鋭い読者は、ダイクストラの["Go To Statement Considered Harmful"](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html)に同様の議論があることに気づくと思う）。
 
-Consider a (tail) recursive
-implementation^[From [Finagle's heap
-balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41)]:
+（末尾）再帰による実装を検討してみよう^[[Finagle's heap
+balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41)より]:
 
 	@tailrec
 	final def fixDown(heap: Array[T], i: Int, j: Int) {
@@ -508,7 +500,9 @@ balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/s
 	  }
 	}
 
-.LP here every iteration starts with a well-defined <em>clean slate</em>, and there are no reference cells: invariants abound. It&rsquo;s much easier to reason about, and easier to read as well. There is also no performance penalty: since the method is tail-recursive, the compiler translates this into a standard imperative loop.
+.LP ここでは、すべての反復ははっきりと<em>白紙の状態で</em>開始される。また、参照セルが存在しないため、不変条件を数多く見出せる。このコードはより推論しやすいだけでなく、より読みやすい。それだけでなく、性能面のペナルティもない。コンパイラはメソッドが末尾再帰なら、これを標準的な命令型のループへと変換するからだ。
+
+（訳注: [エドガー・ダイクストラ](http://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%89%E3%82%AC%E3%83%BC%E3%83%BB%E3%83%80%E3%82%A4%E3%82%AF%E3%82%B9%E3%83%88%E3%83%A9)は、構造化プログラミングの提唱者。彼が執筆したエッセイ"Go To Statement Considered Harmful"は、「GOTO有害論」の端緒として有名。）
 
 <!--
 elaborate..
