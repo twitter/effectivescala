@@ -434,7 +434,7 @@ RPCの失敗が確実に伝播するように、プログラマは、コード�
 	  printf("Got results %s\n", results.mkString(", "))
 	}
 
-順列の操作に`flatMap`を使うと、処理が進むにつれて、リストの先頭に結果を追加できる。これは、関数型プログラミングの一般的なイディオムを、Futureに置き換えたものだ。これは正しく動作するだけでなく、必要な「おまじない」を少なくでき、間違いの元を減らすことができる。そして、読みやすい。
+シーケンスの操作に`flatMap`を使うと、処理が進むにつれて、リストの先頭に結果を追加できる。これは、関数型プログラミングの一般的なイディオムを、Futureに置き換えたものだ。これは正しく動作するだけでなく、必要な「おまじない」を少なくでき、間違いの元を減らすことができる。そして、読みやすい。
 
 *Futureの結合子(combinator)を使おう。*`Future.select`や`Future.join`、そして`Future.collect`は、複数のFutureを結合して操作する際の一般的なパターンを体系化している。
 
@@ -461,7 +461,7 @@ Async*?
 
 ## 制御構造
 
-関数型スタイルで書くプログラムは、宣言型スタイルで書く場合より伝統的な制御構造が少なく済むことが多く、また読みやすい。関数型スタイルとは、典型的には、ロジックをいくつかの小さなメソッドや関数に分解し、それらを互いに`match`式で貼り合わせることを意味する。また、関数型プログラムは、より式指向となる傾向がある。つまり、条件式の分岐で同じ型の値を計算し、`for (..) yield`で包含(comprehension)を計算する。また、再帰を一般的に利用する。
+関数型スタイルで書くプログラムは、宣言型スタイルで書く場合より伝統的な制御構造が少なく済むことが多く、また読みやすい。関数型スタイルとは、典型的には、ロジックをいくつかの小さなメソッドや関数に分解し、それらを互いに`match`式で貼り合わせることを意味する。また、関数型プログラムは、より式指向となる傾向がある。つまり、条件式の分岐で同じ型の値を計算し、`for (..) yield`で内包(comprehension)を計算する。また、再帰を一般的に利用する。
 
 ### 再帰
 
@@ -563,35 +563,26 @@ elaborate..
 	
 .LP このコードは、バイトコードでは例外の`throw`と`catch`として実装されるので、実行頻度の高いコードで使うと、性能に影響を与える。
 
-### `for` loops and comprehensions
+### `for`ループと内包
 
-`for` provides both succinct and natural expression for looping and
-aggregation. It is especially useful when flattening many sequences.
-The syntax of `for` belies the underlying mechanism as it allocates
-and dispatches closures. This can lead to both unexpected costs and
-semantics; for example
+`for`を使うと、ループと集約を簡潔かつ自然に表現できる。`for`は、多数のシーケンスを平坦化する場合に特に有用だ。`for`の構文は、内部的にはクロージャを割り当てて呼び出していることを覆い隠している。このため、予期しないコストが発生したり、予想外の挙動を示したりする。例えば、
 
 	for (item <- container) {
 	  if (item != 2) return
 	}
 
-.LP may cause a runtime error if the container delays computation, making the <code>return</code> nonlocal!
+.LP このコードでは、<code>return</code>を非局所的(nonlocal)にするよう`container`が計算を遅延させると、ランタイムエラーが発生することがある！（訳注: どういう意味？）
 
-For these reasons, it is often preferrable to call `foreach`,
-`flatMap`, `map`, and `filter` directly -- but do use `for`s when they
-clarify.
+これらの理由から、コードを明瞭にするためである場合を除いて、`for`を使う代わりに、`foreach`や`flatMap`や`map`や`filter`を直接呼び出す方が良いことが多い。
 
-### `require` and `assert`
+### `require`と`assert`
 
-`require` and `assert` both serve as executable documentation. Both are
-useful for situations in which the type system cannot express the required
-invariants. `assert` is used for *invariants* that the code assumes (either
-internal or external), for example
+`require`と`assert`は、どちらも実行可能なドキュメントとして機能する。これらは、要求される不変条件を型システムが表現できない状況で有用だ。`assert`は、コードが仮定する（内部あるいは外部の）*不変条件*を表現するために使われる。例えば、
 
 	val stream = getClass.getResourceAsStream("someclassdata")
 	assert(stream != null)
 
-Whereas `require` is used to express API contracts:
+一方で、`require`はAPIの契約を表現するために使われる:
 
 	def fib(n: Int) = {
 	  require(n > 0)
