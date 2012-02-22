@@ -509,19 +509,11 @@ elaborate..
 -->
 
 
-### Returns
+### Return
 
-This is not to say that imperative structures are not also valuable.
-In many cases they are well suited to terminate computation early
-instead of having conditional branches for every possible point of
-termination: indeed in the above `fixDown`, a `return` is used to
-terminate early if we're at the end of the heap.
+前節では再帰を使うメリットを紹介したが、これは「命令型の構造は無価値だ」と言いたいわけじゃない。ほとんどの場合、計算を早期に打ち切る方が、終点の可能性がある全ての位置に条件分岐を持つよりも適切だ。実際に、上記の`fixDown`は、ヒープの終端に達すると`return`によって早期に終了する。
 
-Returns can be used to cut down on branching and establish invariants.
-This helps the reader by reducing nesting (how did I get here?) and
-making it easier to reason about the correctness of subsequent code
-(the array cannot be accessed out of bounds after this point). This is
-especially useful in "guard" clauses:
+`return`を使うと、分岐を省略して不変条件を確立できる。これにより、入れ子が減って読みやすくなるだけでなく、後続のコードの正当性を論証しやすくなる（配列の範囲外をアクセスしないことを確認する場合とか）。これは、"ガード節"で特に有用だ:
 
 	def compare(a: AnyRef, b: AnyRef): Int = {
 	  if (a eq b)
@@ -534,9 +526,7 @@ especially useful in "guard" clauses:
 	  // slow path..
 	}
 
-Use `return`s to clarify and enhance readability, but not as you would
-in an imperative language; avoid using them to return the results of a
-computation. Instead of
+`return`を使って、コードを明快にして読みやすさを高めよう。ただし、命令型言語でのような使い方をしてはいけない。つまり、下記のように計算結果を返すために`return`を使うのは避けよう。
 
 	def suffix(i: Int) = {
 	  if      (i == 1) return "st"
@@ -545,7 +535,7 @@ computation. Instead of
 	  else             return "th"
 	}
 
-.LP prefer:
+.LP 代わりに下記のように書こう:
 
 	def suffix(i: Int) =
 	  if      (i == 1) "st"
@@ -553,7 +543,7 @@ computation. Instead of
 	  else if (i == 3) "rd"
 	  else             "th"
 
-.LP but using a <code>match</code> expression is superior to either:
+.LP しかし、より優れているのは<code>match</code>式を使うことだ:
 
 	def suffix(i: Int) = i match {
 	  case 1 => "st"
@@ -562,7 +552,7 @@ computation. Instead of
 	  case _ => "th"
 	}
 
-Note that returns can have hidden costs: when used inside of a closure,
+なお、クロージャの内部で`return`を使うと、目に見えないコストが発生する場合があるので注意しよう。
 
 	seq foreach { elem =>
 	  if (elem.isLast)
@@ -571,7 +561,7 @@ Note that returns can have hidden costs: when used inside of a closure,
 	  // process...
 	}
 	
-.LP this is implemented in bytecode as an exception catching/throwing pair which, used in hot code, has performance implications.
+.LP このコードは、バイトコードでは例外の`throw`と`catch`として実装されるので、実行頻度の高いコードで使うと、性能に影響を与える。
 
 ### `for` loops and comprehensions
 
