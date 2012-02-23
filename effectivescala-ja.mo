@@ -589,99 +589,72 @@ elaborate..
 	  ...
 	}
 
-## Functional programming
+## 関数型プログラミング
 
-*Value oriented* programming confers many advantages, especially when
-used in conjunction with functional programming constructs. This style
-emphasizes the transformation of values over stateful mutation,
-yielding code that is referentially transparent, providing stronger
-invariants and thus also easier to reason about. Case classes, pattern
-matching, destructuring bindings, type inference, and lightweight
-closure and method creation syntax are the tools of this trade.
+*値指向* プログラミングは多くの長所を、特に関数型プログラミングの構成物と一体的に利用するときにであるが、享受(confer)する。このスタイルはステートフルな変更よりも値の変換を強調し、参照透過(referentially transparent)であるコードを生み出し、より強い不変式(invariants)を提供し、それ故に、その変換を推論することも容易にする。ケースクラスや、パターンマッチング、destructuring-bind(未訳)、型推論、軽量なクロージャ、メソッド生成構文は、この職業の道具達である。
 
-### Case classes as algebraic data types
+### 代数的データ型としてのケースクラス
 
-Case classes encode ADTs: they are useful for modelling a large number
-of data structures and provide for succinct code with strong
-invariants, especially when used in conjunction with pattern matching.
-The pattern matcher implements exhaustivity analysis providing even
-stronger static guarantees.
-
-Use the following pattern when encoding ADTs with case classes:
+ケースクラスは、ADT(訳注:Abstract Data Type、抽象データ型)を符号化する。ケースクラスは、大量のデータ構造をモデリングしたり、強力な不変式(invariants)を持つ簡潔なコードを提供したりすることに有用であり、特にパターンマッチングと組み合わせた時に効果を発揮する。パターンマッチャーは、より強力な静的保証さえ提供することができる包括的分析(exhaustivity analysis)を実装する。ケースクラスでADTをエンコードするときは次のパターンを利用する。
 
 	sealed trait Tree[T]
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
-	
-.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
-Together with pattern matching, such modelling results in code that is
-both succinct "obviously correct":
+</code>型は、<code>Node</code> と <code>Leaf</code> という2つのコンストラクタを持つ。型を <code>sealed</code> に宣言することで、当該ソースファイルの外側でコンストラクタを追加することはできないから、コンパイラに包括的分析(exhaustivity analysis)をさせるようにできる。パターンマッチングと共に利用することで、そのようなモデリングは、両方とも簡潔に"明らかに正しい"コードをもたらす。
 
 	def findMin[T <: Ordered[T]](tree: Tree[T]) = tree match {
 	  case Node(left, right) => Seq(findMin(left), findMin(right)).min
 	  case Leaf(value) => value
 	}
 
-While recursive structures like trees constitute classic applications of
-ADTs, their domain of usefulness is much larger. Disjoint unions in particular are
-readily modelled with ADTs; these occur frequently in state machines.
+木のような再帰的な構造が古典的なアプリケーションのADTを構成する一方で、有用性のある領域はもっと大きいのである。特に結合(unions)の解体は、容易にADTにモデル化される。これらはステートマシンでしばしば発生する。
 
-### Options
+### オプション
+`Option`型は、空であること(`None`)、または満たされていること(`Some(value)`)を表す容器である。`null`に対する安全な代替手段を提供し、可能な限り如何なる時も利用されるべきである。`Option`型は、たかだかひとつの要素を持つコレクションであり、コレクションの操作で装飾される。利用しよう！
 
-The `Option` type is a container that is either empty (`None`) or full
-(`Some(value)`). They provide a safe alternative to the use of `null`,
-and should be used in their stead whenever possible. They are a 
-collection (of at most one item) and they are embellished with 
-collection operations -- use them!
-
-Write
+こう書く
 
 	var username: Option[String] = None
 	...
 	username = Some("foobar")
-	
-.LP instead of
+
+.LP 下記の代わりにである。
 
 	var username: String = null
 	...
 	username = "foobar"
-	
-.LP since the former is safer: the <code>Option</code> type statically enforces that <code>username</code> must be checked for emptyness.
 
-Conditional execution on an `Option` value should be done with
-`foreach`; instead of
+.LP <code>Option</code>型が<code>username</code>が空であるかをチェックしなければならないことを静的に強制するため、前者はより安全だからである。
+
+`Option`の値の条件節の実行は`foreach`を使うべきである。下記の代わりに、
 
 	if (opt.isDefined)
 	  operate(opt.get)
 
-.LP write
+.LP このように書く
 
 	opt foreach { value =>
-	  operate(value)
-	}
+	  operate(value)}
 
-The style may seem odd, but provides greater safety (we don't call the
-exceptional `get`) and brevity. If both branches are taken, use
-pattern matching:
+奇妙なスタイルに思えるかもしれないが、よりよい安全性を提供(例外を引き起こしうる`get`を呼んでいない)し、簡潔である。両方の選択肢が利用されうるなら、パターンマッチングを使う。
 
 	opt match {
 	  case Some(value) => operate(value)
 	  case None => defaultAction()
 	}
 
-.LP but if all that's missing is a default value, use <code>getOrElse</code>
+.LP しかし、もし足りないものがデフォルト値だけであるなら、<code>getOrElse</code> を使う。
 
 	operate(opt getOrElse defaultValue)
-	
-Do not overuse  `Option`: if there is a sensible
-default -- a [*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern) -- use that instead.
 
-`Option` also comes with a handy constructor for wrapping nullable values:
+`Option`を使いすぎてはいけない。もし、何か道理にかなった既定値、[*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern)、があるなら、代わりにそれを使う。
+
+`Option`は、また、nullになりうる値を包む扱いやすいコンストラクターと共に使う。
 
 	Option(getClass.getResourceAsStream("foo"))
-	
-.LP is an <code>Option[InputStream]</code> that assumes a value of <code>None</code> should <code>getResourceAsStream</code> return <code>null</code>.
+
+.LP は、<code>Option[InputStream]</code> であり、<code>getResourceAsStream</code> が <code>null</code> を返す場合に、<code>None</code>  という値を返すものである。
 
 ### Pattern matching
 
