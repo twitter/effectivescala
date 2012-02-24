@@ -656,69 +656,68 @@ elaborate..
 
 .LP は、<code>Option[InputStream]</code> であり、<code>getResourceAsStream</code> が <code>null</code> を返す場合に、<code>None</code>  という値を返すものである。
 
-### Pattern matching
+### パターンマッチング
 
-Pattern matches (`x match { ...`) are pervasive in well written Scala
-code: they conflate conditional execution, destructuring, and casting
-into one construct. Used well they enhance both clarity and safety.
+パターンマッチ(`x match { ...`)は、書かれた Scala コードの見通しを良くする。パターンマッチは条件実行および非構造化(destructuring)、ひとつの構成物へのキャストを合成する。うまく使われたなら、明快さと安全さの両方をより高めてくれる。
 
-Use pattern matching to implement type switches:
+型のスイッチを実装するためにパターンマッチを使う。
 
 	obj match {
 	  case str: String => ...
 	  case addr: SocketAddress => ...
 
-Pattern matching works best when also combined with destructuring (for
-example if you are matching case classes); instead of
+ 
+パターンマッチは、非構造化(destrcturing)とあわせて利用された時に最もよく動作する(たとえば、もしケースクラスをマッチングするなら)
+次の例の代わりに
 
 	animal match {
 	  case dog: Dog => "dog (%s)".format(dog.breed)
 	  case _ => animal.species
 	  }
 
-.LP write
+.LP このように書く
 
 	animal match {
 	  case Dog(breed) => "dog (%s)".format(breed)
 	  case other => other.species
 	}
 
-Write [custom extractors](http://www.scala-lang.org/node/112) but only with
+
+[カスタム抽出子] (http://www.scala-lang.org/node/112) を書こう。しかし、二重コンストラクタ(`apply`) (dual constructor) と利用する場合のみだ。
+そうでなければ、不適当な利用法になるかもしれない。
 a dual constructor (`apply`), otherwise their use may be out of place.
 
-Don't use pattern matching for conditional execution when defaults
-make more sense. The collections libraries usually provide methods
-that return `Option`s; avoid
+デフォルト値が、もっと意味が取れるものであるとき条件実行にパターンマッチングを使わないようにする。
+コレクションライブラリは通常`Option`を返すメソッドを提供する。次の例は避けよ。
 
 	val x = list match {
 	  case head :: _ => head
 	  case Nil => default
 	}
 
-.LP because
+.LP なぜなら
 
 	val x = list.headOption getOrElse default
 
-.LP is both shorter and communicates purpose.
+.LP は、より短く、意図を伝達する。
 
-### Partial functions
+### 部分関数
 
-Scala provides syntactical shorthand for defining a `PartialFunction`:
+Scala は `PartialFunction` を定義するための構文上の簡略的記法を提供する。
 
 	val pf: PartialFunction[Int, String] = {
 	  case i if i%2 == 0 => "even"
 	}
-	
-.LP and they may be composed with <code>orElse</code>
+
+.LP また、<code>orElse</code> と組み合わせられるかもしれない。
 
 	val tf: (Int => String) = pf orElse { case _ => "odd"}
-	
+
 	tf(1) == "odd"
 	tf(2) == "even"
 
-Partial functions arise in many situations and are effectively
-encoded with `PartialFunction`, for example as arguments to
-methods
+部分関数は多くの場面で起こり得るし，たとえば、メソッドの引数として、`PartialFunction`で効果的に符号化される。
+
 
 	trait Publisher[T] {
 	  def subscribe(f: PartialFunction[T, Unit])
@@ -731,16 +730,16 @@ methods
 	  /* ignore the rest */
 	}
 
-.LP or in situations that might otherwise call for returning an <code>Option</code>:
+.LP もしくは <code>Option</code> を返すような呼び出しの場面において、
 
 	// Attempt to classify the the throwable for logging.
 	type Classifier = Throwable => Option[java.util.logging.Level]
 
-.LP might be better expressed with a <code>PartialFunction</code>
+.LP は、<code>PartialFunction</code>で表現される方がよりよいかもしれない。
 
 	type Classifier = PartialFunction[Throwable, java.util.Logging.Level]
-	
-.LP as it affords greater composability:
+
+.LP より優れた構成可能性(composability)を与えるからだ。
 
 	val classifier1: Classifier
 	val classifier2: Classifier
@@ -748,28 +747,26 @@ methods
 	val classifier = classifier1 orElse classifier2 orElse { _ => java.util.Logging.Level.FINEST }
 
 
-### Destructuring bindings
+### 分配束縛(Destructuring bindings)
 
-Destructuring value bindings are related to pattern matching; they use the same
-mechanism but are applicable when there is exactly one option (lest you accept
-the possibility of an exception). Destructuring binds are particularly useful for
-tuples and case classes.
+分配値束縛は、パターンマッチングに関係している。同じメカニズムを利用しているが、
+(例外の可能性を許容しないために)正確にひとつの選択肢があるときだけ適用可能である。
+分配束縛は特にタプルとケースクラスで有用である。
 
 	val tuple = ('a', 1)
 	val (char, digit) = tuple
-	
+
 	val tweet = Tweet("just tweeting", Time.now)
 	val Tweet(text, timestamp) = tweet
 
-### Lazyness
+### 遅延
 
-Fields in scala are computed *by need* when `val` is prefixed with
-`lazy`. Because fields and methods are equivalent in Scala (lest the fields
-are `private[this]`)
+Scala のフィールドは、`val` が `lazy` プレフィックスと共に使われた時は *必要に応じて* 演算される。
+なぜなら、フィールドとメソッドは Scala では等価だからである(フィールドが `private[this]` にならないように)。
 
 	lazy val field = computation()
 
-.LP is (roughly) short-hand for
+.LP は、(概して) 簡略的記法で、
 
 	var _theField = None
 	def field = if (_theField.isDefined) _theField.get else {
@@ -777,9 +774,10 @@ are `private[this]`)
 	  _theField.get
 	}
 
-.LP i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
+.LP すなわち、結果を演算し記憶する。この目的のために遅延フィールドを使うようにし、しかし、遅延がセマンティクスによって要求されるときに遅延を使うことを避ける。
+このようなケースにおいて、コストモデルを明確にし、副作用がより正確に制御されるから、明示的であることがよりよい。
 
-Lazy fields are thread safe.
+遅延フィールドはスレッドセーフである。
 
 ### Call by name
 
