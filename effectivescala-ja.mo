@@ -779,49 +779,45 @@ Scala のフィールドは、`val` が `lazy` プレフィックスと共に使
 
 遅延フィールドはスレッドセーフである。
 
-### Call by name
+### 名前呼び出し
 
-Method parameters may be specified by-name, meaning the parameter is
-bound not to a value but to a *computation* that may be repeated. This
-feature must be applied with care; a caller expecting by-value
-semantics will be surprised. The motivation for this feature is to
-construct syntactically natural DSLs -- new control constructs in
-particular can be made to look much like native language features.
+メソッドのパラメーターは名前によって特定されるかもしれない、その意味するところは
+パラメータは値に紐付くのではなくて、繰り返されうる *演算* に対して紐付くということである。
+この機能は気をつけて適用されなければならない。値渡しの文脈を期待している呼び出し側は驚くであろう。
+この機能の動機は構文的に自然な DSL を構築することにある。-- 新しい制御構造は特に、かなりネイティブな言語機能に見えるように作ることができる
 
-Only use call-by-name for such control constructs, where it is obvious
-to the caller that what is being passed in is a "block" rather than
-the result of an unsuspecting computation. Only use call-by-name arguments
-in the last position of the last argument list. When using call-by-name,
-ensure that method is named so that it is obvious to the caller that 
-its argument is call-by-name.
 
-When you do want a value to be computed multiple times, and especially
-when this computation is side effecting, use explicit functions:
+名前呼び出しは、そのような制御構造のためだけに使うことだ。そこでは、渡されてくるものは、
+思いも寄らない演算結果より"ブロック"であるということが、呼び出し側に明らかである。
+名前呼び出しは、最後の引数リストの最後の位置にある引数にだけ使うことだ。
+名前呼び出しを使うときは、呼び出し側にその引数が名前呼び出しであることが明確に伝わるようにメソッドには名称をつけることを確実におこなう。
+
+値を複数回演算させたいとき、また特にその演算が副作用を持つとき、陽関数(explicit functions)を使う。
 
 	class SSLConnector(mkEngine: () => SSLEngine)
-	
-.LP The intent remains obvious and caller is left without surprises.
+
+.LP その意図は明確なままであり、呼び出し側が驚かずに済む。
 
 ### `flatMap`
 
-`flatMap` -- the combination of `map` with `flatten` -- deserves special
-attention, for it has subtle power and great utility. Like its brethren `map`, it is frequently
-available in nontraditional collections such as `Future` and `Option`. Its behavior
-is revealed by its signature; for some `Container[A]`
+`map` と `flatten` の合成である `flatMap` は、鋭敏な力と素晴らしい実用性を持ち、特別な注目を浴びるに値する。
+その同類である `map` のように、`Future` や `Option` といった非伝統的なコレクションにおいて、しばしば利用可能である。
+その振る舞いは、`Container[A]`といったシグネチャによって明らかになる。
 
 	flatMap[B](f: A => Container[B]): Container[B]
 
-.LP <code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings that aren't the same character repeated twice:
+.LP <code>flatMap</code> は、<em>新しい</em> コレクションを生成するコレクションの各要素に対して関数 <code>f</code> を呼び出し、それら(のすべて)は、
+フラットな結果になる。例えば、次のコードは、同じ文字が繰り返されない2文字からなる文字列の順列をすべて取得する。
 
 	val chars = 'a' to 'z'
-	val perms = chars flatMap { a => 
-	  chars flatMap { b => 
-	    if (a != b) Seq("%c%c".format(a, b)) 
-	    else Seq() 
+	val perms = chars flatMap { a =>
+	  chars flatMap { b =>
+	    if (a != b) Seq("%c%c".format(a, b))
+	    else Seq()
 	  }
 	}
 
-.LP which is equivalent to the more concise for-comprehension (which is &mdash; roughly &mdash; syntactical sugar for the above):
+.LP これは、より簡潔な for による包含に等価である。(それは、&mdash; 荒くまとめるなら &mdash; 上記のためのシンタックスシュガーである)
 
 	val perms = for {
 	  a <- chars
@@ -829,8 +825,7 @@ is revealed by its signature; for some `Container[A]`
 	  if a != b
 	} yield "%c%c".format(a, b)
 
-`flatMap` is frequently useful when dealing with `Options` -- it will
-collapse chains of options down to one,
+`flatMap` は、しばしば `Options` を扱うときに有用である。 -- オプションの連鎖(chain of options)を流れ落ちてひとつになる。
 
 	val host: Option[String] = ..
 	val port: Option[Int] = ..
@@ -842,15 +837,14 @@ collapse chains of options down to one,
 	    }
 	  }
 
-.LP which is also made more succinct with <code>for</code>
+.LP これも、<code>for</code> により、より簡潔に記述できる。
 
 	val addr: Option[InetSocketAddress] = for {
 	  h <- host
 	  p <- port
 	} yield new InetSocketAddress(h, p)
 
-The use of `flatMap` in `Future`s is discussed in the 
-<a href="#Twitter's%20standard%20libraries-Futures">futures section</a>.
+`Future` における `flatMap` の利用については、<a href="#Twitter's%20standard%20libraries-Futures">futures section</a> で言及している。
 
 ## オブジェクト指向プログラミング
 
