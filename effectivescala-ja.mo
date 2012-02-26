@@ -397,7 +397,7 @@ Javaコレクションとの相互運用のために、`scala.collection.JavaCon
 
 Futureを使って並行性を管理しよう。Futureは、並行操作とリソース管理を疎結合にする。例えば、[Finagle][Finagle]は、並行操作をわずかなスレッド数で効率的に多重化する。Scalaには、軽量なクロージャリテラルの構文がある。だから、Futureは構文上の負担が小さく、ほとんどのプログラマが身に付けることができる。
 
-Futureは、プログラマが並行計算を宣言的なスタイルで表現できるようにする。Futureは組み立て可能で、また計算の失敗を原則に沿って処理できる。こうした性質から、Futureは関数型プログラミング言語にとても適しており、推奨されるスタイルだと確信している。
+Futureは、プログラマが並行計算を宣言的なスタイルで表現できるようにする。Futureは合成可能で、また計算の失敗を原則に沿って処理できる。こうした性質から、Futureは関数型プログラミング言語にとても適しており、推奨されるスタイルだと確信している。
 
 *生成したFutureを変換しよう。*Futureの変換を使うと、失敗の伝播やキャンセルの通知が行われることを保証できる。また、プログラマは、Javaメモリモデルの影響を検討する必要がなくなる。RPCを順番に10回発行して結果を表示するとき、注意深いプログラマでさえ、以下のように書いてしまうかもしれない:
 
@@ -565,7 +565,7 @@ elaborate..
 
 ### `for`ループと内包
 
-`for`を使うと、ループと集約を簡潔かつ自然に表現できる。`for`は、多数のシーケンスを平坦化する場合に特に有用だ。`for`の構文は、内部的にはクロージャを割り当てて呼び出していることを覆い隠している。このため、予期しないコストが発生したり、予想外の挙動を示したりする。例えば、
+`for`を使うと、ループと集約を簡潔かつ自然に表現できる。`for`は、多数のシーケンスを平坦化(flatten)する場合に特に有用だ。`for`の構文は、内部的にはクロージャを割り当てて呼び出していることを覆い隠している。このため、予期しないコストが発生したり、予想外の挙動を示したりする。例えば、
 
 	for (item <- container) {
 	  if (item != 2) return
@@ -966,45 +966,21 @@ Scala 固有で、GC問題を軽減する唯一のツールは、ガベージの
      // しかし、これはできる
      abstract class JavaAnimal extends Animal
 
-## Twitter's standard libraries
+## Twitterの標準ライブラリ
 
-The most important standard libraries at Twitter are
-[Util](http://github.com/twitter/util) and
-[Finagle](https://github.com/twitter/finagle). Util should be
-considered an extension to the Scala and Java standard libraries, 
-providing missing functionality or more appropriate implementations. Finagle
-is our RPC system; the kernel distributed systems components.
+Twitterにおいて、最も重要な標準ライブラリは[Util](http://github.com/twitter/util)と[Finagle](https://github.com/twitter/finagle)だ。Utilは、ScalaやJavaの標準ライブラリの拡張という位置付けで、それらに欠けている機能やより適切な実装を提供する。Finagleは、TwitterのRPCシステムで、分散システムの構成要素の中核だ。
 
 ### Futures
 
-Futures have been <a href="#Concurrency-Futures">discussed</a>
-briefly in the <a href="#Concurrency">concurrency section</a>. They 
-are the central mechanism for coordination asynchronous
-processes and are pervasive in our codebase and core to Finagle.
-Futures allow for the composition of concurrent events, and simplifies
-reasoning about highly concurrent operations. They also lend themselves
-to a highly efficient implementation on the JVM.
+Futureについては、<a href="#並行性">並行性</a>の章でも少し<a href="#並行性-Future">議論した</a>。Futureは、非同期処理の連係において重要な機構で、TwitterのコードベースやFinagleのコアで広く使われている。Futureは、並行イベントの合成(composition)を可能にすると共に、高度な並行操作についての判断を単純化する。また、Futureを使うと、並行操作をJVM上で極めて効率的に実装できる。
 
-Twitter's futures are *asynchronous*, so blocking operations --
-basically any operation that can suspend the execution of its thread;
-network IO and disk IO are examples -- must be handled by a system
-that itself provides futures for the results of said operations.
-Finagle provides such a system for network IO.
+ネットワーク入出力やディスク入出力等の操作は、基本的にスレッドの実行を一時停止する可能性がある。TwitterのFutureは*非同期的*なので、ブロックする操作(blocking operation)は、操作結果に対するFutureを提供するシステム自身によって処理されなければいけない。Finagleは、ネットワーク入出力のためのそうしたシステムを提供する。
 
-Futures are plain and simple: they hold the *promise* for the result
-of a computation that is not yet complete. They are a simple container
--- a placeholder. A computation could fail of course, and this must 
-also be encoded: a Future can be in exactly one of 3 states: *pending*,
-*failed* or *completed*.
+Futureは、単純明白だ。Futureは、まだ完了していない計算の結果に対する*約束(promise)*を保持する、単純なコンテナ（プレースホルダ）だ。当然、計算は失敗することがあるので、このこともコード化する必要がある。Futureは三つの状態、すなわち*保留(pending)*、*失敗(failed)*、*完了(completed)*のうち、きっかり一つの状態を取ることができる。
 
 <div class="explainer">
-<h3>Aside: <em>Composition</em></h3>
-<p>Let's revisit what we mean by composition: combining simpler components
-into more complicated ones. The canonical example of this is function
-composition: Given functions <em>f</em> and
-<em>g</em>, the composite function <em>(g&#8728;f)(x) = g(f(x))</em> &mdash; the result
-of applying <em>x</em> to <em>f</em> first, and then the result of that
-to <em>g</em> &mdash; can be written in Scala:</p>
+<h3>余談: <em>合成(composition)</em></h3>
+<p>もう一度確認すると、合成とは、単純なコンポーネントを結合してより複雑なコンポーネントにすることだ。合成の標準的な例は、関数合成だ。関数<em>f</em>と<em>g</em>が与えられたとき、合成関数<em>(g&#8728;f)(x) = g(f(x))</em>は、まず<em>x</em>を<em>f</em>に適用し、その結果を<em>g</em>に適用した結果だ。この合成関数をScalaで書くと:</p>
 
 <pre><code>val f = (i: Int) => i.toString
 val g = (s: String) => s+s+s
@@ -1013,37 +989,33 @@ val h = g compose f  // : Int => String
 scala> h(123)
 res0: java.lang.String = 123123123</code></pre>
 
-.LP the function <em>h</em> being the composite. It is a <em>new</em> function that combines both <em>f</em> and <em>g</em> in a predefined way.
+.LP この関数<em>h</em>は合成関数で、<em>f</em>と<em>g</em>の双方を所定の方法で結合した<em>新しい</em>関数だ。
 </div>
 
-Futures are a type of collection -- they are a container of
-either 0 or 1 elements -- and you'll find they have standard 
-collection methods (eg. `map`, `filter`, and `foreach`). Since a Future's
-value is deferred, the result of applying any of these methods
-is necessarily also deferred; in
+Futureは、ゼロ個あるいは一個の要素を持つコンテナであり、コレクションの一種だ。Futureは、`map`や`filter`や`foreach`といった、標準コレクションのメソッドを持つ。Futureの値は遅延されるので、必然的にこれらのコレクションメソッドを適用した結果もまた遅延される。
 
 	val result: Future[Int]
 	val resultStr: Future[String] = result map { i => i.toString }
 
-.LP the function <code>{ i => i.toString }</code> is not invoked until the integer value becomes available, and the transformed collection <code>resultStr</code> is also in pending state until that time.
+.LP 関数<code>{ i => i.toString }</code>は、Int値が利用可能になるまで呼び出されない。また、変換されたコレクションである<code>resultStr</code>も、その時まで保留状態(pending state)になる。
 
-Lists can be flattened;
+リストは平坦化(flatten)できる;
 
 	val listOfList: List[List[Int]] = ..
 	val list: List[Int] = listOfList.flatten
 
-.LP and this makes sense for futures, too:
+.LP また、平坦化はFutureにおいても意味をなす:
 
 	val futureOfFuture: Future[Future[Int]] = ..
 	val future: Future[Int] = futureOfFuture.flatten
 
-.LP since futures are deferred, the implementation of <code>flatten</code> &mdash; it returns immediately &mdash; has to return a future that is the result of waiting for the completion of the outer future (<code><b>Future[</b>Future[Int]<b>]</b></code>) and after that the inner one (<code>Future[<b>Future[Int]</b>]</code>). If the outer future fails, the flattened future must also fail.
+.LP Futureの<code>flatten</code>の実装は、直ちにFutureを返す。Futureは遅延するので、<code>flatten</code>が返すFutureは、外側のFuture(<code><b>Future[</b>Future[Int]<b>]</b></code>)の完了と、その後に内側のFuture(<code>Future[<b>Future[Int]</b>]</code>)の完了を待つ結果だ。また、外側のFutureが失敗したら、平坦化されたFutureも失敗する必要がある。
 
-Futures (like Lists) also define `flatMap`; `Future[A]` defines its signature as
+Futureは、Listと同様に`flatMap`を定義している。`Future[A]`は、そのシグネチャを以下のように定義する。
 
 	flatMap[B](f: A => Future[B]): Future[B]
 	
-.LP which is like the combination of both <code>map</code> and <code>flatten</code>, and we could implement it that way:
+.LP `flatMap`は、<code>map</code>と<code>flatten</code>の組み合わせのようなものだ。だから、以下のように実装できる:
 
 	def flatMap[B](f: A => Future[B]): Future[B] = {
 	  val mapped: Future[Future[B]] = this map f
@@ -1051,11 +1023,7 @@ Futures (like Lists) also define `flatMap`; `Future[A]` defines its signature as
 	  flattened
 	}
 
-This is a powerful combination! With `flatMap` we can define a Future that
-is the result of two futures sequenced, the second future computed based
-on the result of the first one. Imagine we needed to do two RPCs in order
-to authenticate a user (id), we could define the composite operation in the
-following way:
+これは、強力な組み合わせだ！ `flatMap`によって、順番に並べられた二つのFutureの結果である新しいFutureを定義できる。二番目のFutureは、最初のFutureの結果に基づいて計算する。ユーザ(ID)を認証するために、二つのRPCを実行する必要がある場合を想像してほしい。この場合、結合操作を以下の方法で定義できる:
 
 	def getUser(id: Int): Future[User]
 	def authenticate(user: User): Future[Boolean]
@@ -1063,7 +1031,7 @@ following way:
 	def isIdAuthed(id: Int): Future[Boolean] = 
 	  getUser(id) flatMap { user => authenticate(user) }
 
-.LP an additional benefit to this type of composition is that error handling is built-in: the future returned from <code>isAuthed(..)</code> will fail if either of <code>getUser(..)</code> or <code>authenticate(..)</code> does with no extra error handling code.
+.LP この種の結合のもう一つの恩恵は、エラー処理が組み込まれていることだ。<code>getUser(..)</code>か<code>authenticate(..)</code>が追加でエラー処理をしない限り、<code>isAuthed(..)</code>が返すFutureは失敗するだろう。
 
 #### Style
 
