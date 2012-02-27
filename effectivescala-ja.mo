@@ -1015,7 +1015,7 @@ Futureは、Listと同様に`flatMap`を定義している。`Future[A]`は、�
 
 	flatMap[B](f: A => Future[B]): Future[B]
 	
-.LP `flatMap`は、<code>map</code>と<code>flatten</code>の組み合わせのようなものだ。だから、以下のように実装できる:
+.LP `flatMap`は、<code>map</code>と<code>flatten</code>の組み合わせのようなもので、以下のように実装できる:
 
 	def flatMap[B](f: A => Future[B]): Future[B] = {
 	  val mapped: Future[Future[B]] = this map f
@@ -1023,7 +1023,7 @@ Futureは、Listと同様に`flatMap`を定義している。`Future[A]`は、�
 	  flattened
 	}
 
-これは、強力な組み合わせだ！ `flatMap`によって、順番に並べられた二つのFutureの結果である新しいFutureを定義できる。二番目のFutureは、最初のFutureの結果に基づいて計算する。ユーザ(ID)を認証するために、二つのRPCを実行する必要がある場合を想像してほしい。この場合、結合操作を以下の方法で定義できる:
+これは、強力な組み合わせだ！ `flatMap`によって、二番目のFutureを最初のFutureの結果に基づいて計算する、順番に並べられた二つのFutureの結果である新しいFutureを定義できる。ユーザ(ID)を認証するために、二つのRPCを実行する必要がある場合を想像してほしい。この場合、合成された操作を以下の方法で定義できる:
 
 	def getUser(id: Int): Future[User]
 	def authenticate(user: User): Future[Boolean]
@@ -1033,11 +1033,9 @@ Futureは、Listと同様に`flatMap`を定義している。`Future[A]`は、�
 
 .LP この種の結合のもう一つの恩恵は、エラー処理が組み込まれていることだ。<code>getUser(..)</code>か<code>authenticate(..)</code>が追加でエラー処理をしない限り、<code>isAuthed(..)</code>が返すFutureは失敗するだろう。
 
-#### Style
+#### スタイル
 
-Future callback methods (`respond`, `onSuccess', `onFailure`, `ensure`)
-return a new future that is *chained* to its parent. This future is guaranteed
-to be completed only after its parent, enabling patterns like
+Futureのコールバックメソッドである`respond`や`onSuccess'、`onFailure`、`ensure`は、その親に*連鎖した(chained)*新たなFutureを返す。このFutureは、その親が完了して初めて完了することが保証されている。このパターンを実現するには、例えば以下のようにする。
 
 	acquireResource()
 	future onSuccess { value =>
@@ -1046,20 +1044,13 @@ to be completed only after its parent, enabling patterns like
 	  freeResource()
 	}
 
-.LP where <code>freeResource()</code> is guaranteed to be executed only after <code>computeSomething</code>, allowing for emulation of the native <code>try .. finally</code> pattern.
+.LP このとき<code>freeResource()</code>は、<code>computeSomething</code>の後にのみ実行されることが保証される。これにより、ネイティブな<code>try .. finally</code>パターンのエミュレートが可能になる。
 
-Use `onSuccess` instead of `foreach` -- it is symmetrical to `onFailure` and
-is a better name for the purpose, and also allows for chaining.
+`foreach`の代わりに`onSuccess`を使おう。`onSuccess`の方が`onFailure`と対称を成して目的をより良く表せるし、連鎖も可能になる。
 
-Always try to avoid creating your own `Promise`s: nearly every task
-can be accomplished via the use of predefined combinators. These
-combinators ensure errors and cancellations are propagated, and generally
-encourage *dataflow style* programming which usually <a
-href="#Concurrency-Futures">obviates the need for synchronization and
-volatility declarations</a>.
+できるだけ自分で`Promise`を作らないようにしよう。ほぼ全てのタスクは、定義済みの結合子を使って実現できる。結合子は、エラーやキャンセルが伝播することを保証すると共に、一般的に*データフロー方式*でのプログラミングを促進する。データフロー方式を使うと、大抵、<a href="#並行性-Future">同期化や`volatile`宣言が不要になる</a>。
 
-Code written in tail-recursive style are not subject so space leaks,
-allowing for efficient implementation of loops in dataflow-style:
+末尾再帰方式で書かれたコードは、スペースリークに影響されないので、データフロー方式においてループを効率的に実装できる:
 
 	case class Node(parent: Option[Node], ...)
 	def getNode(id: Int): Future[Node] = ...
@@ -1070,11 +1061,7 @@ allowing for efficient implementation of loops in dataflow-style:
 	    case n => Future.value((n :: nodes).reverse)
 	  }
 
-`Future` defines many useful methods: Use `Future.value()` and
-`Future.exception()` to create pre-satisfied futures.
-`Future.collect()`, `Future.join()` and `Future.select()` provide
-combinators that turn many futures into one (ie. the gather part of a
-scatter-gather operation).
+`Future`は、数多くの有用なメソッドを定義している。`Future.value()`や`Future.exception()`を使うと、事前に結果が満たされたFutureを作れる。`Future.collect()`や`Future.join()`、`Future.select()`は、複数のFutureを一つにまとめる結合子を提供する（ie. scatter-gather操作のgather部分）。
 
 #### Cancellation
 
