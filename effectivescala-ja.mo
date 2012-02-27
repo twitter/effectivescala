@@ -591,72 +591,81 @@ elaborate..
 
 ## 関数型プログラミング
 
-*値指向* プログラミングは多くの長所を、特に関数型プログラミングの構成物と一体的に利用するときにであるが、享受(confer)する。このスタイルはステートフルな変更よりも値の変換を強調し、参照透過(referentially transparent)であるコードを生み出し、より強い不変式(invariants)を提供し、それ故に、その変換を推論することも容易にする。ケースクラスや、パターンマッチング、destructuring-bind(未訳)、型推論、軽量なクロージャ、メソッド生成構文は、この職業の道具達である。
+関数型プログラミングと一緒に用いる時に *値指向型* プログラミングは多くの恩恵を受ける。このスタイルはステートフルな変更よりも値の変換を強調する。得られるコードは参照透過(referentially transparent)であり、より強力な不変式(invariants)を提供し、さらに容易に推論することが可能になる。ケースクラス、パターンマッチング、構造化代入(destructuring-bind)、型推論、軽量クロージャ、メソッド生成構文がこのツールになる。
 
 ### 代数的データ型としてのケースクラス
 
-ケースクラスは、ADT(訳注:Abstract Data Type、抽象データ型)を符号化する。ケースクラスは、大量のデータ構造をモデリングしたり、強力な不変式(invariants)を持つ簡潔なコードを提供したりすることに有用であり、特にパターンマッチングと組み合わせた時に効果を発揮する。パターンマッチャーは、より強力な静的保証さえ提供することができる包括的分析(exhaustivity analysis)を実装する。ケースクラスでADTをエンコードするときは次のパターンを利用する。
+ケースクラスは代数的データ型(ADT)をエンコードする。パターンマッチングと共に利用することで、ケースクラスは巨大なデータ構造をモデリングするのに役に立ち、強力な不変式を簡潔なコードとして提供する。パターンマッチャーは強力で静的保証を提供する包括的分析(exhaustivity analysis)を実装している。
+ケースクラスと共に代数的データ型をエンコードする時、以下のパターンを使おう：
 
 	sealed trait Tree[T]
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
 
-</code>型は、<code>Node</code> と <code>Leaf</code> という2つのコンストラクタを持つ。型を <code>sealed</code> に宣言することで、当該ソースファイルの外側でコンストラクタを追加することはできないから、コンパイラに包括的分析(exhaustivity analysis)をさせるようにできる。パターンマッチングと共に利用することで、そのようなモデリングは、両方とも簡潔に"明らかに正しい"コードをもたらす。
+<code>Tree[T]</code>の型は<code>Node</code>と<code>Leaf</code>の2つのコンストラクタを持つ。<code>sealed</code>として型を宣言する事で、ソースファイルの外からコンストラクタを追加することを制限できるため、コンパイラーに包括的分析(exhaustivity analysis)を行わせることができる。
+
+パターンマッチと一緒に利用することで、そのようなモデリングを簡潔かつ"明らかに正しい"コードにすることができる。
 
 	def findMin[T <: Ordered[T]](tree: Tree[T]) = tree match {
 	  case Node(left, right) => Seq(findMin(left), findMin(right)).min
 	  case Leaf(value) => value
 	}
 
-木のような再帰的な構造が古典的なアプリケーションのADTを構成する一方で、有用性のある領域はもっと大きいのである。特に結合(unions)の解体は、容易にADTにモデル化される。これらはステートマシンでしばしば発生する。
+ツリーのような再帰構造は代数的データ型の古典的なアプリケーションを構成する一方で、それらの有用な領域はかなり大きい。
+代数的データ型でモデリングされた結合の分解は状態遷移(state machines)で頻繁に発生する。
 
 ### オプション
+
 `Option`型は、空であること(`None`)、または満たされていること(`Some(value)`)を表す容器である。`null`に対する安全な代替手段を提供し、可能な限り如何なる時も利用されるべきである。`Option`型は、たかだかひとつの要素を持つコレクションであり、コレクションの操作で装飾される。利用しよう！
 
-こう書く
+`Option`型は、無(`None`)か、有(`Some(Value)`)のどちらかを格納するコンテナである。nullの代わりに安全に使用でき、いつでも可能な限り使用されるべきである。
+`Option`型は(たかだかひとつの一つの要素しかない)コレクションであり、集合の操作で利用できる。使うしかない!
+
+
+以下のように書こう。
 
 	var username: Option[String] = None
 	...
 	username = Some("foobar")
 
-.LP 下記の代わりにである。
+.LP 以下のようには書かない。
 
 	var username: String = null
 	...
 	username = "foobar"
 
-.LP <code>Option</code>型が<code>username</code>が空であるかをチェックしなければならないことを静的に強制するため、前者はより安全だからである。
+.LP 前者の方が安全な理由：<code>Option</code>型は<code>username</code>が空であることをチェックされなければならないことを静的に強要しているため。
 
-`Option`の値の条件節の実行は`foreach`を使うべきである。下記の代わりに、
+`Option`の値の条件節の実行は`foreach`を使うべきである。以下の代わりに、
 
 	if (opt.isDefined)
 	  operate(opt.get)
 
-.LP このように書く
+.LP 以下のように書く
 
 	opt foreach { value =>
 	  operate(value)}
 
-奇妙なスタイルに思えるかもしれないが、よりよい安全性を提供(例外を引き起こしうる`get`を呼んでいない)し、簡潔である。両方の選択肢が利用されうるなら、パターンマッチングを使う。
+奇妙なスタイルに思えるかもしれないが、よりよい安全性を提供(例外を引き起こしうる`get`を呼んでいない)し、簡潔である。両方の選択肢が利用されうるなら、パターンマッチを使おう。
 
 	opt match {
 	  case Some(value) => operate(value)
 	  case None => defaultAction()
 	}
 
-.LP しかし、もし足りないものがデフォルト値だけであるなら、<code>getOrElse</code> を使う。
+.LP しかし、もし値がない場合はデフォルト値で良いのであれば、<code>getOrElse</code>を使おう。
 
 	operate(opt getOrElse defaultValue)
 
-`Option`を使いすぎてはいけない。もし、何か道理にかなった既定値、[*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern)、があるなら、代わりにそれを使う。
+`Option`を多用しすぎてはいけない。もし、何か目的にあったデフォルト値、[*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern)、があるなら、代わりにそれを使おう。
 
-`Option`は、また、nullになりうる値を包む扱いやすいコンストラクターと共に使う。
+`Option`は、また、nullになり得る値を覆う扱いやすいコンストラクターと共に使おう。
 
 	Option(getClass.getResourceAsStream("foo"))
 
-.LP は、<code>Option[InputStream]</code> であり、<code>getResourceAsStream</code> が <code>null</code> を返す場合に、<code>None</code>  という値を返すものである。
+.LP は、<code>Option[InputStream]</code> であり、<code>getResourceAsStream</code> が <code>null</code> を返す場合に、<code>None</code>  という値を返す。
 
-### パターンマッチング
+### パターンマッチ
 
 パターンマッチ(`x match { ...`)は、書かれた Scala コードの見通しを良くする。パターンマッチは条件実行および非構造化(destructuring)、ひとつの構成物へのキャストを合成する。うまく使われたなら、明快さと安全さの両方をより高めてくれる。
 
