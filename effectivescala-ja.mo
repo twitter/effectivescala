@@ -1074,18 +1074,11 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 
 （訳注: スペースリーク(space leak)とは、意図せずに巨大な空間計算量のコードを書いてしまうこと。関数型プログラミングでは、遅延評価式を未評価のまま蓄積するようなコードを書くと起きやすい。）
 
-#### Cancellation
+#### キャンセル
 
-Futures implement a weak form of cancellation. Invoking `Future#cancel`
-does not directly terminate the computation but instead propagates a
-level triggered *signal* that may be queried by whichever process
-ultimately satisfies the future. Cancellation flows in the opposite
-direction from values: a cancellation signal set by a consumer is
-propagated to its producer. The producer uses `onCancellation` on
-`Promise` to listen to this signal and act accordingly.
+Futureは、弱いキャンセルを実装している。`Future#cancel`の呼び出しは、計算を直ちに終了させるのではなく、レベルトリガ方式の*シグナル*を伝播する。最終的にFutureを満たすのがいずれの処理であっても、シグナルに問い合わせる(query)ことができる。キャンセルは、値から反対方向へ伝播する。つまり、消費者(consumer)がセットしたキャンセルのシグナルは、対応する生産者(producer)へと伝播する。生産者は`Promise`にある`onCancellation`を使って、シグナルに応じて作動するリスナーを指定する。
 
-This means that the cancellation semantics depend on the producer,
-and there is no default implementation. *Cancellation is a but a hint*.
+つまり、キャンセルの動作は生産者に依存し、デフォルトの実装は存在しない。*キャンセルはヒントに過ぎない。*
 
 #### Locals
 
