@@ -1059,7 +1059,7 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 
 できるだけ自分で`Promise`を作らないようにしよう。ほぼ全てのタスクは、定義済みの結合子を使って実現できる。結合子は、エラーやキャンセルが伝播することを保証すると共に、一般的に*データフロー方式*でのプログラミングを促進する。データフロー方式を使うと、大抵、<a href="#並行性-Future">同期化や`volatile`宣言が不要になる</a>。
 
-末尾再帰方式で書かれたコードは、スペースリークに影響されないので、データフロー方式においてループを効率的に実装できる:
+末尾再帰方式で書かれたコードはスペースリークに影響されないので、データフロー方式を使ってループを効率的に実装できる:
 
 	case class Node(parent: Option[Node], ...)
 	def getNode(id: Int): Future[Node] = ...
@@ -1071,6 +1071,8 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 	  }
 
 `Future`は、数多くの有用なメソッドを定義している。`Future.value()`や`Future.exception()`を使うと、事前に結果が満たされたFutureを作れる。`Future.collect()`や`Future.join()`、`Future.select()`は、複数のFutureを一つにまとめる結合子を提供する（ie. scatter-gather操作のgather部分）。
+
+（訳注: スペースリーク(space leak)とは、意図せずに巨大な空間計算量のコードを書いてしまうこと。関数型プログラミングでは、遅延評価式を未評価のまま蓄積するようなコードを書くと起きやすい。）
 
 #### Cancellation
 
