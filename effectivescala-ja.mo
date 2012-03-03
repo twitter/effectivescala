@@ -1108,13 +1108,11 @@ Localは、RPCのトレースを介したスレッド管理や、モニターの
 
 -->
 
-## Acknowledgments
+## 謝辞
 
-The lessons herein are those of Twitter's Scala community -- I hope
-I've been a faithful chronicler.
+本レッスンは、Twitter社のScalaコミュニティによるものだ。私は、誠実な記録者でありたい。
 
-Blake Matheny, Nick Kallen, and Steve Gury provided much helpful
-guidance and many excellent suggestions.
+Blake MathenyとNick Kallen、そしてSteve Guryには、とても有益な助言と多くの優れた提案を与えてもらった。
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
