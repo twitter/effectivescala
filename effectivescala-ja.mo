@@ -565,7 +565,7 @@ elaborate..
 
 ### `for`ループと内包
 
-`for`を使うと、ループと集約を簡潔かつ自然に表現できる。`for`は、多数のシーケンスを平坦化(flatten)する場合に特に有用だ。`for`の構文は、内部的にはクロージャを割り当てて呼び出していることを覆い隠している。このため、予期しないコストが発生したり、予想外の挙動を示したりする。例えば、
+`for`を使うと、ループと集約を簡潔かつ自然に表現できる。`for`は、多数のシーケンスを平坦化(flatten)する場合に特に有用だ。`for`の構文は、内部的にはクロージャを割り当ててディスパッチしていることを覆い隠している。このため、予期しないコストが発生したり、予想外の挙動を示したりする。例えば、
 
 	for (item <- container) {
 	  if (item != 2) return
@@ -1072,7 +1072,7 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 
 `Future`は、数多くの有用なメソッドを定義している。`Future.value()`や`Future.exception()`を使うと、事前に結果が満たされたFutureを作れる。`Future.collect()`や`Future.join()`、`Future.select()`は、複数のFutureを一つにまとめる結合子を提供する（ie. scatter-gather操作のgather部分）。
 
-（訳注: スペースリーク(space leak)とは、意図せずに巨大な空間計算量のコードを書いてしまうこと。関数型プログラミングでは、遅延評価式を未評価のまま蓄積するようなコードを書くと起きやすい。）
+（訳注: スペースリーク(space leak)とは、意図せずに空間計算量が非常に大きいコードを書いてしまうこと。関数型プログラミングでは、遅延評価式を未評価のまま蓄積するようなコードを書くと起きやすい。）
 
 #### キャンセル
 
@@ -1080,13 +1080,9 @@ Futureは、弱いキャンセルを実装している。`Future#cancel`の呼�
 
 つまり、キャンセルの動作は生産者に依存し、デフォルトの実装は存在しない。*キャンセルはヒントに過ぎない。*
 
-#### Locals
+#### Local
 
-Util's
-[`Local`](https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40)
-provides a reference cell that is local to a particular future dispatch tree. Setting the value of a local makes this
-value available to any computation deferred by a Future in the same thread. They are analagous to thread locals,
-except their scope is not a Java thread but a tree of "future threads". In
+Utilライブラリの[`Local`](https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40)は、ローカルから特定のFutureのディスパッチツリーへの参照セルを提供する。`Local`の値をセットすると、同じスレッド内のFutureによって遅延されるあらゆる計算が、この値を利用できるようになる。これらはスレッドローカルに似ているけど、そのスコープはJavaのスレッドでなく、"Futureスレッド"のツリーだ。
 
 	trait User {
 	  def name: String
@@ -1101,18 +1097,11 @@ except their scope is not a Java thread but a tree of "future threads". In
 	  user().incrCost(10)
 	}
 
-.LP <code>user()</code> in the <code>ensure</code> block will refer to the value of the <code>user</code> local at the time the callback was added.
+.LP ここで、<code>ensure</code>ブロックの中の<code>user()</code>は、コールバックが追加された時点での<code>user</code>(Local)の値を参照する。
 
-As with thread locals, `Local`s can be very convenient, but should
-almost always be avoided: make sure the problem cannot be sufficiently
-solved by passing data around explicitly, even if it is somewhat
-burdensome.
+スレッドローカルと同様に`Local`は非常に便利なこともあるが、ほとんどの場合は避けるべきだ。データを明示的に渡して回るのは、たとえそうした方が負担が少なくても、問題を十分に解決できないことを確認しよう。
 
-Locals are used effectively by core libraries for *very* common 
-concerns -- threading through RPC traces, propagating monitors,
-creating "stack traces" for future callbacks -- where any other solution
-would unduly burden the user. Locals are inappropriate in almost any
-other situation.
+Localは、RPCのトレースを介したスレッド管理や、モニターの伝播、Futureコールバックのための"スタックトレース"の作成など、*とても*一般的な関心事(concern)を実現する際に、その他の解決策ではユーザに過度な負担がある場合、コアとなるライブラリにおいて効果的に使われる。Localは、その他のほとんどの場面では不適切だ。
 
 <!--
   ### Offer/Broker
