@@ -667,24 +667,24 @@ elaborate..
 
 ### パターンマッチ
 
-パターンマッチ(`x match { ...`)は、書かれた Scala コードの見通しを良くする。パターンマッチは条件実行および非構造化(destructuring)、ひとつの構成物へのキャストを合成する。うまく使われたなら、明快さと安全さの両方をより高めてくれる。
+パターンマッチ (`x match { ...`) は、Scalaで書かれたコード内に広く使われている。パターンマッチは条件の実行および分解(destructuring)、ひとつの構成物へのキャストを合成する。うまく使うことで明快さと安全さの両方をより高めてくれる。
 
-型のスイッチを実装するためにパターンマッチを使う。
+型ごとの処理を実装するためにパターンマッチを使う。
 
 	obj match {
 	  case str: String => ...
 	  case addr: SocketAddress => ...
 
  
-パターンマッチは、非構造化(destrcturing)とあわせて利用された時に最もよく動作する(たとえば、もしケースクラスをマッチングするなら)
-次の例の代わりに
+パターンマッチは、分解とあわせて利用された時(たとえば、ケースクラスをマッチングするとき)に最大限に役立つ
+次の例のように書くべきではなく、
 
 	animal match {
 	  case dog: Dog => "dog (%s)".format(dog.breed)
 	  case _ => animal.species
 	  }
 
-.LP このように書く
+.LP 以下のように書く
 
 	animal match {
 	  case Dog(breed) => "dog (%s)".format(breed)
@@ -692,11 +692,11 @@ elaborate..
 	}
 
 
-[カスタム抽出子] (http://www.scala-lang.org/node/112) を書こう。しかし、二重コンストラクタ(`apply`) (dual constructor) と利用する場合のみだ。
-そうでなければ、不適当な利用法になるかもしれない。
-a dual constructor (`apply`), otherwise their use may be out of place.
+ただ、2つのコンストラクタ(`apply`) を利用する場合のみ、[カスタム抽出子] (http://www.scala-lang.org/node/112) を書く。
+さもなければ不自然になる可能性がある。
 
-デフォルト値が、もっと意味が取れるものであるとき条件実行にパターンマッチングを使わないようにする。
+
+デフォルト値がもっと意味を持つものであるとき、条件実行にパターンマッチングを使わないようにする。
 コレクションライブラリは通常`Option`を返すメソッドを提供する。次の例は避けよ。
 
 	val x = list match {
@@ -708,25 +708,25 @@ a dual constructor (`apply`), otherwise their use may be out of place.
 
 	val x = list.headOption getOrElse default
 
-.LP は、より短く、意図を伝達する。
+.LP の方がより短く、目的が伝わりやすいからだ。
 
 ### 部分関数
 
-Scala は `PartialFunction` を定義するための構文上の簡略的記法を提供する。
+Scala は 部分関数(`PartialFunction`) を定義するための構文上の簡略的記法を提供する。
 
 	val pf: PartialFunction[Int, String] = {
 	  case i if i%2 == 0 => "even"
 	}
 
-.LP また、<code>orElse</code> と組み合わせられるかもしれない。
+.LP また、これらは <code>orElse</code> と組み合わせられる。
 
 	val tf: (Int => String) = pf orElse { case _ => "odd"}
 
 	tf(1) == "odd"
 	tf(2) == "even"
 
-部分関数は多くの場面で起こり得るし，たとえば、メソッドの引数として、`PartialFunction`で効果的に符号化される。
-
+部分関数は多くの場面で起こり得るものであり，`PartialFunction` で効率的に符号化される。
+メソッドの引数として利用する例：
 
 	trait Publisher[T] {
 	  def subscribe(f: PartialFunction[T, Unit])
@@ -739,16 +739,16 @@ Scala は `PartialFunction` を定義するための構文上の簡略的記法�
 	  /* ignore the rest */
 	}
 
-.LP もしくは <code>Option</code> を返すような呼び出しの場面において、
+.LP また状況によっては <code>Option</code> を返すような呼び出しがあるかもしれないが、
 
 	// Attempt to classify the the throwable for logging.
 	type Classifier = Throwable => Option[java.util.logging.Level]
 
-.LP は、<code>PartialFunction</code>で表現される方がよりよいかもしれない。
+.LP これも、<code>PartialFunction</code>を使って表現する方がよいだろう。
 
 	type Classifier = PartialFunction[Throwable, java.util.Logging.Level]
 
-.LP より優れた構成可能性(composability)を与えるからだ。
+.LP それはより優れた構成可能性(composability)につながるからだ。
 
 	val classifier1: Classifier
 	val classifier2: Classifier
@@ -756,11 +756,11 @@ Scala は `PartialFunction` を定義するための構文上の簡略的記法�
 	val classifier = classifier1 orElse classifier2 orElse { _ => java.util.Logging.Level.FINEST }
 
 
-### 分配束縛(Destructuring bindings)
+### Destructuring bindings
 
-分配値束縛は、パターンマッチングに関係している。同じメカニズムを利用しているが、
-(例外の可能性を許容しないために)正確にひとつの選択肢があるときだけ適用可能である。
-分配束縛は特にタプルとケースクラスで有用である。
+Destructuring bind(訳注:構造化代入、分配束縛などの訳がある)による値代入は、パターンマッチに関連している。
+それらは同じメカニズムを利用しているが、(例外の可能性を許容しないために)正確にひとつの選択肢があるときだけ適用できる。
+Destructuring bindは特にタプルやケースクラスで有用である。
 
 	val tuple = ('a', 1)
 	val (char, digit) = tuple
@@ -768,10 +768,10 @@ Scala は `PartialFunction` を定義するための構文上の簡略的記法�
 	val tweet = Tweet("just tweeting", Time.now)
 	val Tweet(text, timestamp) = tweet
 
-### 遅延
+### 遅延評価
 
-Scala のフィールドは、`val` が `lazy` プレフィックスと共に使われた時は *必要に応じて* 演算される。
-なぜなら、フィールドとメソッドは Scala では等価だからである(フィールドが `private[this]` にならないように)。
+Scala のフィールドは、`val` が `lazy` プレフィックスと共に使われた時は *必要になったときに* 計算されるようになる。
+なぜなら、(フィールドを `private[this]` にしない限りは)フィールドとメソッドは Scala では等価だからである。
 
 	lazy val field = computation()
 
@@ -783,8 +783,8 @@ Scala のフィールドは、`val` が `lazy` プレフィックスと共に使
 	  _theField.get
 	}
 
-.LP すなわち、結果を演算し記憶する。この目的のために遅延フィールドを使うようにし、しかし、遅延がセマンティクスによって要求されるときに遅延を使うことを避ける。
-このようなケースにおいて、コストモデルを明確にし、副作用がより正確に制御されるから、明示的であることがよりよい。
+.LP すなわち、結果を演算し記憶する。この目的のために遅延フィールドを使うようにし、しかし、遅延さが意味を持って(by semantics)要求されるときには遅延評価を使うことを避ける。
+このような場合には、コストモデルを明確にし、副作用をより正確に制御するために明示的であることがよりよい。
 
 遅延フィールドはスレッドセーフである。
 
@@ -794,30 +794,32 @@ Scala のフィールドは、`val` が `lazy` プレフィックスと共に使
 パラメータは値に紐付くのではなくて、繰り返されうる *演算* に対して紐付くということである。
 この機能は気をつけて適用されなければならない。値渡しの文脈を期待している呼び出し側は驚くであろう。
 この機能の動機は構文的に自然な DSL を構築することにある。-- 新しい制御構造は特に、かなりネイティブな言語機能に見えるように作ることができる
-
++メソッドの引数は名前渡しで特定される、引数の中身は必ずしも値である必要はなく *計算式* (繰り返し使われる可能性がある)であれば良い。この機能は注意して適用しなければならない; 呼び出し元が値渡しを意図している場合は意図しない結果になる可能性があるからだ。この機能は構文的に自然なドメイン特定言語(DSL)を構成するためにある。新しい特別な制御機構を自然言語のように見せる事ができる。
 
 名前呼び出しは、そのような制御構造のためだけに使うことだ。そこでは、渡されてくるものは、
 思いも寄らない演算結果より"ブロック"であるということが、呼び出し側に明らかである。
 名前呼び出しは、最後の引数リストの最後の位置にある引数にだけ使うことだ。
 名前呼び出しを使うときは、呼び出し側にその引数が名前呼び出しであることが明確に伝わるようにメソッドには名称をつけることを確実におこなう。
++通りすぎてしまうのは予期しない計算式の結果よりもむしろ"ブロック"である、その事は呼び出し元に明らかにし、そのような制御機構のためだけに名前呼び出しを使おう。最後の引数リストの最後にある引数だけを名前呼出し用に使いなさい。名前呼出しを使っている時、引数が名前呼出しになっている事を呼び出し元に明らかになるようにメソッドが命名されていることを保証しなさい。
 
 値を複数回演算させたいとき、また特にその演算が副作用を持つとき、陽関数(explicit functions)を使う。
 
+
 	class SSLConnector(mkEngine: () => SSLEngine)
 
-.LP その意図は明確なままであり、呼び出し側が驚かずに済む。
+.LP 目的は明らかに残しつつ、呼び出し元が驚くことなくなる。
 
 ### `flatMap`
 
 `map` と `flatten` の合成である `flatMap` は、鋭敏な力と素晴らしい実用性を持ち、特別な注目を浴びるに値する。
-その同類である `map` のように、`Future` や `Option` といった非伝統的なコレクションにおいて、しばしば利用可能である。
+その同類である `map` のように、`Future` や `Option` といった非伝統的なコレクションにおいて、頻繁に利用できる。
 その振る舞いは、`Container[A]`といったシグネチャによって明らかになる。
-
+ 
 	flatMap[B](f: A => Container[B]): Container[B]
 
 .LP <code>flatMap</code> は、<em>新しい</em> コレクションを生成するコレクションの各要素に対して関数 <code>f</code> を呼び出し、それら(のすべて)は、
 フラットな結果になる。例えば、次のコードは、同じ文字が繰り返されない2文字からなる文字列の順列をすべて取得する。
-
+ 
 	val chars = 'a' to 'z'
 	val perms = chars flatMap { a =>
 	  chars flatMap { b =>
@@ -827,15 +829,15 @@ Scala のフィールドは、`val` が `lazy` プレフィックスと共に使
 	}
 
 .LP これは、より簡潔な for による包含に等価である。(それは、&mdash; 荒くまとめるなら &mdash; 上記のためのシンタックスシュガーである)
-
+ 
 	val perms = for {
 	  a <- chars
 	  b <- chars
 	  if a != b
 	} yield "%c%c".format(a, b)
 
-`flatMap` は、しばしば `Options` を扱うときに有用である。 -- オプションの連鎖(chain of options)を流れ落ちてひとつになる。
-
+`flatMap` は、(Optionの連鎖(chain of options)を畳み込んでひとつにするときなど) `Option` を扱うときに頻繁に役に立つ。
+ 
 	val host: Option[String] = ..
 	val port: Option[Int] = ..
 	
@@ -846,14 +848,14 @@ Scala のフィールドは、`val` が `lazy` プレフィックスと共に使
 	    }
 	  }
 
-.LP これも、<code>for</code> により、より簡潔に記述できる。
-
+.LP これも、<code>for</code> を使えばもっと簡潔に記述できる。
+ 
 	val addr: Option[InetSocketAddress] = for {
 	  h <- host
 	  p <- port
 	} yield new InetSocketAddress(h, p)
 
-`Future` における `flatMap` の利用については、<a href="#Twitter's%20standard%20libraries-Futures">futures section</a> で言及している。
+`Future` における `flatMap` の利用については、<a href="#Twitter's%20standard%20libraries-Futures">futures section</a> で議論されている。
 
 ## オブジェクト指向プログラミング
 
