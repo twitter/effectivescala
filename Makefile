@@ -6,7 +6,7 @@ all: index.html index-ja.html
 index.html: header.html.inc effectivescala.html footer.html.inc
 	cat $^ > $@
 
-index-ja.html: header.html.inc effectivescala-ja.html footer.html.inc
+index-ja.html: header-jp.html.inc effectivescala-ja.html footer-jp.html.inc
 	cat $^ > $@
 
 pub: all
