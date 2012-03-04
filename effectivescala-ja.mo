@@ -571,9 +571,19 @@ elaborate..
 	  if (item != 2) return
 	}
 
-.LP このコードでは、<code>return</code>を非局所的(nonlocal)にするよう`container`が計算を遅延させると、ランタイムエラーが発生することがある！（訳注: どういう意味？）
+.LP このコードは、`container`が計算を遅延させた場合にランタイムエラーが発生し、その結果として<code>return</code>が非局所的(nonlocal)に評価されてしまうことがある！
 
 これらの理由から、コードを明瞭にするためである場合を除いて、`for`を使う代わりに、`foreach`や`flatMap`や`map`や`filter`を直接呼び出す方が良いことが多い。
+
+（訳注1: Scalaのfor式は`foreach`、`flatMap`、`map`、`withFilter`を呼び出す糖衣構文で、ループ内の式は、コンパイル時にそれらのメソッドに渡される匿名関数に変換される。例えば、上記の例のfor式は、実際には
+
+	container foreach { item =>
+	  if (item != 2) return
+	}
+
+というコードとして実行される。原文では、最初からこのように記述することを推奨している。）
+
+（訳注2: ネストした匿名関数での`return`式は、ランタイムエラーである`NonLocalReturnException`の`throw`と`catch`に変換される。この場合、`container`が遅延評価されると`return`式の挙動が意図しないものになる場合がある。詳細に興味がある場合は、[こちらの議論](https://github.com/okapies/effectivescala/commit/8b448ef819e6d87d21fa78310b84fc72593b0226#commitcomment-996948)も参照してほしい。）
 
 ### `require`と`assert`
 
