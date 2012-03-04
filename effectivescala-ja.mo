@@ -950,12 +950,14 @@ Scala では、シングルトンクラス型を生成することは一般的�
 
 .LP <code>foo()</code> の呼び出し側は、戻り値のインスタンスの限定されたビュー(<code>Foo with Bar</code>) を参照する。
 
-### 構造的な型付け
+### 構造的部分型
 
-構造的な型(structual type)(訳注:構造的部分型(structural subtyping) 相当。[issue #1](https://github.com/okapies/effectivescala/pull/1)に議論・解説あり)は通常は使わない。構造的な型は、便利で強力な機能であるが、残念なことに JVM 上では効率的な実装手段はない。しかし、ある運命のいたずらともいうべき実装によって、リフレクションをするためのとても良い速記法を提供する。
+構造的部分型(structural type)は通常は使わない。構造的部分型は、便利で強力な機能であるが、残念なことに JVM 上では効率的な実装手段はない。しかし、ある運命のいたずらともいうべき実装によって、リフレクションをするためのとても良い速記法を提供する。
 
      val obj: AnyRef
      obj.asInstanceOf[{def close()}].close()
+
+（訳注: "structural typing"を直訳すると「構造的な型付け」だが、Scalaの文脈では「構造的部分型(structural subtyping)」と同じ意味だと考えて良い。この用語の背景については、[@kmizu氏による解説](https://github.com/okapies/effectivescala/pull/1#r455268)を参照して欲しい。）
 
 ## ガベージコレクション
 
