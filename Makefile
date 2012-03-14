@@ -1,5 +1,5 @@
 #MARKDOWN = $(HOME)/Library/Haskell/bin/pandoc  -f markdown -t html
-MARKDOWN = peg-markdown --smart --notes
+MARKDOWN = ~/workspace/peg-markdown/markdown --smart --notes
 
 all: index.html index-ja.html
 
