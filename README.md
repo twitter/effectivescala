@@ -1,6 +1,4 @@
-﻿このforkは、Effective Scalaの日本語訳です。訳に対するご指摘、Pull Request、更なるforkを歓迎します。
-
-# Effective Scala
+﻿# Effective Scala
 
 This is the repository for the [Effective Scala](http://twitter.github.com/effectivescala/) document. 
 
