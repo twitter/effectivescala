@@ -583,7 +583,7 @@ elaborate..
 
 というコードとして実行される。原文では、最初からこのように記述することを推奨している。）
 
-（訳注2: ネストした匿名関数での`return`式は、ランタイムエラーである`NonLocalReturnException`の`throw`と`catch`に変換される。この場合、`container`が遅延評価されると`return`式の挙動が意図しないものになる場合がある。詳細に興味がある場合は、[こちらの議論](https://github.com/okapies/effectivescala/commit/8b448ef819e6d87d21fa78310b84fc72593b0226#commitcomment-996948)も参照してほしい。）
+（訳注2: ネストした匿名関数での`return`式は、ランタイムエラーである`NonLocalReturnException`の`throw`と`catch`に変換される。この場合、`container`が遅延評価されると`return`式の挙動が意図しないものになる場合がある。詳細に興味がある場合は、[こちらの議論](https://github.com/scalajp/effectivescala/commit/8b448ef819e6d87d21fa78310b84fc72593b0226#commitcomment-996948)も参照してほしい。）
 
 ### `require`と`assert`
 
@@ -778,7 +778,7 @@ Destructuring bindは特にタプルやケースクラスで有用である。
 	val tweet = Tweet("just tweeting", Time.now)
 	val Tweet(text, timestamp) = tweet
 
-（訳注: Destructuring bindは、「構造化代入」や「分配束縛」等の訳がある。詳細については、[こちらの議論](https://github.com/okapies/effectivescala/issues/4)を参照してほしい。）
+（訳注: Destructuring bindは、「構造化代入」や「分配束縛」等の訳がある。詳細については、[こちらの議論](https://github.com/scalajp/effectivescala/issues/4)を参照してほしい。）
 
 ### 遅延評価
 
@@ -961,7 +961,7 @@ Scala では、シングルトンクラス型を生成することは一般的�
      val obj: AnyRef
      obj.asInstanceOf[{def close()}].close()
 
-（訳注: "structural typing"を直訳すると「構造的な型付け」だが、Scalaの文脈では「構造的部分型(structural subtyping)」と同じ意味だと考えて良い。この用語の背景については、[@kmizu氏による解説](https://github.com/okapies/effectivescala/pull/1#r455268)を参照して欲しい。）
+（訳注: "structural typing"を直訳すると「構造的な型付け」だが、Scalaの文脈では「構造的部分型(structural subtyping)」と同じ意味だと考えて良い。この用語の背景については、[@kmizu氏による解説](https://github.com/scalajp/effectivescala/pull/1#r455268)を参照して欲しい。）
 
 ## ガベージコレクション
 
