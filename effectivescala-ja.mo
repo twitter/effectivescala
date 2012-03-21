@@ -271,7 +271,7 @@ Scalaでは戻り型アノテーション(return type annotation)を省略でき
 
 ## コレクション
 
-Scalaが持つコレクションライブラリは、とても総称的(generic)で、機能豊富で、強力で、組み立てやすい。コレクションは高水準であり、多数の操作を提供している。多数のコレクション操作と変換を簡潔かつ読みやすく表現できるが、それらの機能を不注意に適用すると、しばしば正反対の結果を招く。全てのScalaプログラマは、[collections design document](http://www.scala-lang.org/docu/files/collections-api/collections.html)を読むべきだ。このドキュメントは、Scalaのコレクションライブラリに対する優れた洞察と意欲をもたらしてくれる。
+Scalaが持つコレクションライブラリは、とても総称的(generic)で、機能豊富で、強力で、組み立てやすい。コレクションは高水準であり、多数の操作を提供している。多数のコレクション操作と変換を簡潔かつ読みやすく表現できるが、それらの機能を不注意に適用すると、しばしば正反対の結果を招く。全てのScalaプログラマは、[collections design document](http://scalajp.github.com/scala-collections-doc-ja/)を読むべきだ。このドキュメントは、Scalaのコレクションライブラリに対する優れた洞察と意欲をもたらしてくれる。
 
 常に、君のニーズを最もシンプルに満たすコレクションを使おう。
 
