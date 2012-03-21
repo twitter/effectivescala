@@ -82,7 +82,7 @@ Scalaは、簡潔な表現を可能にする数多くのツールを提供して
 <dt>6個より多くの名前をインポートするときはワイルドカードを使う</dt>
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />ワイルドカードを濫用しないこと。一部のパッケージは、大量の名前をエクスポートする。</dd>
-<dt>コレクションを使う時は、<code>scala.collections.immutable</code> あるいは <code>scala.collections.mutable</code> をインポートして名前を修飾する</dt>
+<dt>コレクションを使う時は、<code>scala.collection.immutable</code> あるいは <code>scala.collection.mutable</code> をインポートして名前を修飾する</dt>
 <dd>可変(mutable)コレクションと不変(immutable)コレクションは同じ名前を二重に使っている。読み手のために、名前を修飾してどちらのコレクションを使っているか明確にしよう。 (e.g. "<code>immutable.Map</code>")</dd>
 <dt>他のパッケージからの相対指定でインポートしない</dt>
 <dd><pre><code>import com.twitter
