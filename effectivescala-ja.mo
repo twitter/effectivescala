@@ -1128,6 +1128,16 @@ Localは、RPCのトレースを介したスレッド管理や、モニターの
 
 Blake MathenyとNick Kallen、そしてSteve Guryには、とても有益な助言と多くの優れた提案を与えてもらった。
 
+### 日本語版への謝辞
+
+本ドキュメントの日本語訳は、[@okapies](http://github.com/okapies)と[@scova0731](https://github.com/scova0731)が担当しました。
+
+翻訳にあたっては、日本のScalaコミュニティから数多くの貢献を頂きました: [@xuwei-k](http://github.com/xuwei-k)さん、[@kmizu](http://github.com/kmizu)さん、[@eed3si9n](http://github.com/eed3si9n)さん、[@akr4](http://github.com/akr4)さん、[@yosuke-furukawa](http://github.com/yosuke-furukawa)さん、m hanadaさん、および[日本Scalaユーザーズグループ](http://jp.scala-users.org/)の皆さん。（以上、順不同）
+
+また、[@kmizu](http://github.com/kmizu)さんと[@eed3si9n](http://github.com/eed3si9n)さんには、高度に専門的な議論について貴重な助言を頂きました。
+
+ありがとうございます。
+
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
 [Util]: http://github.com/twitter/util
