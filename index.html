@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Effective Scala</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <script type="text/javascript" src="http://use.typekit.com/bub8efs.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
@@ -132,6 +133,10 @@
 <li><strong><a href="#Twitter's standard libraries">Twitter&rsquo;s standard libraries</a></strong>: <em><a href="#Twitter's standard libraries-Futures">Futures</a></em></li>
 <li><strong><a href="#Acknowledgments">Acknowledgments</a></strong></li>
 </ul>
+
+<h2>Other languages</h2>
+
+<p><a href="index-ja.html">日本語</a></p>
 
 <p><a id="Introduction" /></p>
 
@@ -271,7 +276,7 @@ no more information than <code>User.get</code>.
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />Don't apply this blindly: some packages export too many names</dd>
 <dt>When using collections, qualify names by importing 
-<code>scala.collections.immutable</code> and/or <code>scala.collections.mutable</code></dt>
+<code>scala.collection.immutable</code> and/or <code>scala.collection.mutable</code></dt>
 <dd>Mutable and immutable collections have dual names. 
 Qualifiying the names makes is obvious to the reader which variant is being used (e.g. "<code>immutable.Map</code>")</dd>
 <dt>Do not use relative imports from other packages</dt>
@@ -577,9 +582,9 @@ circumstances, and make programs easier to reason about since they are
 referentially transparent and are thus also threadsafe by default.</p>
 
 <p><em>Use the <code>mutable</code> namespace explicitly.</em> Don&rsquo;t import
-<code>scala.collections.mutable._</code> and refer to <code>Set</code>, instead</p>
+<code>scala.collection.mutable._</code> and refer to <code>Set</code>, instead</p>
 
-<pre><code>import scala.collections.mutable
+<pre><code>import scala.collection.mutable
 val set = mutable.Set()
 </code></pre>
 
