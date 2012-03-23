@@ -1,4 +1,4 @@
-﻿# Effective Scala
+# Effective Scala
 
 This is the repository for the [Effective Scala](http://twitter.github.com/effectivescala/) document. 
 
