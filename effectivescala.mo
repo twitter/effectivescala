@@ -1487,7 +1487,7 @@ other situation.
 
 ### Offer/Broker
 
-Futures provide a simple and composable representation for the results
+Futures provide a simple and composable representation of the results
 of deferred operations. They are by nature *asynchronous*: values are
 propagated independently of each other. Their application as a
 coordination mechanism is thus limited.
@@ -1518,9 +1518,9 @@ selective communication in order to create an expressive system with
 simple semantics.
 
 Offer/Broker, based on the ideas from [Concurrent
-ML](http://cml.cs.uchicago.edu) generalizes CSP by focusing on the
-communications aspect; Futures, language, and runtime constructs
-provide the rest.
+ML](http://cml.cs.uchicago.edu), generalizes CSP by focusing on the
+communications aspect; Futures as well as language and runtime
+constructs provide the rest.
 
 `Offer` encodes an *offer to communicate*. They are parameterized:
 `Offer[T]` communicates values of type `T`; persistent: offers are
