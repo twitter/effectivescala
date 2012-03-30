@@ -1487,98 +1487,101 @@ other situation.
 
 ### Offer/Broker
 
-Futures provide a simple and composable representation of the results
-of deferred operations. They are by nature *asynchronous*: values are
-propagated independently of each other. Their application as a
-coordination mechanism is thus limited.
-
-We define a *process* to be an independent and sequential thread of control;
-a *synchronization mechanism* is one that coordinates the work of
-several concurrently executing processes. Most nontrivial concurrent programs
-utilizes several forms of synchronization --
+We define a *process* to be an independent and sequential thread of
+control; a *synchronization mechanism* is one that coordinates the
+work of several concurrently executing processes. Most nontrivial
+concurrent programs utilize several forms of synchronization --
 [Mutexes](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/locks/Lock.html),
 [Semaphores](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/Semaphore.html),
 [Latches](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CountDownLatch.html),
 and
 [Barriers](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CyclicBarrier.html)
-constitute everyday tools of a systems programmer -- but these are a stubborn source of bugs. Their multitude
-gives pause, as this is surely a symptom of poor composability; worse
-yet, they are difficult to reason about operationally, and often lead
-to races, deadlocks and inconsistencies that are difficult to debug.
+constitute everyday tools of a systems programmer -- but these are a
+stubborn source of bugs. Their multitude gives pause, as this is
+surely a symptom of poor composability; worse yet, they are difficult
+to reason about operationally, often resulting in races, deadlocks and
+inconsistencies that are difficult to debug.
 
-A central insight of Hoare's Communicating Sequential
-Processes^[Hoare, C. A. R. (1978). "Communicating sequential
-processes". Communications of the ACM 21 (8): 666–677.] is that
-conflating synchronization with communication -- process `a` sends a
-value to process `b` exactly when both `a` and `b` simultaneously
-agree to send and receive respectively -- is powerful, composable, and
-much simpler to reason about than traditional synchronization
-mechanisms. CSP composes *processes* together with guarded and
-selective communication in order to create an expressive system with
-simple semantics.
+While futures provide a simple and composable representation for the
+results of such processes, they are by nature *asynchronous*: values
+are propagated independently of each other and their application as a
+coordination mechanism is thus limited. A central insight of Hoare's
+Communicating Sequential Processes^[Hoare, C. A. R. (1978).
+"Communicating sequential processes". Communications of the ACM 21
+(8): 666–677.] is that conflating synchronization with communication
+-- process `a` sends a value to process `b` exactly when both `a` and
+`b` simultaneously agree to send and receive respectively -- is
+powerful, composable, and much simpler to reason about than
+traditional synchronization mechanisms. CSP composes *processes*
+together with guarded and selective communication in order to create
+an expressive system with simple semantics.
 
 Offer/Broker, based on the ideas from [Concurrent
 ML](http://cml.cs.uchicago.edu), generalizes CSP by focusing on the
 communications aspect; Futures as well as language and runtime
 constructs provide the rest.
 
-`Offer` encodes an *offer to communicate*. They are parameterized:
-`Offer[T]` communicates values of type `T`; persistent: offers are
-immutable and only describe the offer to communicate -- they may thus
-be reused; and they are composable: Offers are combined in various
-ways to create *new* offers with new semantics. In order to attempt
-communications, an offer must be synchronized, yielding the result.
+`Offer` encodes an *offer to communicate* a value. They are
+parameterized: `Offer[T]` communicates values of type `T`; persistent:
+offers are immutable and only describe the offer to communicate --
+they may thus be reused; and they are composable: Offers are combined
+in various ways to create *new* offers with new semantics. In order to do 
+anything useful, offers must be *synchronized*, which is done with `sync()`:
 
 	trait Offer[T] {
-	  // Synchronize this offer
-	  def apply(): Future[T]
-	  ...
+	  def sync(): Future[T]
 	}
 
-Synchronization follows the CSP semantics: it succeeds exactly when
-both sender and receiver synchronize.
+.LP <code>sync()</code> returns a Future representing the result of the synchronization &mdash; the value exchanged. We say that a synchronization <em>obtains</em> when the synchronization completes.
 
-A `Broker` is a FIFO queue that provides offers to send and receive to
-and from the queue: it is a communications broker.
+The power of Offers become apparent in their composition, and
+in particular through selective communication:
+
+	def choose[T](ofs: Offer[T]*): Offer[T]
+
+.LP is the offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one available. When several are available immediately, one is chosen at random to obtain.
+
+A `Broker` coordinates the exchange of values through offers:
 
 	trait Broker[T] {
 	  def send(msg: T): Offer[Unit]
 	  val recv: Offer[T]
 	}
 
-These are not the only sources of offers, however: There are a number
-of other useful offers:
+.LP so when creating two offers
+
+	val b: Broker[Int]
+	val sendOf = send(1)
+	val recvOf = b.recv
+
+.LP <code>sendOf</code> and <code>recvOf</code> are simultaneously synchronized, both offers obtain and the value <code>1</code> is exchanged.
+
+These are not the only sources of offers, however -- the `Offer`
+object contains a number of useful implementations:
 
 	Offer.timeout(duration): Offer[Unit]
+
+.LP Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value.
+
+It may be tempting to compare the use of Offer/Broker to
+[SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
+but they are different in subtle but important ways. Offers can be composed in ways that such queues simply cannot. For example, consider a set of queues, represented as Brokers:
+
+	val q0 = new Broker[Int]
+	val q1 = new Broker[Int]
+	val q2 = new Broker[Int]
 	
-Is an offer that is willing to synchronize after the given duration.
-`Offer.never` will never synchronize, and `Offer.const(value)`
-synchronizes immediately with the given value.
+.LP Now let's create a merged queue for reading:
 
-The power of Offer/Broker becomes apparent in its composition, and
-particularly through selective communication: `Offer.choose`:
-
-	def choose[T](ofs: Offer[T]*): Offer[T]
-
-is the offer that, when synchronized, attempts to synchronize all of
-`ofs`, picking the first successfull one. In other words, it is the
-offer that represents the synchronization of *exactly one* of `ofs`.
-If, when synchronizing the offer returned by `Offer.choose`, several
-of `ofs` are immediately able to synchronize one is chosen at random.
-
-It is often useful -- and sometimes vastly simplifying -- to structure
-concurrent programs as a set of sequential processes that communicate
-synchronously. Offers and Brokers provide a set of tools to make this simple
-and uniform. Indeed, their application transcends what one might think
-of as "classic" concurrency problems -- concurrent programming (with
-the aid of Offer/Broker) is a useful *structuring* tool, just as
-subroutines, classes, and modules are.
-
+	val anyq: Offer[Int] = Offer.choose(q0, q1, q2)
+	
+.LP <code>anyq</code> is an offer that will read from first available queue. Note that <code>anyq</code> is <em>still synchronous</em> &mdash; we still have the semantics of the underlying queues. Such composition is simply not possible using queues.
+	
 #### Example: A Simple Connection Pool
 
 Connection pools are common in network applications, and they're often
 tricky to implement -- for example, it's often desirable to have
-timeouts on the pools, because various clients have different latency
+timeouts on acquisition from the pool since various clients have different latency
 requirements. Pools are simple in principle: we maintain a queue of
 connections, and we satisfy waiters as they come in. With traditional
 synchronization primitives this typically involves keeping two queues:
@@ -1595,13 +1598,13 @@ Using Offer/Brokers, we can express this quite naturally:
 	  def put(c: Conn) { returnConn ! c }
 	
 	  private[this] def loop(connq: Queue[Conn]) {
-	    Offer.select(
+	    Offer.choose(
 	      if (connq.isEmpty) Offer.never else {
 	        val (head, rest) = connq.dequeue
 	        waiters.send(head) { _ => loop(rest) }
 	      },
 	      returnConn.recv { c => loop(connq enqueue c) }
-	    )
+	    ).sync()
 	  }
 	
 	  loop(Queue.empty ++ conns)
@@ -1612,10 +1615,10 @@ to send one when the queue is nonempty. Using a persistent queue simplifies
 reasoning further. The interface to the pool is also through an Offer, so if a caller
 wishes to apply a timeout, they can do so through the use of combinators:
 
-	val conn: Future[Option[Conn]] = Offer.select(
+	val conn: Future[Option[Conn]] = Offer.choose(
 	  pool.get { conn => Some(conn) },
 	  Offer.timeout(1.second) { _ => None }
-	)
+	).sync()
 
 No extra bookkeeping was required to implement timeouts; this is due to
 the semantics of Offers: if `Offer.timeout` is selected, there is no
@@ -1623,13 +1626,77 @@ longer an offer to receive from the pool -- the pool and its caller
 never simultaneously agreed to receive and send, respectively, on the
 `waiters` broker.
 
+#### Example: Sieve of Eratosthenes
+
+It is often useful -- and sometimes vastly simplifying -- to structure
+concurrent programs as a set of sequential processes that communicate
+synchronously. Offers and Brokers provide a set of tools to make this simple
+and uniform. Indeed, their application transcends what one might think
+of as "classic" concurrency problems -- concurrent programming (with
+the aid of Offer/Broker) is a useful *structuring* tool, just as
+subroutines, classes, and modules are -- another important 
+idea from CSP.
+
+One example of this is the [Sieve of
+Eratosthenes](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes),
+which can be structured as a successive application of filters to a
+stream of integers. First, we'll need a source of integers:
+
+	def integers(from: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def gen(n: Int): Unit = b.send(n).sync() ensure gen(n + 1)
+	  gen(from)
+	  b.recv
+	}
+
+.LP <code>integers(n)</code> is simply the offer of all consecutive integers starting at <code>n</code>. Then we need a filter:
+
+	def filter(in: Offer[Int], prime: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def loop() {
+	    in.sync() onSuccess { i =>
+	      if (i % prime != 0)
+	        b.send(i).sync() ensure loop()
+	      else
+	        loop()
+	    }
+	  }
+	  loop()
+	
+	  b.recv
+	}
+
+.LP <code>filter(in, p)</code> returns the offer that removes multiples of the prime <code>p</code> from <code>in</code>. Finally, we define our sieve:
+
+	def sieve = {
+	  val b = new Broker[Int]
+	  def loop(of: Offer[Int]) {
+	    for (prime <- of.sync(); _ <- b.send(prime).sync())
+	      loop(filter(of, prime))
+	  }
+	  loop(integers(2))
+	  b.recv
+	}
+
+.LP <code>loop()</code> works simply: it reads the next (prime) number from <code>of</code>, and then applies a filter to <code>of</code> that excludes this prime. As <code>loop</code> recurses, successive primes are filtered, and we have a Sieve. We can now print out the first 10000 primes:
+
+	val primes = sieve
+	0 until 10000 foreach { _ =>
+	  println(primes.sync()())
+	}
+
+Besides being structured into simple, orthogonal components, this
+approach gives you a streaming Sieve: you do not a-priori need to
+compute the set of primes you are interested in, further enhancing
+modularity.
+
 ## Acknowledgments
 
 The lessons herein are those of Twitter's Scala community -- I hope
 I've been a faithful chronicler.
 
-Blake Matheny, Nick Kallen, and Steve Gury provided much helpful
-guidance and many excellent suggestions.
+Blake Matheny, Nick Kallen, Steve Gury, and Raghavendra Prabhu
+provided much helpful guidance and many excellent suggestions.
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
