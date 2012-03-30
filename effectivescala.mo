@@ -1487,81 +1487,76 @@ other situation.
 
 ### Offer/Broker
 
-We define a *process* to be an independent and sequential thread of
-control; a *synchronization mechanism* is one that coordinates the
-work of several concurrently executing processes. Most nontrivial
-concurrent programs utilize several forms of synchronization --
-[Mutexes](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/locks/Lock.html),
-[Semaphores](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/Semaphore.html),
-[Latches](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CountDownLatch.html),
-and
-[Barriers](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CyclicBarrier.html)
-constitute everyday tools of a systems programmer -- but these are a
-stubborn source of bugs. Their multitude gives pause, as this is
-surely a symptom of poor composability; worse yet, they are difficult
-to reason about operationally, often resulting in races, deadlocks and
-inconsistencies that are difficult to debug.
+Concurrent systems are greatly complicated by the need to coordinate
+access to shared data and resources.
+[Actors](http://www.scala-lang.org/api/current/scala/actors/Actor.html)
+encourage a different approach: each actor is a sequential process
+that maintains its own state and resources, and data is shared by
+messaging with other actors.
 
-While futures provide a simple and composable representation for the
-results of such processes, they are by nature *asynchronous*: values
-are propagated independently of each other and their application as a
-coordination mechanism is thus limited. A central insight of Hoare's
-Communicating Sequential Processes^[Hoare, C. A. R. (1978).
-"Communicating sequential processes". Communications of the ACM 21
-(8): 666–677.] is that conflating synchronization with communication
--- process `a` sends a value to process `b` exactly when both `a` and
-`b` simultaneously agree to send and receive respectively -- is
-powerful, composable, and much simpler to reason about than
-traditional synchronization mechanisms. CSP composes *processes*
-together with guarded and selective communication in order to create
-an expressive system with simple semantics.
+Offer/Broker builds on this in three important ways. First,
+communication channels (Brokers) are first class -- that is, you send
+messages via Brokers, not to an actor directly. Secondly, Offer/Broker
+is a synchronous mechanism: to communicate is to synchronize. This
+means we can use Brokers as a coordination mechanism: when process `a`
+has sent a message to process `b`; both `a` and `b` agree on the state
+of the system. Lastly, communication can be performed *selectively*: a
+process can propose several different communications, and exactly one
+of them will obtain.
 
-Offer/Broker, based on the ideas from [Concurrent
-ML](http://cml.cs.uchicago.edu), generalizes CSP by focusing on the
-communications aspect; Futures as well as language and runtime
-constructs provide the rest.
-
-`Offer` encodes an *offer to communicate* a value. They are
-parameterized: `Offer[T]` communicates values of type `T`; persistent:
-offers are immutable and only describe the offer to communicate --
-they may thus be reused; and they are composable: Offers are combined
-in various ways to create *new* offers with new semantics. In order to do 
-anything useful, offers must be *synchronized*, which is done with `sync()`:
+In order to support selective communication (as well as other
+composition) in a general way, we need to decouple the description of
+a communication from the act of communicating. This is what an `Offer`
+does -- it is a persistent value that describes a communication; in
+order to perform that communication (act on the offer), we synchronize
+via its `sync()` method
 
 	trait Offer[T] {
 	  def sync(): Future[T]
 	}
 
-.LP <code>sync()</code> returns a Future representing the result of the synchronization &mdash; the value exchanged. We say that a synchronization <em>obtains</em> when the synchronization completes.
+.LP which returns a <code>Future[T]</code> that yields the exchanged value when the communication obtains.
 
-The power of Offers become apparent in their composition, and
-in particular through selective communication:
-
-	def choose[T](ofs: Offer[T]*): Offer[T]
-
-.LP is the offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one available. When several are available immediately, one is chosen at random to obtain.
-
-A `Broker` coordinates the exchange of values through offers:
+A `Broker` coordinates the exchange of values through offers -- it is the channel of communications:
 
 	trait Broker[T] {
 	  def send(msg: T): Offer[Unit]
 	  val recv: Offer[T]
 	}
 
-.LP so when creating two offers
+.LP so that, when creating two offers
 
 	val b: Broker[Int]
 	val sendOf = send(1)
 	val recvOf = b.recv
 
-.LP <code>sendOf</code> and <code>recvOf</code> are simultaneously synchronized, both offers obtain and the value <code>1</code> is exchanged.
+.LP and <code>sendOf</code> and <code>recvOf</code> are both synchronized
 
-These are not the only sources of offers, however -- the `Offer`
-object contains a number of useful implementations:
+	// In process 1:
+	sendOf.sync()
+
+	// In process 2:
+	recvOf.sync()
+
+.LP both offers obtain and the value <code>1</code> is exchanged.
+
+Selective communication is performed by combining several offers with
+`Offer.choose`
+
+	def choose[T](ofs: Offer[T]*): Offer[T]
+
+.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.
+
+The `Offer` object has a number of one-off Offers that are used to compose with Offers from a Broker.
 
 	Offer.timeout(duration): Offer[Unit]
 
-.LP Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value.
+.LP Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
+
+	Offer.choose(
+	  Offer.timeout(10.seconds),
+	  broker.send("my value")
+	).sync()
 
 It may be tempting to compare the use of Offer/Broker to
 [SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
@@ -1573,7 +1568,7 @@ but they are different in subtle but important ways. Offers can be composed in w
 	
 .LP Now let's create a merged queue for reading:
 
-	val anyq: Offer[Int] = Offer.choose(q0, q1, q2)
+	val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
 	
 .LP <code>anyq</code> is an offer that will read from first available queue. Note that <code>anyq</code> is <em>still synchronous</em> &mdash; we still have the semantics of the underlying queues. Such composition is simply not possible using queues.
 	
