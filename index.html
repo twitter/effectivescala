@@ -1768,61 +1768,38 @@ other situation.</p>
 
 <h3>Offer/Broker</h3>
 
-<p>We define a <em>process</em> to be an independent and sequential thread of
-control; a <em>synchronization mechanism</em> is one that coordinates the
-work of several concurrently executing processes. Most nontrivial
-concurrent programs utilize several forms of synchronization &mdash;
-<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/locks/Lock.html">Mutexes</a>,
-<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/Semaphore.html">Semaphores</a>,
-<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CountDownLatch.html">Latches</a>,
-and
-<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CyclicBarrier.html">Barriers</a>
-constitute everyday tools of a systems programmer &mdash; but these are a
-stubborn source of bugs. Their multitude gives pause, as this is
-surely a symptom of poor composability; worse yet, they are difficult
-to reason about operationally, often resulting in races, deadlocks and
-inconsistencies that are difficult to debug.</p>
+<p>Concurrent systems are greatly complicated by the need to coordinate
+access to shared data and resources.
+<a href="http://www.scala-lang.org/api/current/scala/actors/Actor.html">Actors</a>
+encourage a different approach: each actor is a sequential process
+that maintains its own state and resources, and data is shared by
+messaging with other actors.</p>
 
-<p>While futures provide a simple and composable representation for the
-results of such processes, they are by nature <em>asynchronous</em>: values
-are propagated independently of each other and their application as a
-coordination mechanism is thus limited. A central insight of Hoare&rsquo;s
-Communicating Sequential Processes<a class="noteref" id="fnref3" href="#fn3" title="Jump to note 3">[3]</a> is that conflating synchronization with communication
-&mdash; process <code>a</code> sends a value to process <code>b</code> exactly when both <code>a</code> and
-<code>b</code> simultaneously agree to send and receive respectively &mdash; is
-powerful, composable, and much simpler to reason about than
-traditional synchronization mechanisms. CSP composes <em>processes</em>
-together with guarded and selective communication in order to create
-an expressive system with simple semantics.</p>
+<p>Offer/Broker builds on this in three important ways. First,
+communication channels (Brokers) are first class &mdash; that is, you send
+messages via Brokers, not to an actor directly. Secondly, Offer/Broker
+is a synchronous mechanism: to communicate is to synchronize. This
+means we can use Brokers as a coordination mechanism: when process <code>a</code>
+has sent a message to process <code>b</code>; both <code>a</code> and <code>b</code> agree on the state
+of the system. Lastly, communication can be performed <em>selectively</em>: a
+process can propose several different communications, and exactly one
+of them will obtain.</p>
 
-<p>Offer/Broker, based on the ideas from <a href="http://cml.cs.uchicago.edu">Concurrent
-ML</a>, generalizes CSP by focusing on the
-communications aspect; Futures as well as language and runtime
-constructs provide the rest.</p>
-
-<p><code>Offer</code> encodes an <em>offer to communicate</em> a value. They are
-parameterized: <code>Offer[T]</code> communicates values of type <code>T</code>; persistent:
-offers are immutable and only describe the offer to communicate &mdash;
-they may thus be reused; and they are composable: Offers are combined
-in various ways to create <em>new</em> offers with new semantics. In order to do
-anything useful, offers must be <em>synchronized</em>, which is done with <code>sync()</code>:</p>
+<p>In order to support selective communication (as well as other
+composition) in a general way, we need to decouple the description of
+a communication from the act of communicating. This is what an <code>Offer</code>
+does &mdash; it is a persistent value that describes a communication; in
+order to perform that communication (act on the offer), we synchronize
+via its <code>sync()</code> method</p>
 
 <pre><code>trait Offer[T] {
   def sync(): Future[T]
 }
 </code></pre>
 
-<p class="LP"><code>sync()</code> returns a Future representing the result of the synchronization &mdash; the value exchanged. We say that a synchronization <em>obtains</em> when the synchronization completes.</p>
+<p class="LP">which returns a <code>Future[T]</code> that yields the exchanged value when the communication obtains.</p>
 
-<p>The power of Offers become apparent in their composition, and
-in particular through selective communication:</p>
-
-<pre><code>def choose[T](ofs: Offer[T]*): Offer[T]
-</code></pre>
-
-<p class="LP">is the offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one available. When several are available immediately, one is chosen at random to obtain.</p>
-
-<p>A <code>Broker</code> coordinates the exchange of values through offers:</p>
+<p>A <code>Broker</code> coordinates the exchange of values through offers &mdash; it is the channel of communications:</p>
 
 <pre><code>trait Broker[T] {
   def send(msg: T): Offer[Unit]
@@ -1830,22 +1807,44 @@ in particular through selective communication:</p>
 }
 </code></pre>
 
-<p class="LP">so when creating two offers</p>
+<p class="LP">so that, when creating two offers</p>
 
 <pre><code>val b: Broker[Int]
 val sendOf = send(1)
 val recvOf = b.recv
 </code></pre>
 
-<p class="LP"><code>sendOf</code> and <code>recvOf</code> are simultaneously synchronized, both offers obtain and the value <code>1</code> is exchanged.</p>
+<p class="LP">and <code>sendOf</code> and <code>recvOf</code> are both synchronized</p>
 
-<p>These are not the only sources of offers, however &mdash; the <code>Offer</code>
-object contains a number of useful implementations:</p>
+<pre><code>// In process 1:
+sendOf.sync()
+
+// In process 2:
+recvOf.sync()
+</code></pre>
+
+<p class="LP">both offers obtain and the value <code>1</code> is exchanged.</p>
+
+<p>Selective communication is performed by combining several offers with
+<code>Offer.choose</code></p>
+
+<pre><code>def choose[T](ofs: Offer[T]*): Offer[T]
+</code></pre>
+
+<p class="LP">which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.</p>
+
+<p>The <code>Offer</code> object has a number of one-off Offers that are used to compose with Offers from a Broker.</p>
 
 <pre><code>Offer.timeout(duration): Offer[Unit]
 </code></pre>
 
-<p class="LP">Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value.</p>
+<p class="LP">Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:</p>
+
+<pre><code>Offer.choose(
+  Offer.timeout(10.seconds),
+  broker.send(&quot;my value&quot;)
+).sync()
+</code></pre>
 
 <p>It may be tempting to compare the use of Offer/Broker to
 <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronousQueue</a>,
@@ -1858,7 +1857,7 @@ val q2 = new Broker[Int]
 
 <p class="LP">Now let's create a merged queue for reading:</p>
 
-<pre><code>val anyq: Offer[Int] = Offer.choose(q0, q1, q2)
+<pre><code>val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
 </code></pre>
 
 <p class="LP"><code>anyq</code> is an offer that will read from first available queue. Note that <code>anyq</code> is <em>still synchronous</em> &mdash; we still have the semantics of the underlying queues. Such composition is simply not possible using queues.</p>
@@ -2000,10 +1999,6 @@ provided much helpful guidance and many excellent suggestions.</p>
 <li id="fn2">
 From <a href="https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41">Finagle&rsquo;s heap
 balancer</a> <a href="#fnref2" title="Jump back to reference">[back]</a></li>
-<li id="fn3">
-Hoare, C. A. R. (1978).
-&ldquo;Communicating sequential processes&rdquo;. Communications of the ACM 21
-(8): 666–677. <a href="#fnref3" title="Jump back to reference">[back]</a></li>
 </ol>
 
 <center class="footer">
