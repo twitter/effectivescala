@@ -130,7 +130,7 @@
 <li><strong><a href="#Object oriented programming">Object oriented programming</a></strong>: <em><a href="#Object oriented programming-Dependency injection">Dependency injection</a></em>, <em><a href="#Object oriented programming-Traits">Traits</a></em>, <em><a href="#Object oriented programming-Visibility">Visibility</a></em>, <em><a href="#Object oriented programming-Structural typing">Structural typing</a></em></li>
 <li><strong><a href="#Garbage collection">Garbage collection</a></strong></li>
 <li><strong><a href="#Java compatibility">Java compatibility</a></strong></li>
-<li><strong><a href="#Twitter's standard libraries">Twitter&rsquo;s standard libraries</a></strong>: <em><a href="#Twitter's standard libraries-Futures">Futures</a></em></li>
+<li><strong><a href="#Twitter's standard libraries">Twitter&rsquo;s standard libraries</a></strong>: <em><a href="#Twitter's standard libraries-Futures">Futures</a></em>, <em><a href="#Twitter's standard libraries-Offer/Broker">Offer/Broker</a></em></li>
 <li><strong><a href="#Acknowledgments">Acknowledgments</a></strong></li>
 </ul>
 
@@ -1764,10 +1764,150 @@ creating &ldquo;stack traces&rdquo; for future callbacks &mdash; where any other
 would unduly burden the user. Locals are inappropriate in almost any
 other situation.</p>
 
-<!--
-  ### Offer/Broker
+<p><a id="Twitter's standard libraries-Offer/Broker" /></p>
 
--->
+<h3>Offer/Broker</h3>
+
+<p>Futures provide a simple and composable representation for the results
+of deferred operations. They are by nature <em>asynchronous</em>: values are
+propagated independently of each other. Their application as a
+coordination mechanism is thus limited.</p>
+
+<p>We define a <em>process</em> to be an independent and sequential thread of control;
+a <em>synchronization mechanism</em> is one that coordinates the work of
+several concurrently executing processes. Most nontrivial concurrent programs
+utilizes several forms of synchronization &mdash;
+<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/locks/Lock.html">Mutexes</a>,
+<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/Semaphore.html">Semaphores</a>,
+<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CountDownLatch.html">Latches</a>,
+and
+<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CyclicBarrier.html">Barriers</a>
+constitute everyday tools of a systems programmer &mdash; but these are a stubborn source of bugs. Their multitude
+gives pause, as this is surely a symptom of poor composability; worse
+yet, they are difficult to reason about operationally, and often lead
+to races, deadlocks and inconsistencies that are difficult to debug.</p>
+
+<p>A central insight of Hoare&rsquo;s Communicating Sequential
+Processes<a class="noteref" id="fnref3" href="#fn3" title="Jump to note 3">[3]</a> is that
+conflating synchronization with communication &mdash; process <code>a</code> sends a
+value to process <code>b</code> exactly when both <code>a</code> and <code>b</code> simultaneously
+agree to send and receive respectively &mdash; is powerful, composable, and
+much simpler to reason about than traditional synchronization
+mechanisms. CSP composes <em>processes</em> together with guarded and
+selective communication in order to create an expressive system with
+simple semantics.</p>
+
+<p>Offer/Broker, based on the ideas from <a href="http://cml.cs.uchicago.edu">Concurrent
+ML</a> generalizes CSP by focusing on the
+communications aspect; Futures, language, and runtime constructs
+provide the rest.</p>
+
+<p><code>Offer</code> encodes an <em>offer to communicate</em>. They are parameterized:
+<code>Offer[T]</code> communicates values of type <code>T</code>; persistent: offers are
+immutable and only describe the offer to communicate &mdash; they may thus
+be reused; and they are composable: Offers are combined in various
+ways to create <em>new</em> offers with new semantics. In order to attempt
+communications, an offer must be synchronized, yielding the result.</p>
+
+<pre><code>trait Offer[T] {
+  // Synchronize this offer
+  def apply(): Future[T]
+  ...
+}
+</code></pre>
+
+<p>Synchronization follows the CSP semantics: it succeeds exactly when
+both sender and receiver synchronize.</p>
+
+<p>A <code>Broker</code> is a FIFO queue that provides offers to send and receive to
+and from the queue: it is a communications broker.</p>
+
+<pre><code>trait Broker[T] {
+  def send(msg: T): Offer[Unit]
+  val recv: Offer[T]
+}
+</code></pre>
+
+<p>These are not the only sources of offers, however: There are a number
+of other useful offers:</p>
+
+<pre><code>Offer.timeout(duration): Offer[Unit]
+</code></pre>
+
+<p>Is an offer that is willing to synchronize after the given duration.
+<code>Offer.never</code> will never synchronize, and <code>Offer.const(value)</code>
+synchronizes immediately with the given value.</p>
+
+<p>The power of Offer/Broker becomes apparent in its composition, and
+particularly through selective communication: <code>Offer.choose</code>:</p>
+
+<pre><code>def choose[T](ofs: Offer[T]*): Offer[T]
+</code></pre>
+
+<p>is the offer that, when synchronized, attempts to synchronize all of
+<code>ofs</code>, picking the first successfull one. In other words, it is the
+offer that represents the synchronization of <em>exactly one</em> of <code>ofs</code>.
+If, when synchronizing the offer returned by <code>Offer.choose</code>, several
+of <code>ofs</code> are immediately able to synchronize one is chosen at random.</p>
+
+<p>It is often useful &mdash; and sometimes vastly simplifying &mdash; to structure
+concurrent programs as a set of sequential processes that communicate
+synchronously. Offers and Brokers a set of tools to make this simple
+and uniform. Indeed, their application transcends what one might think
+of as &ldquo;classic&rdquo; concurrency problems &mdash; concurrent programming (with
+the aid of Offer/Broker) is a useful <em>structuring</em> tool, just as
+subroutines, classes, and modules are.</p>
+
+<h4>Example: A Simple Connection Pool</h4>
+
+<p>Connection pools are common in network applications, and they&rsquo;re often
+tricky to implement &mdash; for example, it&rsquo;s often desirable to have
+timeouts on the pools, because various clients have different latency
+requirements. Pools are simple in principle: we maintain a queue of
+connections, and we satisfy waiters as they come in. With traditional
+synchronization primitives this typically involves keeping two queues:
+one of waiters (when there are no connections), and one of connections
+(when there are no waiters).</p>
+
+<p>Using Offer/Brokers, we can express this quite naturally:</p>
+
+<pre><code>class Pool(conns: Seq[Conn]) {
+  private[this] val waiters = new Broker[Conn]
+  private[this] val returnConn = new Broker[Conn]
+
+  val get: Offer[Conn] = waiters.recv
+  def put(c: Conn) { returnConn ! c }
+
+  private[this] def loop(connq: Queue[Conn]) {
+    Offer.select(
+      if (connq.isEmpty) Offer.never else {
+        val (head, rest) = connq.dequeue
+        waiters.send(head) { _ =&gt; loop(rest) }
+      },
+      returnConn.recv { c =&gt; loop(connq enqueue c) }
+    )
+  }
+
+  loop(Queue.empty ++ conns)
+}
+</code></pre>
+
+<p><code>loop</code> will always offer to have a connection returned, but only offer
+to send one when the queue is nonempty. Using a persistent queue simplifies
+reasoning further. The interface to the pool is also through an Offer, so if a caller
+wishes to apply a timeout, they can do so through the use of combinators:</p>
+
+<pre><code>val conn: Future[Option[Conn]] = Offer.select(
+  pool.get { conn =&gt; Some(conn) },
+  Offer.timeout(1.second) { _ =&gt; None }
+)
+</code></pre>
+
+<p>No extra bookkeeping was require to implement timeouts; this is due to
+the semantics of Offers: if <code>Offer.timeout</code> is selected, there is no
+longer an offer to receive from the pool &mdash; the pool and its caller
+never simultaneously agreed to receive and send, respectively, on the
+<code>waiters</code> broker.</p>
 
 <p><a id="Acknowledgments" /></p>
 
@@ -1787,6 +1927,9 @@ guidance and many excellent suggestions.</p>
 <li id="fn2">
 From <a href="https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41">Finagle&rsquo;s heap
 balancer</a> <a href="#fnref2" title="Jump back to reference">[back]</a></li>
+<li id="fn3">
+Hoare, C. A. R. (1978). &ldquo;Communicating sequential
+processes&rdquo;. Communications of the ACM 21 (8): 666–677. <a href="#fnref3" title="Jump back to reference">[back]</a></li>
 </ol>
 
 <center class="footer">
