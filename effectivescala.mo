@@ -1617,7 +1617,7 @@ wishes to apply a timeout, they can do so through the use of combinators:
 	  Offer.timeout(1.second) { _ => None }
 	)
 
-No extra bookkeeping was require to implement timeouts; this is due to
+No extra bookkeeping was required to implement timeouts; this is due to
 the semantics of Offers: if `Offer.timeout` is selected, there is no
 longer an offer to receive from the pool -- the pool and its caller
 never simultaneously agreed to receive and send, respectively, on the
