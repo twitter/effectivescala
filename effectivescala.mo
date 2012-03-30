@@ -1568,7 +1568,7 @@ of `ofs` are immediately able to synchronize one is chosen at random.
 
 It is often useful -- and sometimes vastly simplifying -- to structure
 concurrent programs as a set of sequential processes that communicate
-synchronously. Offers and Brokers a set of tools to make this simple
+synchronously. Offers and Brokers provide a set of tools to make this simple
 and uniform. Indeed, their application transcends what one might think
 of as "classic" concurrency problems -- concurrent programming (with
 the aid of Offer/Broker) is a useful *structuring* tool, just as
