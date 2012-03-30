@@ -1485,10 +1485,143 @@ creating "stack traces" for future callbacks -- where any other solution
 would unduly burden the user. Locals are inappropriate in almost any
 other situation.
 
-<!--
-  ### Offer/Broker
+### Offer/Broker
 
--->
+Futures provide a simple and composable representation for the results
+of deferred operations. They are by nature *asynchronous*: values are
+propagated independently of each other. Their application as a
+coordination mechanism is thus limited.
+
+We define a *process* to be an independent and sequential thread of control;
+a *synchronization mechanism* is one that coordinates the work of
+several concurrently executing processes. Most nontrivial concurrent programs
+utilizes several forms of synchronization --
+[Mutexes](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/locks/Lock.html),
+[Semaphores](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/Semaphore.html),
+[Latches](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CountDownLatch.html),
+and
+[Barriers](http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/CyclicBarrier.html)
+constitute everyday tools of a systems programmer -- but these are a stubborn source of bugs. Their multitude
+gives pause, as this is surely a symptom of poor composability; worse
+yet, they are difficult to reason about operationally, and often lead
+to races, deadlocks and inconsistencies that are difficult to debug.
+
+A central insight of Hoare's Communicating Sequential
+Processes^[Hoare, C. A. R. (1978). "Communicating sequential
+processes". Communications of the ACM 21 (8): 666–677.] is that
+conflating synchronization with communication -- process `a` sends a
+value to process `b` exactly when both `a` and `b` simultaneously
+agree to send and receive respectively -- is powerful, composable, and
+much simpler to reason about than traditional synchronization
+mechanisms. CSP composes *processes* together with guarded and
+selective communication in order to create an expressive system with
+simple semantics.
+
+Offer/Broker, based on the ideas from [Concurrent
+ML](http://cml.cs.uchicago.edu) generalizes CSP by focusing on the
+communications aspect; Futures, language, and runtime constructs
+provide the rest.
+
+`Offer` encodes an *offer to communicate*. They are parameterized:
+`Offer[T]` communicates values of type `T`; persistent: offers are
+immutable and only describe the offer to communicate -- they may thus
+be reused; and they are composable: Offers are combined in various
+ways to create *new* offers with new semantics. In order to attempt
+communications, an offer must be synchronized, yielding the result.
+
+	trait Offer[T] {
+	  // Synchronize this offer
+	  def apply(): Future[T]
+	  ...
+	}
+
+Synchronization follows the CSP semantics: it succeeds exactly when
+both sender and receiver synchronize.
+
+A `Broker` is a FIFO queue that provides offers to send and receive to
+and from the queue: it is a communications broker.
+
+	trait Broker[T] {
+	  def send(msg: T): Offer[Unit]
+	  val recv: Offer[T]
+	}
+
+These are not the only sources of offers, however: There are a number
+of other useful offers:
+
+	Offer.timeout(duration): Offer[Unit]
+	
+Is an offer that is willing to synchronize after the given duration.
+`Offer.never` will never synchronize, and `Offer.const(value)`
+synchronizes immediately with the given value.
+
+The power of Offer/Broker becomes apparent in its composition, and
+particularly through selective communication: `Offer.choose`:
+
+	def choose[T](ofs: Offer[T]*): Offer[T]
+
+is the offer that, when synchronized, attempts to synchronize all of
+`ofs`, picking the first successfull one. In other words, it is the
+offer that represents the synchronization of *exactly one* of `ofs`.
+If, when synchronizing the offer returned by `Offer.choose`, several
+of `ofs` are immediately able to synchronize one is chosen at random.
+
+It is often useful -- and sometimes vastly simplifying -- to structure
+concurrent programs as a set of sequential processes that communicate
+synchronously. Offers and Brokers a set of tools to make this simple
+and uniform. Indeed, their application transcends what one might think
+of as "classic" concurrency problems -- concurrent programming (with
+the aid of Offer/Broker) is a useful *structuring* tool, just as
+subroutines, classes, and modules are.
+
+#### Example: A Simple Connection Pool
+
+Connection pools are common in network applications, and they're often
+tricky to implement -- for example, it's often desirable to have
+timeouts on the pools, because various clients have different latency
+requirements. Pools are simple in principle: we maintain a queue of
+connections, and we satisfy waiters as they come in. With traditional
+synchronization primitives this typically involves keeping two queues:
+one of waiters (when there are no connections), and one of connections
+(when there are no waiters).
+
+Using Offer/Brokers, we can express this quite naturally:
+
+	class Pool(conns: Seq[Conn]) {
+	  private[this] val waiters = new Broker[Conn]
+	  private[this] val returnConn = new Broker[Conn]
+
+	  val get: Offer[Conn] = waiters.recv
+	  def put(c: Conn) { returnConn ! c }
+	
+	  private[this] def loop(connq: Queue[Conn]) {
+	    Offer.select(
+	      if (connq.isEmpty) Offer.never else {
+	        val (head, rest) = connq.dequeue
+	        waiters.send(head) { _ => loop(rest) }
+	      },
+	      returnConn.recv { c => loop(connq enqueue c) }
+	    )
+	  }
+	
+	  loop(Queue.empty ++ conns)
+	}
+
+`loop` will always offer to have a connection returned, but only offer
+to send one when the queue is nonempty. Using a persistent queue simplifies
+reasoning further. The interface to the pool is also through an Offer, so if a caller
+wishes to apply a timeout, they can do so through the use of combinators:
+
+	val conn: Future[Option[Conn]] = Offer.select(
+	  pool.get { conn => Some(conn) },
+	  Offer.timeout(1.second) { _ => None }
+	)
+
+No extra bookkeeping was require to implement timeouts; this is due to
+the semantics of Offers: if `Offer.timeout` is selected, there is no
+longer an offer to receive from the pool -- the pool and its caller
+never simultaneously agreed to receive and send, respectively, on the
+`waiters` broker.
 
 ## Acknowledgments
 
