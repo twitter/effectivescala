@@ -1771,9 +1771,10 @@ other situation.</p>
 <p>Concurrent systems are greatly complicated by the need to coordinate
 access to shared data and resources.
 <a href="http://www.scala-lang.org/api/current/scala/actors/Actor.html">Actors</a>
-encourage a different approach: each actor is a sequential process
+present one strategy of simplification: each actor is a sequential process
 that maintains its own state and resources, and data is shared by
-messaging with other actors.</p>
+messaging with other actors. Sharing data requires communicating between
+actors.</p>
 
 <p>Offer/Broker builds on this in three important ways. First,
 communication channels (Brokers) are first class &mdash; that is, you send
