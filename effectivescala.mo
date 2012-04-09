@@ -842,7 +842,7 @@ emphasizes the transformation of values over stateful mutation,
 yielding code that is referentially transparent, providing stronger
 invariants and thus also easier to reason about. Case classes, pattern
 matching, destructuring bindings, type inference, and lightweight
-closure and method creation syntax are the tools of this trade.
+closure- and method-creation syntax are the tools of this trade.
 
 ### Case classes as algebraic data types
 
@@ -861,7 +861,7 @@ Use the following pattern when encoding ADTs with case classes:
 .LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
-both succinct "obviously correct":
+both succinct and "obviously correct":
 
 	def findMin[T <: Ordered[T]](tree: Tree[T]) = tree match {
 	  case Node(left, right) => Seq(findMin(left), findMin(right)).min
@@ -1128,7 +1128,7 @@ The use of `flatMap` in `Future`s is discussed in the
 
 ## Object oriented programming
 
-Much of Scala's vastness lie in its object system. Scala is a *pure*
+Much of Scala's vastness lies in its object system. Scala is a *pure*
 language in the sense that *all values* are objects; there is no
 distinction between primitive types and composite ones.
 Scala also features mixins allowing for more orthogonal and piecemeal
@@ -1138,7 +1138,7 @@ time with all the benefits of static type checking.
 A motivation behind the mixin system was to obviate the need for 
 traditional dependency injection. The culmination of this "component
 style" of programming is [the cake
-pattern](http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html).
+pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
 
 ### Dependency injection
 
@@ -1151,7 +1151,7 @@ It's boring and simple and it works. *Use dependency injection for
 program modularization*, and in particular, *prefer composition over
 inheritance* -- for this leads to more modular and testable programs.
 When encountering a situation requiring inheritance, ask yourself: how
-you structure the program if the language lacked support for
+would you structure the program if the language lacked support for
 inheritance? The answer may be compelling.
 
 Dependency injection typically makes use of traits,
