@@ -1040,7 +1040,7 @@ emphasizes the transformation of values over stateful mutation,
 yielding code that is referentially transparent, providing stronger
 invariants and thus also easier to reason about. Case classes, pattern
 matching, destructuring bindings, type inference, and lightweight
-closure and method creation syntax are the tools of this trade.</p>
+closure- and method-creation syntax are the tools of this trade.</p>
 
 <p><a id="Functional programming-Case classes as algebraic data types" /></p>
 
@@ -1062,7 +1062,7 @@ case class Leaf[T](value: T) extends Tree[T]
 <p class="LP">the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.</p>
 
 <p>Together with pattern matching, such modelling results in code that is
-both succinct &ldquo;obviously correct&rdquo;:</p>
+both succinct and &ldquo;obviously correct&rdquo;:</p>
 
 <pre><code>def findMin[T &lt;: Ordered[T]](tree: Tree[T]) = tree match {
   case Node(left, right) =&gt; Seq(findMin(left), findMin(right)).min
@@ -1372,7 +1372,7 @@ val addr: Option[InetSocketAddress] =
 
 <h2>Object oriented programming</h2>
 
-<p>Much of Scala&rsquo;s vastness lie in its object system. Scala is a <em>pure</em>
+<p>Much of Scala&rsquo;s vastness lies in its object system. Scala is a <em>pure</em>
 language in the sense that <em>all values</em> are objects; there is no
 distinction between primitive types and composite ones.
 Scala also features mixins allowing for more orthogonal and piecemeal
@@ -1381,7 +1381,7 @@ time with all the benefits of static type checking.</p>
 
 <p>A motivation behind the mixin system was to obviate the need for
 traditional dependency injection. The culmination of this &ldquo;component
-style&rdquo; of programming is <a href="http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html">the cake
+style&rdquo; of programming is <a href="http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/">the cake
 pattern</a>.</p>
 
 <p><a id="Object oriented programming-Dependency injection" /></p>
@@ -1397,7 +1397,7 @@ It&rsquo;s boring and simple and it works. <em>Use dependency injection for
 program modularization</em>, and in particular, <em>prefer composition over
 inheritance</em> &mdash; for this leads to more modular and testable programs.
 When encountering a situation requiring inheritance, ask yourself: how
-you structure the program if the language lacked support for
+would you structure the program if the language lacked support for
 inheritance? The answer may be compelling.</p>
 
 <p>Dependency injection typically makes use of traits,</p>
