@@ -1596,10 +1596,10 @@ Using Offer/Brokers, we can express this quite naturally:
 	  private[this] def loop(connq: Queue[Conn]) {
 	    Offer.choose(
 	      if (connq.isEmpty) Offer.never else {
-	        val (head, rest) = connq.dequeue
-	        waiters.send(head) { _ => loop(rest) }
+	        val (head, rest) = connq.dequeue()
+	        waiters.send(head) map { _ => loop(rest) }
 	      },
-	      returnConn.recv { c => loop(connq enqueue c) }
+	      returnConn.recv map { c => loop(connq.enqueue(c)) }
 	    ).sync()
 	  }
 	
@@ -1612,8 +1612,8 @@ reasoning further. The interface to the pool is also through an Offer, so if a c
 wishes to apply a timeout, they can do so through the use of combinators:
 
 	val conn: Future[Option[Conn]] = Offer.choose(
-	  pool.get { conn => Some(conn) },
-	  Offer.timeout(1.second) { _ => None }
+	  pool.get map { conn => Some(conn) },
+	  Offer.timeout(1.second) map { _ => None }
 	).sync()
 
 No extra bookkeeping was required to implement timeouts; this is due to
