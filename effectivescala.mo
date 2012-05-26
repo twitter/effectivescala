@@ -323,7 +323,7 @@ purpose, but do not alias types that are self-explanatory.
 
 Don't use subclassing when an alias will do.
 
-	trait SocketFactory extends (SocketAddress) => Socket
+	trait SocketFactory extends (SocketAddress => Socket)
 	
 .LP a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a type alias
 
