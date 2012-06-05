@@ -490,7 +490,7 @@ IntMaker
 
 <p>Don&rsquo;t use subclassing when an alias will do.</p>
 
-<pre><code>trait SocketFactory extends (SocketAddress) =&gt; Socket
+<pre><code>trait SocketFactory extends (SocketAddress =&gt; Socket)
 </code></pre>
 
 <p class="LP">a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a type alias</p>
