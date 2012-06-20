@@ -1397,7 +1397,7 @@ following way:
 
 #### Style
 
-Future callback methods (`respond`, `onSuccess', `onFailure`, `ensure`)
+Future callback methods (`respond`, `onSuccess`, `onFailure`, `ensure`)
 return a new future that is *chained* to its parent. This future is guaranteed
 to be completed only after its parent, enabling patterns like
 
@@ -1413,14 +1413,14 @@ to be completed only after its parent, enabling patterns like
 Use `onSuccess` instead of `foreach` -- it is symmetrical to `onFailure` and
 is a better name for the purpose, and also allows for chaining.
 
-Always try to avoid creating your own `Promise`s: nearly every task
+Always try to avoid creating `Promise` instances directly: nearly every task
 can be accomplished via the use of predefined combinators. These
 combinators ensure errors and cancellations are propagated, and generally
 encourage *dataflow style* programming which usually <a
 href="#Concurrency-Futures">obviates the need for synchronization and
 volatility declarations</a>.
 
-Code written in tail-recursive style are not subject so space leaks,
+Code written in tail-recursive style is not subject to stack-space leaks,
 allowing for efficient implementation of loops in dataflow-style:
 
 	case class Node(parent: Option[Node], ...)
@@ -1449,7 +1449,7 @@ propagated to its producer. The producer uses `onCancellation` on
 `Promise` to listen to this signal and act accordingly.
 
 This means that the cancellation semantics depend on the producer,
-and there is no default implementation. *Cancellation is a but a hint*.
+and there is no default implementation. *Cancellation is but a hint*.
 
 #### Locals
 
