@@ -1,4 +1,4 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
@@ -323,7 +323,7 @@ purpose, but do not alias types that are self-explanatory.
 
 Don't use subclassing when an alias will do.
 
-	trait SocketFactory extends (SocketAddress) => Socket
+	trait SocketFactory extends (SocketAddress => Socket)
 	
 .LP a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a type alias
 
@@ -842,7 +842,7 @@ emphasizes the transformation of values over stateful mutation,
 yielding code that is referentially transparent, providing stronger
 invariants and thus also easier to reason about. Case classes, pattern
 matching, destructuring bindings, type inference, and lightweight
-closure and method creation syntax are the tools of this trade.
+closure- and method-creation syntax are the tools of this trade.
 
 ### Case classes as algebraic data types
 
@@ -861,7 +861,7 @@ Use the following pattern when encoding ADTs with case classes:
 .LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
-both succinct "obviously correct":
+both succinct and "obviously correct":
 
 	def findMin[T <: Ordered[T]](tree: Tree[T]) = tree match {
 	  case Node(left, right) => Seq(findMin(left), findMin(right)).min
@@ -1128,7 +1128,7 @@ The use of `flatMap` in `Future`s is discussed in the
 
 ## Object oriented programming
 
-Much of Scala's vastness lie in its object system. Scala is a *pure*
+Much of Scala's vastness lies in its object system. Scala is a *pure*
 language in the sense that *all values* are objects; there is no
 distinction between primitive types and composite ones.
 Scala also features mixins allowing for more orthogonal and piecemeal
@@ -1138,7 +1138,7 @@ time with all the benefits of static type checking.
 A motivation behind the mixin system was to obviate the need for 
 traditional dependency injection. The culmination of this "component
 style" of programming is [the cake
-pattern](http://jboner.github.com/2008/10/06/real-world-scala-dependency-injection-di.html).
+pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
 
 ### Dependency injection
 
@@ -1151,7 +1151,7 @@ It's boring and simple and it works. *Use dependency injection for
 program modularization*, and in particular, *prefer composition over
 inheritance* -- for this leads to more modular and testable programs.
 When encountering a situation requiring inheritance, ask yourself: how
-you structure the program if the language lacked support for
+would you structure the program if the language lacked support for
 inheritance? The answer may be compelling.
 
 Dependency injection typically makes use of traits,
@@ -1397,7 +1397,7 @@ following way:
 
 #### Style
 
-Future callback methods (`respond`, `onSuccess', `onFailure`, `ensure`)
+Future callback methods (`respond`, `onSuccess`, `onFailure`, `ensure`)
 return a new future that is *chained* to its parent. This future is guaranteed
 to be completed only after its parent, enabling patterns like
 
@@ -1413,14 +1413,14 @@ to be completed only after its parent, enabling patterns like
 Use `onSuccess` instead of `foreach` -- it is symmetrical to `onFailure` and
 is a better name for the purpose, and also allows for chaining.
 
-Always try to avoid creating your own `Promise`s: nearly every task
+Always try to avoid creating `Promise` instances directly: nearly every task
 can be accomplished via the use of predefined combinators. These
 combinators ensure errors and cancellations are propagated, and generally
 encourage *dataflow style* programming which usually <a
 href="#Concurrency-Futures">obviates the need for synchronization and
 volatility declarations</a>.
 
-Code written in tail-recursive style are not subject so space leaks,
+Code written in tail-recursive style is not subject to stack-space leaks,
 allowing for efficient implementation of loops in dataflow-style:
 
 	case class Node(parent: Option[Node], ...)
@@ -1449,7 +1449,7 @@ propagated to its producer. The producer uses `onCancellation` on
 `Promise` to listen to this signal and act accordingly.
 
 This means that the cancellation semantics depend on the producer,
-and there is no default implementation. *Cancellation is a but a hint*.
+and there is no default implementation. *Cancellation is but a hint*.
 
 #### Locals
 
@@ -1485,18 +1485,214 @@ creating "stack traces" for future callbacks -- where any other solution
 would unduly burden the user. Locals are inappropriate in almost any
 other situation.
 
-<!--
-  ### Offer/Broker
+### Offer/Broker
 
--->
+Concurrent systems are greatly complicated by the need to coordinate
+access to shared data and resources.
+[Actors](http://www.scala-lang.org/api/current/scala/actors/Actor.html)
+present one strategy of simplification: each actor is a sequential process
+that maintains its own state and resources, and data is shared by
+messaging with other actors. Sharing data requires communicating between
+actors.
+
+Offer/Broker builds on this in three important ways. First,
+communication channels (Brokers) are first class -- that is, you send
+messages via Brokers, not to an actor directly. Secondly, Offer/Broker
+is a synchronous mechanism: to communicate is to synchronize. This
+means we can use Brokers as a coordination mechanism: when process `a`
+has sent a message to process `b`; both `a` and `b` agree on the state
+of the system. Lastly, communication can be performed *selectively*: a
+process can propose several different communications, and exactly one
+of them will obtain.
+
+In order to support selective communication (as well as other
+composition) in a general way, we need to decouple the description of
+a communication from the act of communicating. This is what an `Offer`
+does -- it is a persistent value that describes a communication; in
+order to perform that communication (act on the offer), we synchronize
+via its `sync()` method
+
+	trait Offer[T] {
+	  def sync(): Future[T]
+	}
+
+.LP which returns a <code>Future[T]</code> that yields the exchanged value when the communication obtains.
+
+A `Broker` coordinates the exchange of values through offers -- it is the channel of communications:
+
+	trait Broker[T] {
+	  def send(msg: T): Offer[Unit]
+	  val recv: Offer[T]
+	}
+
+.LP so that, when creating two offers
+
+	val b: Broker[Int]
+	val sendOf = send(1)
+	val recvOf = b.recv
+
+.LP and <code>sendOf</code> and <code>recvOf</code> are both synchronized
+
+	// In process 1:
+	sendOf.sync()
+
+	// In process 2:
+	recvOf.sync()
+
+.LP both offers obtain and the value <code>1</code> is exchanged.
+
+Selective communication is performed by combining several offers with
+`Offer.choose`
+
+	def choose[T](ofs: Offer[T]*): Offer[T]
+
+.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.
+
+The `Offer` object has a number of one-off Offers that are used to compose with Offers from a Broker.
+
+	Offer.timeout(duration): Offer[Unit]
+
+.LP Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
+
+	Offer.choose(
+	  Offer.timeout(10.seconds),
+	  broker.send("my value")
+	).sync()
+
+It may be tempting to compare the use of Offer/Broker to
+[SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
+but they are different in subtle but important ways. Offers can be composed in ways that such queues simply cannot. For example, consider a set of queues, represented as Brokers:
+
+	val q0 = new Broker[Int]
+	val q1 = new Broker[Int]
+	val q2 = new Broker[Int]
+	
+.LP Now let's create a merged queue for reading:
+
+	val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
+	
+.LP <code>anyq</code> is an offer that will read from first available queue. Note that <code>anyq</code> is <em>still synchronous</em> &mdash; we still have the semantics of the underlying queues. Such composition is simply not possible using queues.
+	
+#### Example: A Simple Connection Pool
+
+Connection pools are common in network applications, and they're often
+tricky to implement -- for example, it's often desirable to have
+timeouts on acquisition from the pool since various clients have different latency
+requirements. Pools are simple in principle: we maintain a queue of
+connections, and we satisfy waiters as they come in. With traditional
+synchronization primitives this typically involves keeping two queues:
+one of waiters (when there are no connections), and one of connections
+(when there are no waiters).
+
+Using Offer/Brokers, we can express this quite naturally:
+
+	class Pool(conns: Seq[Conn]) {
+	  private[this] val waiters = new Broker[Conn]
+	  private[this] val returnConn = new Broker[Conn]
+
+	  val get: Offer[Conn] = waiters.recv
+	  def put(c: Conn) { returnConn ! c }
+	
+	  private[this] def loop(connq: Queue[Conn]) {
+	    Offer.choose(
+	      if (connq.isEmpty) Offer.never else {
+	        val (head, rest) = connq.dequeue
+	        waiters.send(head) { _ => loop(rest) }
+	      },
+	      returnConn.recv { c => loop(connq enqueue c) }
+	    ).sync()
+	  }
+	
+	  loop(Queue.empty ++ conns)
+	}
+
+`loop` will always offer to have a connection returned, but only offer
+to send one when the queue is nonempty. Using a persistent queue simplifies
+reasoning further. The interface to the pool is also through an Offer, so if a caller
+wishes to apply a timeout, they can do so through the use of combinators:
+
+	val conn: Future[Option[Conn]] = Offer.choose(
+	  pool.get { conn => Some(conn) },
+	  Offer.timeout(1.second) { _ => None }
+	).sync()
+
+No extra bookkeeping was required to implement timeouts; this is due to
+the semantics of Offers: if `Offer.timeout` is selected, there is no
+longer an offer to receive from the pool -- the pool and its caller
+never simultaneously agreed to receive and send, respectively, on the
+`waiters` broker.
+
+#### Example: Sieve of Eratosthenes
+
+It is often useful -- and sometimes vastly simplifying -- to structure
+concurrent programs as a set of sequential processes that communicate
+synchronously. Offers and Brokers provide a set of tools to make this simple
+and uniform. Indeed, their application transcends what one might think
+of as "classic" concurrency problems -- concurrent programming (with
+the aid of Offer/Broker) is a useful *structuring* tool, just as
+subroutines, classes, and modules are -- another important 
+idea from CSP.
+
+One example of this is the [Sieve of
+Eratosthenes](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes),
+which can be structured as a successive application of filters to a
+stream of integers. First, we'll need a source of integers:
+
+	def integers(from: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def gen(n: Int): Unit = b.send(n).sync() ensure gen(n + 1)
+	  gen(from)
+	  b.recv
+	}
+
+.LP <code>integers(n)</code> is simply the offer of all consecutive integers starting at <code>n</code>. Then we need a filter:
+
+	def filter(in: Offer[Int], prime: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def loop() {
+	    in.sync() onSuccess { i =>
+	      if (i % prime != 0)
+	        b.send(i).sync() ensure loop()
+	      else
+	        loop()
+	    }
+	  }
+	  loop()
+	
+	  b.recv
+	}
+
+.LP <code>filter(in, p)</code> returns the offer that removes multiples of the prime <code>p</code> from <code>in</code>. Finally, we define our sieve:
+
+	def sieve = {
+	  val b = new Broker[Int]
+	  def loop(of: Offer[Int]) {
+	    for (prime <- of.sync(); _ <- b.send(prime).sync())
+	      loop(filter(of, prime))
+	  }
+	  loop(integers(2))
+	  b.recv
+	}
+
+.LP <code>loop()</code> works simply: it reads the next (prime) number from <code>of</code>, and then applies a filter to <code>of</code> that excludes this prime. As <code>loop</code> recurses, successive primes are filtered, and we have a Sieve. We can now print out the first 10000 primes:
+
+	val primes = sieve
+	0 until 10000 foreach { _ =>
+	  println(primes.sync()())
+	}
+
+Besides being structured into simple, orthogonal components, this
+approach gives you a streaming Sieve: you do not a-priori need to
+compute the set of primes you are interested in, further enhancing
+modularity.
 
 ## Acknowledgments
 
 The lessons herein are those of Twitter's Scala community -- I hope
 I've been a faithful chronicler.
 
-Blake Matheny, Nick Kallen, and Steve Gury provided much helpful
-guidance and many excellent suggestions.
+Blake Matheny, Nick Kallen, Steve Gury, and Raghavendra Prabhu
+provided much helpful guidance and many excellent suggestions.
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
