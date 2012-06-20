@@ -139,7 +139,7 @@ no more information than <code>User.get</code>.
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />Don't apply this blindly: some packages export too many names</dd>
 <dt>When using collections, qualify names by importing 
-<code>scala.collections.immutable</code> and/or <code>scala.collections.mutable</code></dt>
+<code>scala.collection.immutable</code> and/or <code>scala.collection.mutable</code></dt>
 <dd>Mutable and immutable collections have dual names. 
 Qualifiying the names makes is obvious to the reader which variant is being used (e.g. "<code>immutable.Map</code>")</dd>
 <dt>Do not use relative imports from other packages</dt>
@@ -422,9 +422,9 @@ circumstances, and make programs easier to reason about since they are
 referentially transparent and are thus also threadsafe by default.
 
 *Use the `mutable` namespace explicitly.* Don't import
-`scala.collections.mutable._` and refer to `Set`, instead
+`scala.collection.mutable._` and refer to `Set`, instead
 
-	import scala.collections.mutable
+	import scala.collection.mutable
 	val set = mutable.Set()
 
 .LP makes it clear that the mutable variant is being used.
