@@ -111,7 +111,7 @@
 </head>
 
 <body>
-<p><a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a></p>
+<p><a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a></p>
 
 <h1 class="header">Effective Scala</h1>
 
@@ -1673,7 +1673,7 @@ def isIdAuthed(id: Int): Future[Boolean] =
 
 <h4>Style</h4>
 
-<p>Future callback methods (<code>respond</code>, <code>onSuccess',</code>onFailure<code>,</code>ensure`)
+<p>Future callback methods (<code>respond</code>, <code>onSuccess</code>, <code>onFailure</code>, <code>ensure</code>)
 return a new future that is <em>chained</em> to its parent. This future is guaranteed
 to be completed only after its parent, enabling patterns like</p>
 
@@ -1690,14 +1690,14 @@ future onSuccess { value =&gt;
 <p>Use <code>onSuccess</code> instead of <code>foreach</code> &mdash; it is symmetrical to <code>onFailure</code> and
 is a better name for the purpose, and also allows for chaining.</p>
 
-<p>Always try to avoid creating your own <code>Promise</code>s: nearly every task
+<p>Always try to avoid creating <code>Promise</code> instances directly: nearly every task
 can be accomplished via the use of predefined combinators. These
 combinators ensure errors and cancellations are propagated, and generally
 encourage <em>dataflow style</em> programming which usually <a
 href="#Concurrency-Futures">obviates the need for synchronization and
 volatility declarations</a>.</p>
 
-<p>Code written in tail-recursive style are not subject so space leaks,
+<p>Code written in tail-recursive style is not subject to stack-space leaks,
 allowing for efficient implementation of loops in dataflow-style:</p>
 
 <pre><code>case class Node(parent: Option[Node], ...)
@@ -1727,7 +1727,7 @@ propagated to its producer. The producer uses <code>onCancellation</code> on
 <code>Promise</code> to listen to this signal and act accordingly.</p>
 
 <p>This means that the cancellation semantics depend on the producer,
-and there is no default implementation. <em>Cancellation is a but a hint</em>.</p>
+and there is no default implementation. <em>Cancellation is but a hint</em>.</p>
 
 <h4>Locals</h4>
 
