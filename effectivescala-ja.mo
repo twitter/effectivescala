@@ -1,4 +1,4 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by Yuta Okamoto(<a href="http://github.com/okapies">@okapies</a>) and Satoshi Kobayashi(<a href="https://github.com/scova0731">@scova0731</a>)]</address>
@@ -233,7 +233,7 @@ Scalaでは戻り型アノテーション(return type annotation)を省略でき
 
 エイリアスが使える場合はサブクラス化を使ってはいけない。
 
-	trait SocketFactory extends (SocketAddress) => Socket
+	trait SocketFactory extends (SocketAddress => Socket)
 	
 .LP <code>SocketFactory</code>は、<code>Socket</code>を生成する<em>関数</em>だ。型エイリアス
 
@@ -601,7 +601,7 @@ elaborate..
 
 ## 関数型プログラミング
 
-関数型プログラミングと一緒に用いる時に *値指向型* プログラミングは多くの恩恵を受ける。このスタイルはステートフルな変更よりも値の変換を強調する。得られるコードは参照透過(referentially transparent)であり、より強力な不変式(invariant)を提供し、さらに容易に推論することが可能になる。ケースクラス、パターンマッチ、構造化代入(destructuring-bind)、型推論、軽量クロージャ、メソッド生成構文がこのツールになる。
+関数型プログラミングと一緒に用いる時に *値指向型* プログラミングは多くの恩恵を受ける。このスタイルはステートフルな変更よりも値の変換を強調する。得られるコードは参照透過(referentially transparent)であり、より強力な不変式(invariant)を提供し、さらに容易に推論することが可能になる。ケースクラス、パターンマッチ、構造化代入(destructuring-bind)、型推論、クロージャやメソッドの軽量な生成構文がこのツールになる。
 
 ### 代数的データ型としてのケースクラス
 
@@ -1058,7 +1058,7 @@ Futureは、Listと同様に`flatMap`を定義している。`Future[A]`は、�
 
 #### スタイル
 
-Futureのコールバックメソッドである`respond`や`onSuccess'、`onFailure`、`ensure`は、その親に*連鎖した(chained)*新たなFutureを返す。このFutureは、その親が完了して初めて完了することが保証されている。このパターンを実現するには、例えば以下のようにする。
+Futureのコールバックメソッドである`respond`や`onSuccess`、`onFailure`、`ensure`は、その親に*連鎖した(chained)*新たなFutureを返す。このFutureは、その親が完了して初めて完了することが保証されている。このパターンを実現するには、例えば以下のようにする。
 
 	acquireResource()
 	future onSuccess { value =>
@@ -1071,9 +1071,9 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 
 `foreach`の代わりに`onSuccess`を使おう。`onSuccess`の方が`onFailure`と対称を成して目的をより良く表せるし、連鎖も可能になる。
 
-できるだけ自分で`Promise`を作らないようにしよう。ほぼ全てのタスクは、定義済みの結合子を使って実現できる。結合子は、エラーやキャンセルが伝播することを保証すると共に、一般的に*データフロー方式*でのプログラミングを促進する。データフロー方式を使うと、大抵、<a href="#並行性-Future">同期化や`volatile`宣言が不要になる</a>。
+なるべく、`Promise`インスタンスを直接作らないようにしよう。ほぼ全てのタスクは、定義済みの結合子を使って実現できる。結合子は、エラーやキャンセルが伝播することを保証すると共に、一般的に*データフロー方式*でのプログラミングを促進する。データフロー方式を使うと、大抵、<a href="#並行性-Future">同期化や`volatile`宣言が不要になる</a>。
 
-末尾再帰方式で書かれたコードはスペースリークに影響されないので、データフロー方式を使ってループを効率的に実装できる:
+末尾再帰方式で書かれたコードは、スタック空間のリークを引き起こさないので、データフロー方式を使ってループを効率的に実装できる:
 
 	case class Node(parent: Option[Node], ...)
 	def getNode(id: Int): Future[Node] = ...
@@ -1085,8 +1085,6 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 	  }
 
 `Future`は、数多くの有用なメソッドを定義している。`Future.value()`や`Future.exception()`を使うと、事前に結果が満たされたFutureを作れる。`Future.collect()`や`Future.join()`、`Future.select()`は、複数のFutureを一つにまとめる結合子を提供する（ie. scatter-gather操作のgather部分）。
-
-（訳注: スペースリーク(space leak)とは、意図せずに空間計算量が非常に大きいコードを書いてしまうこと。関数型プログラミングでは、遅延評価式を未評価のまま蓄積するようなコードを書くと起きやすい。）
 
 #### キャンセル
 
@@ -1126,7 +1124,7 @@ Localは、RPCのトレースを介したスレッド管理や、モニターの
 
 本レッスンは、Twitter社のScalaコミュニティによるものだ。私は、誠実な記録者でありたい。
 
-Blake MathenyとNick Kallen、そしてSteve Guryには、とても有益な助言と多くの優れた提案を与えてもらった。
+Blake MathenyとNick Kallen、Steve Gury、そしてRaghavendra Prabhuには、とても有益な助言と多くの優れた提案を与えてもらった。
 
 ### 日本語版への謝辞
 
