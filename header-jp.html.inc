@@ -18,7 +18,7 @@
 
 <style>	
 	body {
-		font-family: times, serif;
+		font-family: "ff-meta-serif-web-pro", times, serif;
 		margin: 0 1.0in 0 1.0in;
 /*		line-height: 1.3em;*/
 	}
@@ -56,7 +56,7 @@
 	}
 	
 	h1 {
-		font-family: sans-serif;
+		font-family: "prenton-condensed";
 	}
 	
 	h2 {
