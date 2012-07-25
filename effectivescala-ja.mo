@@ -1139,7 +1139,7 @@ OfferとBrokerは、これに基づいて、三つの重要な考え方を取り
 .LP そして、二つのOfferを生成するとき、
 
 	val b: Broker[Int]
-	val sendOf = send(1)
+	val sendOf = b.send(1)
 	val recvOf = b.recv
 
 .LP <code>sendOf</code>と<code>recvOf</code>はどちらも同期化されており、

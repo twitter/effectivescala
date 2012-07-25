@@ -1528,7 +1528,7 @@ A `Broker` coordinates the exchange of values through offers -- it is the channe
 .LP so that, when creating two offers
 
 	val b: Broker[Int]
-	val sendOf = send(1)
+	val sendOf = b.send(1)
 	val recvOf = b.recv
 
 .LP and <code>sendOf</code> and <code>recvOf</code> are both synchronized
