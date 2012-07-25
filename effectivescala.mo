@@ -373,7 +373,7 @@ the reader should beware of these implications.
 Scala has a very generic, rich, powerful, and composable collections
 library; collections are high level and expose a large set of
 operations. Many collection manipulations and transformations can be
-expressed succinctly and readbly, but careless application of its
+expressed succinctly and readably, but careless application of its
 features can often lead to the opposite result. Every Scala programmer
 should read the [collections design
 document](http://www.scala-lang.org/docu/files/collections-api/collections.html);
