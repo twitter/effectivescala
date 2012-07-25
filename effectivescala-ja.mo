@@ -1,4 +1,4 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/edc6dae7a1079163caf7f17c60495bbb6d027c93/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
 <address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by Yuta Okamoto(<a href="http://github.com/okapies">@okapies</a>) and Satoshi Kobayashi(<a href="https://github.com/scova0731">@scova0731</a>)]</address>
@@ -233,7 +233,7 @@ Scalaでは戻り型アノテーション(return type annotation)を省略でき
 
 エイリアスが使える場合はサブクラス化を使ってはいけない。
 
-	trait SocketFactory extends (SocketAddress) => Socket
+	trait SocketFactory extends (SocketAddress => Socket)
 	
 .LP <code>SocketFactory</code>は、<code>Socket</code>を生成する<em>関数</em>だ。型エイリアス
 
@@ -601,7 +601,7 @@ elaborate..
 
 ## 関数型プログラミング
 
-関数型プログラミングと一緒に用いる時に *値指向型* プログラミングは多くの恩恵を受ける。このスタイルはステートフルな変更よりも値の変換を強調する。得られるコードは参照透過(referentially transparent)であり、より強力な不変式(invariant)を提供し、さらに容易に推論することが可能になる。ケースクラス、パターンマッチ、構造化代入(destructuring-bind)、型推論、軽量クロージャ、メソッド生成構文がこのツールになる。
+関数型プログラミングと一緒に用いる時に *値指向型* プログラミングは多くの恩恵を受ける。このスタイルはステートフルな変更よりも値の変換を強調する。得られるコードは参照透過(referentially transparent)であり、より強力な不変式(invariant)を提供し、さらに容易に推論することが可能になる。ケースクラス、パターンマッチ、構造化代入(destructuring-bind)、型推論、クロージャやメソッドの軽量な生成構文がこのツールになる。
 
 ### 代数的データ型としてのケースクラス
 
@@ -1058,7 +1058,7 @@ Futureは、Listと同様に`flatMap`を定義している。`Future[A]`は、�
 
 #### スタイル
 
-Futureのコールバックメソッドである`respond`や`onSuccess'、`onFailure`、`ensure`は、その親に*連鎖した(chained)*新たなFutureを返す。このFutureは、その親が完了して初めて完了することが保証されている。このパターンを実現するには、例えば以下のようにする。
+Futureのコールバックメソッドである`respond`や`onSuccess`、`onFailure`、`ensure`は、その親に*連鎖した(chained)*新たなFutureを返す。このFutureは、その親が完了して初めて完了することが保証されている。このパターンを実現するには、例えば以下のようにする。
 
 	acquireResource()
 	future onSuccess { value =>
@@ -1071,9 +1071,9 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 
 `foreach`の代わりに`onSuccess`を使おう。`onSuccess`の方が`onFailure`と対称を成して目的をより良く表せるし、連鎖も可能になる。
 
-できるだけ自分で`Promise`を作らないようにしよう。ほぼ全てのタスクは、定義済みの結合子を使って実現できる。結合子は、エラーやキャンセルが伝播することを保証すると共に、一般的に*データフロー方式*でのプログラミングを促進する。データフロー方式を使うと、大抵、<a href="#並行性-Future">同期化や`volatile`宣言が不要になる</a>。
+なるべく、`Promise`インスタンスを直接作らないようにしよう。ほぼ全てのタスクは、定義済みの結合子を使って実現できる。結合子は、エラーやキャンセルが伝播することを保証すると共に、一般的に*データフロー方式*でのプログラミングを促進する。データフロー方式を使うと、大抵、<a href="#並行性-Future">同期化や`volatile`宣言が不要になる</a>。
 
-末尾再帰方式で書かれたコードはスペースリークに影響されないので、データフロー方式を使ってループを効率的に実装できる:
+末尾再帰方式で書かれたコードは、スタック空間のリークを引き起こさないので、データフロー方式を使ってループを効率的に実装できる:
 
 	case class Node(parent: Option[Node], ...)
 	def getNode(id: Int): Future[Node] = ...
@@ -1085,8 +1085,6 @@ Futureのコールバックメソッドである`respond`や`onSuccess'、`onFai
 	  }
 
 `Future`は、数多くの有用なメソッドを定義している。`Future.value()`や`Future.exception()`を使うと、事前に結果が満たされたFutureを作れる。`Future.collect()`や`Future.join()`、`Future.select()`は、複数のFutureを一つにまとめる結合子を提供する（ie. scatter-gather操作のgather部分）。
-
-（訳注: スペースリーク(space leak)とは、意図せずに空間計算量が非常に大きいコードを書いてしまうこと。関数型プログラミングでは、遅延評価式を未評価のまま蓄積するようなコードを書くと起きやすい。）
 
 #### キャンセル
 
@@ -1117,16 +1115,163 @@ Utilライブラリの[`Local`](https://github.com/twitter/util/blob/master/util
 
 Localは、RPCのトレースを介したスレッド管理や、モニターの伝播、Futureコールバックのための"スタックトレース"の作成など、*とても*一般的な関心事(concern)を実現する際に、その他の解決策ではユーザに過度な負担がある場合、コアとなるライブラリにおいて効果的に使われる。Localは、その他のほとんどの場面では不適切だ。
 
-<!--
-  ### Offer/Broker
+### OfferとBroker
 
--->
+並行システムは非常に複雑だ。それは、共有データやリソースへのアクセスを協調させる必要があるからだ。[Actor](http://www.scala-lang.org/api/current/scala/actors/Actor.html)は、単純化の一つの戦略を提起している。Actorはシーケンシャルなプロセスで、それぞれが自分自身の状態やリソースを保持している。そして、データは、他のActorとのメッセージングによって共有される。共有データは、Actor間で通信する必要がある。
+
+OfferとBrokerは、これに基づいて、三つの重要な考え方を取り入れている。一つ目、通信チャネル(Broker)は第一級(first class)だ。すなわち、Actorに直接メッセージを送るのではなく、Broker経由で送信する。二つ目、OfferやBrokerは同期化メカニズムであり、通信することは同期化することだ。これは、Brokerが協調メカニズムとして使えることを意味する。プロセス`a`がプロセス`b`にメッセージを送信したとき、`a`と`b`の両方とも、システムの状態について合意する。三つ目、通信は*選択的に*実行できる。一つのプロセスは、いくつかの異なる通信を提案でき、それらのうち、ただ一つが有効になる。
+
+一般的な（他の合成と同様の）やり方で選択的な通信をサポートするには、通信行為(act of communicating)から通信の記述(description of a communication)を分離する必要がある。これをやるのが`Offer`だ。Offerは通信を記述する永続的な値であり、通信を（Offerに従って）実行するには、`sync()`メソッドによって同期化する。
+
+	trait Offer[T] {
+	  def sync(): Future[T]
+	}
+
+.LP `sync()`メソッドは、通信が行われた時にやり取りされた値を生成する<code>Future[T]</code>を返す。
+
+`Broker`は、Offerを介して値のやり取りを協調する。Brokerは通信のチャネルだ:
+
+	trait Broker[T] {
+	  def send(msg: T): Offer[Unit]
+	  val recv: Offer[T]
+	}
+
+.LP そして、二つのOfferを生成するとき、
+
+	val b: Broker[Int]
+	val sendOf = send(1)
+	val recvOf = b.recv
+
+.LP <code>sendOf</code>と<code>recvOf</code>はどちらも同期化されており、
+
+	// In process 1:
+	sendOf.sync()
+
+	// In process 2:
+	recvOf.sync()
+
+.LP どちらのOfferも有効になり、<code>1</code>の値がやり取りされる。
+
+選択的な通信は、いくつかのOfferを`Offer.choose`で結合することにより実行される。
+
+	def choose[T](ofs: Offer[T]*): Offer[T]
+
+.LP は、同期化すると<code>ofs</code>のうち、最初に利用可能になった唯一つのOfferを有効とする、新しいOfferを生成する。いくつかが即座に利用可能になった場合は、有効になる`Offer`はランダムに選ばれる。
+
+`Offer`オブジェクトは、一個限りのOfferをいくつも持っており、BrokerからのOfferを組み立てるために使用される。
+
+	Offer.timeout(duration): Offer[Unit]
+
+.LP は、与えられた期間の後に起動するOfferだ。<code>Offer.never</code>は、決して有効にならない。また、<code>Offer.const(value)</code>は、与えられた値が直ちに有効になる。選択的な通信を用いて合成するのにも有用だ。例えば、送信操作でタイムアウトを適用するときは:
+
+	Offer.choose(
+	  Offer.timeout(10.seconds),
+	  broker.send("my value")
+	).sync()
+
+OfferとBrokerを使う方法と、[SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html)を比べてみたくなるかもしれないが、両者には微妙だが重要な違いがある。Offerは組み立てることができるが、SynchronousQueueのようなキューでは、とてもそんなことはできない。例えば、Brokerで表される一連のキューを考えると:
+
+	val q0 = new Broker[Int]
+	val q1 = new Broker[Int]
+	val q2 = new Broker[Int]
+	
+.LP ここで、読み込みのための結合されたキューを作ってみると:
+
+	val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
+	
+.LP <code>anyq</code>はOfferで、最初に利用可能になったキューから読み込む。ここで、<code>anyq</code>はやはり同期的であり、内部にあるキューの動作を利用できる。こうした合成は、キューを使う方法ではとても不可能だ。
+	
+#### 例: 簡単なコネクションプール
+
+コネクションプールはネットワークアプリケーションでは一般的なもので、たいていは実装がとても難しい。例えば、個々のクライアントは異なるレイテンシを要求するため、多くの場合、プールからの取得にタイムアウトを持つことが望ましい。プールは、原理的には単純だ。コネクションのキューを保持し、待機クライアント(waiter)が入ってきたら要求を満たしてやる。従来の同期化プリミティブでは、典型的には二つのキューを保持する。一つはwaiterで、コネクション(connection)がない時に使われる。もう一つはconnectionで、これは待機クライアント(waiter)がない時に使われる。
+
+OfferとBrokerを使うと、これをとても自然に表現できる:
+
+	class Pool(conns: Seq[Conn]) {
+	  private[this] val waiters = new Broker[Conn]
+	  private[this] val returnConn = new Broker[Conn]
+
+	  val get: Offer[Conn] = waiters.recv
+	  def put(c: Conn) { returnConn ! c }
+	
+	  private[this] def loop(connq: Queue[Conn]) {
+	    Offer.choose(
+	      if (connq.isEmpty) Offer.never else {
+	        val (head, rest) = connq.dequeue
+	        waiters.send(head) { _ => loop(rest) }
+	      },
+	      returnConn.recv { c => loop(connq enqueue c) }
+	    ).sync()
+	  }
+	
+	  loop(Queue.empty ++ conns)
+	}
+
+`loop`は、返却されたコネクションを持つことを常にオファー(offer)し、キューが空でない時のみ送信をオファーする。永続的なキューを使うことで、推論をより単純にできる。プールに対するインタフェースもOfferを介しているから、もし呼び出し側がタイムアウトを適用したいなら、コンビネータを使うことで可能だ:
+
+	val conn: Future[Option[Conn]] = Offer.choose(
+	  pool.get { conn => Some(conn) },
+	  Offer.timeout(1.second) { _ => None }
+	).sync()
+
+タイムアウトの実装に余計な簿記は必要とされない。これは、Offerの動作によるものだ: もし`Offer.timeout`が選択されたら、もはやプールからの受信をオファーしない。つまり、プールと呼び出し側がそれぞれ、Brokerである`waiters`上で送信と受信を同時に合意することはない。
+
+#### 例: エラトステネスの篩
+
+並行プログラムを、同期的に通信する一連のシーケンシャルなプロセスとして構築するのは、多くの場合で有用だし、時としてプログラムを非常に単純化できる。OfferとBrokerは、これを単純化しかつ統一化する手段を提供する。実際、それらのアプリケーションは、人が"古典的な"並行性の問題だとみなすかもしれないことを乗り越える。（OfferやBrokerを用いた）並行プログラミングは、サブルーチンやクラス、モジュールと同じように、有用な*構造化*ツールだ。これは、制約充足問題(Constraint Satisfaction Problem; CSP)からのもう一つの重要なアイデアだ。
+
+この一つの例は[エラトステネスの篩](http://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%A9%E3%83%88%E3%82%B9%E3%83%86%E3%83%8D%E3%82%B9%E3%81%AE%E7%AF%A9)で、整数ストリームに対するフィルタの連続的な適用として構造化できる。まず、整数の生成源が必要だ:
+
+	def integers(from: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def gen(n: Int): Unit = b.send(n).sync() ensure gen(n + 1)
+	  gen(from)
+	  b.recv
+	}
+
+.LP <code>integers(n)</code>は、<code>n</code>から始まる全ての連続した整数の単純なOfferだ。次に、フィルタが必要だ:
+
+	def filter(in: Offer[Int], prime: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def loop() {
+	    in.sync() onSuccess { i =>
+	      if (i % prime != 0)
+	        b.send(i).sync() ensure loop()
+	      else
+	        loop()
+	    }
+	  }
+	  loop()
+	
+	  b.recv
+	}
+
+.LP <code>filter(in, p)</code>は、<code>in</code>から素数<code>p</code>の倍数を取り除くOfferを返す。最後に、篩(sieve)を定義する:
+
+	def sieve = {
+	  val b = new Broker[Int]
+	  def loop(of: Offer[Int]) {
+	    for (prime <- of.sync(); _ <- b.send(prime).sync())
+	      loop(filter(of, prime))
+	  }
+	  loop(integers(2))
+	  b.recv
+	}
+
+.LP <code>loop()</code>の動作は単純だ: <code>of</code>から次の素数を読み取った後、この素数を除外した<code>of</code>にフィルタを適用する。<code>loop</code>が再帰するにつれて連続した素数がフィルタされ、篩が手に入る。今や、我々は最初から10000個の素数を出力できる:
+
+	val primes = sieve
+	0 until 10000 foreach { _ =>
+	  println(primes.sync()())
+	}
+
+このアプローチは、単純かつ直行的なコンポーネントへと構造化できることに加えて、篩をストリームとして扱える。君は、興味がある素数の集合を演繹的に計算したり、さらにモジュラリティを拡張したりする必要がない。
 
 ## 謝辞
 
 本レッスンは、Twitter社のScalaコミュニティによるものだ。私は、誠実な記録者でありたい。
 
-Blake MathenyとNick Kallen、そしてSteve Guryには、とても有益な助言と多くの優れた提案を与えてもらった。
+Blake MathenyとNick Kallen、Steve Gury、そしてRaghavendra Prabhuには、とても有益な助言と多くの優れた提案を与えてもらった。
 
 ### 日本語版への謝辞
 
