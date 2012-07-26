@@ -1811,7 +1811,7 @@ via its <code>sync()</code> method</p>
 <p class="LP">so that, when creating two offers</p>
 
 <pre><code>val b: Broker[Int]
-val sendOf = send(1)
+val sendOf = b.send(1)
 val recvOf = b.recv
 </code></pre>
 
