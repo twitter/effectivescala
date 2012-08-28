@@ -515,7 +515,7 @@ structures. Excessive focus on optimization is typically wasted
 effort. Remember Knuth's maxim: "Premature optimisation is the root of
 all evil."
 
-It is often approriate to use lower level collections in situations
+It is often appropriate to use lower level collections in situations
 that require better performance or space efficiency. Use arrays
 instead of lists for large sequences (the immutable `Vector`
 collections provides a referentially transparent interface to arrays);
