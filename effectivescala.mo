@@ -1050,7 +1050,7 @@ are `private[this]`)
 	  _theField.get
 	}
 
-.LP i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
+.LP i.e., it computes a results and memorizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
 
 Lazy fields are thread safe.
 
