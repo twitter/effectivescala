@@ -846,6 +846,515 @@ Scala предоставляет синтаксический сахар для 
 
 ### `flatMap`
 
+`flatMap` - сочетает в себе `map` и `flatten` - заслуживающие особого внимания, потому что они обладают небольшой мощью, но очень полезны. Подобно `map`, она доступна в нетрадиционных коллекциях, таких как `Future` и `Option`. Поведение функции
+раскрывается при описании; например `Container[]`
+
+	flatMap[B](f: A => Container[B]): Container[B]
+
+.LP <code>flatMap</code> вызывает функцию <code>f</code> для элемента(ов) из коллекции создавая <em>новую</em> коллекцию, (из всех тех), которые дают нужный результат. Например, чтобы получить все перестановки двух символьных строк, у которых нет общих символов, напишем дважды:
+
+	val chars = 'a' to 'z'
+	val perms = chars flatMap { a => 
+	  chars flatMap { b => 
+	    if (a != b) Seq("%c%c".format(a, b)) 
+	    else Seq() 
+	  }
+	}
+
+.LP который эквивалентен, но более краток и понятен (что само по себе &mdash;грубый&mdash; синтаксический сахар для написанного выше):
+
+	val perms = for {
+	  a <- chars
+	  b <- chars
+	  if a != b
+	} yield "%c%c".format(a, b)
+
+`flatMap` часто полезна при работе с `Option` - она позволяет
+свернуть цепочки вызовов до одного,
+
+	val host: Option[String] = ..
+	val port: Option[Int] = ..
+	
+	val addr: Option[InetSocketAddress] =
+	  host flatMap { h =>
+	    port map { p =>
+	      new InetSocketAddress(h, p)
+	    }
+	  }
+
+.LP данный пример также кратко можно написать с использованием <code>for</code>
+
+	val addr: Option[InetSocketAddress] = for {
+	  h <- host
+	  p <- port
+	} yield new InetSocketAddress(h, p)
+
+Использование `flatMap` в `Future` обсуждается в  
+<a href="#Twitter's%20standard%20libraries-Futures">разделе futures</a>.
+
+## Объектно-ориентированное программирование
+
+Большая часть возможностей Scala обеспечивается благодаря объектной системе. Scala является *чистым* языком в том смысле, что *все элементы* являются объектами, нет различия между примитивными типами и составными. Scala также имеет примеси (Mixins), позволяющие более основательное построение модулей, которые можно гибко собрать на этапе компиляции со всеми преимуществами статической проверки типов.
+
+Основная идея системы примесей в том, чтобы избежать необходимости в традиционном построение зависимостей. Кульминацией этого "компонентного стиля" программирования [the cake pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
+
+### Внедрение зависимостей
+
+В нашем программировании, мы обнаружили, что Scala на самом деле удаляет большую часть синтаксических издержек "классического" (в конструкторе) внедрения зависимостей, и мы можем просто использовать это: более ясное описание, зависимости все еще закодированы в типе и конструкция класса так синтаксически проста, что это становится незаметно.
+Это скучно и просто, и это работает. *Использование внедрения зависимостей для модульного построения программы*, и в частности *предпочтение композиции вместо наследования* - это приводит к более модульным и легко тестируемым программам.
+Если возникает ситуация, когда требуется наследование, то спросите себя: как бы вы спроектировали программу, если бы язык не имел такой возможности, как наследование? Ответ может быть не так прост.
+
+Для внедрения зависимостей обычно используются трейты(traits),
+
+	trait TweetStream {
+	  def subscribe(f: Tweet => Unit)
+	}
+	class HosebirdStream extends TweetStream ...
+	class FileStream extends TweetStream ..
+	
+	class TweetCounter(stream: TweetStream) {
+	  stream.subscribe { tweet => count += 1 }
+	}
+
+Они обычно исопользуются для внедрения *фабрик* - объектов, которые генерируют другие объекты. В этом случае предпочитают использовать более простые функции вместо специализированных
+фабрик типов.
+
+	class FilteredTweetCounter(mkStream: Filter => TweetStream) {
+	  mkStream(PublicTweets).subscribe { tweet => publicCount += 1 }
+	  mkStream(DMs).subscribe { tweet => dmCount += 1 }
+	}
+
+### Трейты(Traits)
+
+Внедрение зависимостей вовсе не исключает возможности использования общих *интерфейсов*, или релизации общего кода в трейтах. Совсем наоборот - использование трейтов настоятельно рекомендуется именно по этой причине: несколько интерфейсов (трейтов) могут быть реализованы в конкретном классе, а общий код может быть использован во всех таких классах.
+
+Держите трейты короткими и простыми: но не стоит разделять функциональности между трейтами, думайте о них, как о небольших кусочках, которые связаны друг с другом. Например, представьте, что у вас есть то, что может сделать IO:
+
+	trait IOer {
+	  def write(bytes: Array[Byte])
+	  def read(n: Int): Array[Byte]
+	}
+	
+.LP разделите эти два поведения:
+
+	trait Reader {
+	  def read(n: Int): Array[Byte]
+	}
+	trait Writer {
+	  def write(bytes: Array[Byte])
+	}
+	
+.LP и объедините их вместе, чтобы получить то, что было в <code>IOer</code>: <code> new Reader with Writer</code>&hellip; минимализм интерфейса приводит к простоте и более "чистой" модульности.
+
+### Видимость
+
+Скала имеет очень выразительные модификаторы видимости. Важно использовать их, так как они определяют то, что представляет собой *публичный API*. Публичные API должны быть ограничены так, чтобы пользователи случайно не полагались на реализацию деталей и предел возможностей автора менять их: они имеют решающее значение при постороение хорошей модульности. Как правило, гораздо проще расширять публичные API, чем их сокращать. Плохие аннотации также могут подорвать обратную
+бинарную совместимость вашего кода.
+
+#### `private[this]`
+
+Член класса помеченный как `private`, 
+
+	private val x: Int = ...
+	
+.LP видим для всех <em>экземпляров</em> этого класса (но не и подклассов). В большинстве случаев вам нужен <code>private[this]</code>.
+
+	private[this] val: Int = ..
+
+.LP который ограничивает видимость для конкретного экземпляра.Компилятор Scala также может переводить <code>private[this]</code> в простое поле для доступа (поскольку доступ ограничен для статически определенного класса), которое иногда может помочь при оптимизации производительности.
+
+#### Класс синглтон (Singleton)
+
+Общепринятая в Scala практика по созданию класса синглтона, например
+
+	def foo() = new Foo with Bar with Baz {
+	  ...
+	}
+
+.LP В таких ситуациях, видимость может быть ограничена, при объявлении возвращаемого типа:
+
+	def foo(): Foo with Bar = new Foo with Bar with Baz {
+	  ...
+	}
+
+.LP где вызывающие <code>foo()</code> участки кода будут ограничены с помощью (<code>Foo with Bar</code>) для возвращаемого экземпляра.
+
+### Структурная типизация
+
+Не используйте структурных типов в обычных случаях. Они являются удобным и мощным средством, но к сожалению не имеют эффективной реализации для JVM. Однако - в связи с причудами реализации - они обеспечивают очень краткое выражение для написания отражений(reflection).
+
+	val obj: AnyRef
+	obj.asInstanceOf[{def close()}].close()
+
+## Сборка мусора
+
+Мы тратим много времени на настройку сборщика мусора в реальном коде. Проблемы сборщика мусора в значительной степени аналогичны Java, хотя с идеалогической точки зрения код Scala имеет тенденцию генерировать больше (короткоживущего) мусора, чем подобный код на Java - все это побочный продукт функционального стиля. Сборщик мусора обычно делает это
+без проблем так как короткоживущий мусор эффективно собирается в большинстве случаев.
+
+Прежде чем пытаться бороться с проблемами производительности сборщика мусора, посмотрите [это](http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter) Выступление Аттилы, который иллюстрирует некоторый наш опыт по настройке сборщика мусора.
+
+В Scala собственно вашим единственным инструментом облегчения проблем со сборщиком мусора является создание меньшего количества мусора, но не стоит дествовать без предварительных данных! Пока вы не сделали того, что явно ухудшает ситуацию, используйте различные инструменты профилирования Java - Наши собственные инструменты включают [heapster](https://github.com/mariusaeriksen/heapster) и [gcprof](https://github.com/twitter/jvmgcprof).
+
+# # Java совместимость
+
+Когда мы пишем код на Scala, который используется в Java, мы оуверены, что эта возможность осталась из чисто идеалогическох соображений. Обычно для этого не требуется лишних усилий - классы и чисые трейты в точности эквивалентны
+их Java коллегам - но иногда нужно предоставить некоторые  Java API. Хороший способ получить это для вашего библиотечного Java API, это написать юнит тест в Java (только для компиляции), это также обеспечивает то, что поведение вашей Java библиотеки остается стабильным с течением времени, потому что компилятор Scala может быть неустойчив в этом отношении.
+
+Трейты, которые реализуют некоторый функционал, не
+пригодны для непосредственного использования в Java: для этого нужно расширить абстрактный класс с трейтом.
+
+	// Не используется напрямую в Java
+	trait Animal {
+	  def eat(other: Animal)
+	  def eatMany(animals: Seq[Animal) = animals foreach(eat(_))
+	}
+	
+	// А так можно:
+	abstract class JavaAnimal extends Animal
+
+## Стандартные билиотеки Twitter
+
+Наиболее важными стандартными библиотеками в Twitter являются
+[Util](http://github.com/twitter/util) и [Finagle](https://github.com/twitter/finagle). Util должна 
+рассматриваться как расширение для стандартной библиотеки Scala и Java, предоставляя недостающую функциональность или более соответствует конкретной реализации. Finagle - это наша RPC система, ядро ​​распределенных системных компонентов.
+
+### Futures
+
+Futures <a href="#Параллелизм-Futures">обсуждались</a> 
+коротко <a href="#Параллелизм">разделе о параллельных вычислениях</a>. Они являются центральным механизмом координации асинхронных процессов и широко распространены в нашем кода и в ядре Finagle. Futures позволяют объединять одновременные события, а также упрощают рассуждения о высокопараллельных операциях. Их можно эффективно реализовать на JVM.
+
+Futures в Twitter являются *асинхронными*, так что блокирование операций - в основном любой операции, может быть приостановлено при выполнении своим потоком; сетевой ввод-вывод и дисковый ввод-вывод, например - должны быть обработаны системой, что обеспечивают сами futures для результатов указанных операций. Finagle предоставляет такую систему для сетевого ввода-вывода.
+
+Futures являются простыми и понятными: они *ждут* результата вычислений, которые еще не завершились. Они представляют собой просто контейнер - заполнитель. Вычисление может и не закончится, и это должно быть закодировано: Future может находится ровно в одном из 3-х состояний: *в ожидании*,
+*провалено* или *завершено*.
+
+<div class="explainer">
+<h3>В резерве: <em>Композиция</em></h3>
+<p>Давайте вернемся к тому, что мы подразумеваем под композицией: сочетание простых компонентов в более сложных. Самый распространенный пример, это функция композиции: Даны функции <em>f</em> и <em>g</em>, функция композиции <em>(g&#8728;f)(x) = g(f(x))</em> &mdash; сначала результат получаем применения <em>x</em> в <em>f</em>, и потом результат этого выражения применяется в <em>g</em> &mdash; может быть записано на Scala:</p>
+
+<pre><code>val f = (i: Int) => i.toString
+val g = (s: String) => s+s+s
+val h = g compose f  // : Int => String
+	
+scala> h(123)
+res0: java.lang.String = 123123123</code></pre>
+
+.LP функция <em>h</em> будет композитной. Это <em>новая</em> функция, которая объединяет <em>f</em> и <em>g</em>.
+</div>
+
+Futures являются своего рода коллекцией - это контейнер из 
+0 или 1 элементов - и вы увидите, что они имеют стандартные
+методы коллекций (например, `map`, `filter`, и `foreach`). С Future значение откладывается(deferred), результат применения любого из этих методов также откладывается, в
+
+	val result: Future[Int]
+	val resultStr: Future[String] = result map { i => i.toString }
+
+.LP функция <code>{ i => i.toString }</code> не вызывается, пока целочисленное значение не становится доступно, и преобразвание коллекции <code>resultStr</code> также откладывается до этого момента.
+
+Списки могут быть свернуты;
+
+	val listOfList: List[List[Int]] = ..
+	val list: List[Int] = listOfList.flatten
+
+.LP и тоже самое можно сделать для futures:
+
+	val futureOfFuture: Future[Future[Int]] = ..
+	val future: Future[Int] = futureOfFuture.flatten
+
+.LP с futures происходит задержка, реализация <code>flatten</code> &mdash; должна немедленно &mdash; вернуть future, который ждет завершения внешнего future (<code><b>Future[</b>Future[Int]<b>]</b></code>) и после этого выполняется внутренний (<code>Future[<b>Future[Int]</b>]</code>). Если внешний future завершается с ошибкой, свернутый future должен также завершиться с ошибкой.
+
+Futures (подобны Спискам) также имеют `flatMap`; `Future[A]` объявление:
+
+	flatMap[B](f: A => Future[B]): Future[B]
+	
+.LP который похож на комбинацию <code>map</code> и <code>flatten</code>, и можем реализовать это следующим способом:
+
+	def flatMap[B](f: A => Future[B]): Future[B] = {
+	  val mapped: Future[Future[B]] = this map f
+	  val flattened: Future[B] = mapped.flatten
+	  flattened
+	}
+
+Это мощная комбинация! С помощью `flatMap` мы можем определить Future который является результатом двух последовательных futures, второй future вычисляется на основе 
+результатов первого. Представьте себе, что мы должны были бы сделать два RPC для аутентификации пользователя (ID), мы могли бы определить составную операцию следующим образом:
+
+	def getUser(id: Int): Future[User]
+	def authenticate(user: User): Future[Boolean]
+	
+	def isIdAuthed(id: Int): Future[Boolean] = 
+	  getUser(id) flatMap { user => authenticate(user) }
+
+.LP Дополнительным преимуществом этого типа композиции является то, что есть встроенная обработка ошибок: future не возвратиться из <code>isAuthed(..)</code> если в одной из функций <code>getUser(..)</code> или <code>authenticate(..)</code> не пишется дополнительного кода для обработки ошибок.
+
+#### Style
+
+Future методы обратного вызова (callback) (`respond`, `onSuccess`, `onFailure`, `ensure`) вернут новый future, который *сцеплен* со своим родителем. Этот future гарантировано будет завершен только после завершения своего родителя, что позволяет писать так:
+
+	acquireResource()
+	future onSuccess { value =>
+	  computeSomething(value)
+	} ensure {
+	  freeResource()
+	}
+
+.LP где <code>freeResource()</code> гарантированно будет выполнен после <code>computeSomething</code>, позволяя эмуляцию шаблона <code>try .. finally</code>.
+
+Используйте `onSuccess` вместо `foreach` -- он симметричен для `onFailure` это лучшее имя для подобного случая, и позволяет цепочечные вызовы.
+
+Всегда старайтесь избегать `Общанных` экземпляров напрямую: почти каждая задача может быть решена с помощью использования предопределенных комбинаций. Эти комбинации обеспечивают распространение ошибки и отмены, и в целом поощряют *стиль программирования потоков данных*, который обычно <href = "#Параллелизм-Futures">устраняет необходимость синхронизации и управления объявлениями</a>.
+
+Код, написанный в стиле хвостовой рекурсии не способствует утечки области стека, позволяет эффективно реализовывать циклы в стиле потоков данных:
+
+	case class Node(parent: Option[Node], ...)
+	def getNode(id: Int): Future[Node] = ...
+
+	def getHierarchy(id: Int, nodes: List[Node] = Nil): Future[Node] =
+	  getNode(id) flatMap {
+	    case n@Node(Some(parent), ..) => getHierarchy(parent, n :: nodes)
+	    case n => Future.value((n :: nodes).reverse)
+	  }
+
+`Future` определяют множество полезных методов: Use `Future.value()` и `Future.exception()` для создания заранее определенных futures. `Future.collect()`, `Future.join()` и `Future.select()` предоставляют комбинации, которые обращают многие futures в один (например, объединяются как часть операции сбора-разбора).
+
+#### Отмена
+
+Futures реализуют слабую форму отмены. Вызов `Future#cancel`
+непосредственно не прекращает вычисления, но вместо этого устанавливает триггер *сигнал*, который может быть запрошен процессом, который в конечном счете удовлетворит требованиям future. Отмена распространяется в противоположном
+направлении, чем значения: отмена сигнала установленная принимающим объектом распространяется до объекта, установившего этот сигнал. Объект, установивший сигнал, использует `onCancellation` и `Обещание` слушать этот сигнал и действовать соответственно.
+
+Это означает, что смысл отмены зависит от объекта, который ее вызвал, и не существует реализации по умолчанию. *Отмена - всего лишь подсказка*.
+
+#### Locals
+
+Утилита [`Local`](https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40) предоставляет ссылочную ячейку, которая является локальной для конкретного future дерева диспетчеризации. Установка значения local делает это значение доступны для любого вычисления отложенного Future в том же потоке. Они, аналогичны locals потоков, за исключением того, что они не используются в потоках Java, а в дереве "future потоков". Например, в
+
+	trait User {
+	  def name: String
+	  def incrCost(points: Int)
+	}
+	val user = new Local[User]
+
+	...
+
+	user() = currentUser
+	rpc() ensure {
+	  user().incrCost(10)
+	}
+
+.LP <code>user()</code> в блоке <code>ensure</code> будет ссылаться на значение <code>user</code>, локальное во время добавления функции обратного вызова.
+
+Как и потоковых locals, `Local` могут быть очень удобны, но их следует почти всегда избегать: убедитесь, что проблема не может быть решена путем передачи данных везде явно, даже если это несколько обременительно.
+
+Locals эффективно используются в базовых библиотеках для *очень* общих задач - работа с потоками через RPC, передача мониторов, создание «трассировки стека» для будущих обратных вызовов - там, где любое другое решение было бы слишком обременительными для пользователей. Locals почти не подходят в любой другой ситуации.
+
+### Offer/Broker
+
+Concurrent systems are greatly complicated by the need to coordinate
+access to shared data and resources.
+[Actors](http://www.scala-lang.org/api/current/scala/actors/Actor.html)
+present one strategy of simplification: each actor is a sequential process
+that maintains its own state and resources, and data is shared by
+messaging with other actors. Sharing data requires communicating between
+actors.
+
+Offer/Broker builds on this in three important ways. First,
+communication channels (Brokers) are first class -- that is, you send
+messages via Brokers, not to an actor directly. Secondly, Offer/Broker
+is a synchronous mechanism: to communicate is to synchronize. This
+means we can use Brokers as a coordination mechanism: when process `a`
+has sent a message to process `b`; both `a` and `b` agree on the state
+of the system. Lastly, communication can be performed *selectively*: a
+process can propose several different communications, and exactly one
+of them will obtain.
+
+In order to support selective communication (as well as other
+composition) in a general way, we need to decouple the description of
+a communication from the act of communicating. This is what an `Offer`
+does -- it is a persistent value that describes a communication; in
+order to perform that communication (act on the offer), we synchronize
+via its `sync()` method
+
+	trait Offer[T] {
+	  def sync(): Future[T]
+	}
+
+.LP which returns a <code>Future[T]</code> that yields the exchanged value when the communication obtains.
+
+A `Broker` coordinates the exchange of values through offers -- it is the channel of communications:
+
+	trait Broker[T] {
+	  def send(msg: T): Offer[Unit]
+	  val recv: Offer[T]
+	}
+
+.LP so that, when creating two offers
+
+	val b: Broker[Int]
+	val sendOf = b.send(1)
+	val recvOf = b.recv
+
+.LP and <code>sendOf</code> and <code>recvOf</code> are both synchronized
+
+	// In process 1:
+	sendOf.sync()
+
+	// In process 2:
+	recvOf.sync()
+
+.LP both offers obtain and the value <code>1</code> is exchanged.
+
+Selective communication is performed by combining several offers with
+`Offer.choose`
+
+	def choose[T](ofs: Offer[T]*): Offer[T]
+
+.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.
+
+The `Offer` object has a number of one-off Offers that are used to compose with Offers from a Broker.
+
+	Offer.timeout(duration): Offer[Unit]
+
+.LP Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
+
+	Offer.choose(
+	  Offer.timeout(10.seconds),
+	  broker.send("my value")
+	).sync()
+
+It may be tempting to compare the use of Offer/Broker to
+[SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
+but they are different in subtle but important ways. Offers can be composed in ways that such queues simply cannot. For example, consider a set of queues, represented as Brokers:
+
+	val q0 = new Broker[Int]
+	val q1 = new Broker[Int]
+	val q2 = new Broker[Int]
+	
+.LP Now let's create a merged queue for reading:
+
+	val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
+	
+.LP <code>anyq</code> is an offer that will read from first available queue. Note that <code>anyq</code> is <em>still synchronous</em> &mdash; we still have the semantics of the underlying queues. Such composition is simply not possible using queues.
+	
+#### Example: A Simple Connection Pool
+
+Connection pools are common in network applications, and they're often
+tricky to implement -- for example, it's often desirable to have
+timeouts on acquisition from the pool since various clients have different latency
+requirements. Pools are simple in principle: we maintain a queue of
+connections, and we satisfy waiters as they come in. With traditional
+synchronization primitives this typically involves keeping two queues:
+one of waiters (when there are no connections), and one of connections
+(when there are no waiters).
+
+Using Offer/Brokers, we can express this quite naturally:
+
+	class Pool(conns: Seq[Conn]) {
+	  private[this] val waiters = new Broker[Conn]
+	  private[this] val returnConn = new Broker[Conn]
+
+	  val get: Offer[Conn] = waiters.recv
+	  def put(c: Conn) { returnConn ! c }
+	
+	  private[this] def loop(connq: Queue[Conn]) {
+	    Offer.choose(
+	      if (connq.isEmpty) Offer.never else {
+	        val (head, rest) = connq.dequeue
+	        waiters.send(head) { _ => loop(rest) }
+	      },
+	      returnConn.recv { c => loop(connq enqueue c) }
+	    ).sync()
+	  }
+	
+	  loop(Queue.empty ++ conns)
+	}
+
+`loop` will always offer to have a connection returned, but only offer
+to send one when the queue is nonempty. Using a persistent queue simplifies
+reasoning further. The interface to the pool is also through an Offer, so if a caller
+wishes to apply a timeout, they can do so through the use of combinators:
+
+	val conn: Future[Option[Conn]] = Offer.choose(
+	  pool.get { conn => Some(conn) },
+	  Offer.timeout(1.second) { _ => None }
+	).sync()
+
+No extra bookkeeping was required to implement timeouts; this is due to
+the semantics of Offers: if `Offer.timeout` is selected, there is no
+longer an offer to receive from the pool -- the pool and its caller
+never simultaneously agreed to receive and send, respectively, on the
+`waiters` broker.
+
+#### Example: Sieve of Eratosthenes
+
+It is often useful -- and sometimes vastly simplifying -- to structure
+concurrent programs as a set of sequential processes that communicate
+synchronously. Offers and Brokers provide a set of tools to make this simple
+and uniform. Indeed, their application transcends what one might think
+of as "classic" concurrency problems -- concurrent programming (with
+the aid of Offer/Broker) is a useful *structuring* tool, just as
+subroutines, classes, and modules are -- another important 
+idea from CSP.
+
+One example of this is the [Sieve of
+Eratosthenes](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes),
+which can be structured as a successive application of filters to a
+stream of integers. First, we'll need a source of integers:
+
+	def integers(from: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def gen(n: Int): Unit = b.send(n).sync() ensure gen(n + 1)
+	  gen(from)
+	  b.recv
+	}
+
+.LP <code>integers(n)</code> is simply the offer of all consecutive integers starting at <code>n</code>. Then we need a filter:
+
+	def filter(in: Offer[Int], prime: Int): Offer[Int] = {
+	  val b = new Broker[Int]
+	  def loop() {
+	    in.sync() onSuccess { i =>
+	      if (i % prime != 0)
+	        b.send(i).sync() ensure loop()
+	      else
+	        loop()
+	    }
+	  }
+	  loop()
+	
+	  b.recv
+	}
+
+.LP <code>filter(in, p)</code> returns the offer that removes multiples of the prime <code>p</code> from <code>in</code>. Finally, we define our sieve:
+
+	def sieve = {
+	  val b = new Broker[Int]
+	  def loop(of: Offer[Int]) {
+	    for (prime <- of.sync(); _ <- b.send(prime).sync())
+	      loop(filter(of, prime))
+	  }
+	  loop(integers(2))
+	  b.recv
+	}
+
+.LP <code>loop()</code> works simply: it reads the next (prime) number from <code>of</code>, and then applies a filter to <code>of</code> that excludes this prime. As <code>loop</code> recurses, successive primes are filtered, and we have a Sieve. We can now print out the first 10000 primes:
+
+	val primes = sieve
+	0 until 10000 foreach { _ =>
+	  println(primes.sync()())
+	}
+
+Besides being structured into simple, orthogonal components, this
+approach gives you a streaming Sieve: you do not a-priori need to
+compute the set of primes you are interested in, further enhancing
+modularity.
+
+## Acknowledgments
+
+The lessons herein are those of Twitter's Scala community -- I hope
+I've been a faithful chronicler.
+
+Blake Matheny, Nick Kallen, Steve Gury, and Raghavendra Prabhu
+provided much helpful guidance and many excellent suggestions.
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
