@@ -1547,7 +1547,7 @@ Selective communication is performed by combining several offers with
 
 	def choose[T](ofs: Offer[T]*): Offer[T]
 
-.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.
+.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediately, one is chosen at random to obtain.
 
 The `Offer` object has a number of one-off Offers that are used to compose with Offers from a Broker.
 

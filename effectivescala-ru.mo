@@ -1147,53 +1147,37 @@ Futures реализуют слабую форму отмены. Вызов `Fut
 
 Locals эффективно используются в базовых библиотеках для *очень* общих задач - работа с потоками через RPC, передача мониторов, создание «трассировки стека» для будущих обратных вызовов - там, где любое другое решение было бы слишком обременительными для пользователей. Locals почти не подходят в любой другой ситуации.
 
-### Offer/Broker
+### Сделка/Посредник(Offer/Broker)
 
-Concurrent systems are greatly complicated by the need to coordinate
-access to shared data and resources.
-[Actors](http://www.scala-lang.org/api/current/scala/actors/Actor.html)
-present one strategy of simplification: each actor is a sequential process
-that maintains its own state and resources, and data is shared by
-messaging with other actors. Sharing data requires communicating between
-actors.
+Работа параллельных систем сильно осложняется необходимостью координации
+доступ к общим данным и ресурсам.[Акторы](http://www.scala-lang.org/api/current/scala/actors/Actor.html) предоставляют одну из стратегий упрощения работы: каждый актор это последовательный процесс, который сохраняет свое собственное состояние и ресурсы, а данные передаются путем передачи сообщений другим акторам. Обмен данными требует взаимодействия между акторами.
 
-Offer/Broker builds on this in three important ways. First,
-communication channels (Brokers) are first class -- that is, you send
-messages via Brokers, not to an actor directly. Secondly, Offer/Broker
-is a synchronous mechanism: to communicate is to synchronize. This
-means we can use Brokers as a coordination mechanism: when process `a`
-has sent a message to process `b`; both `a` and `b` agree on the state
-of the system. Lastly, communication can be performed *selectively*: a
-process can propose several different communications, and exactly one
-of them will obtain.
+Сделка/Посредник состоит из трех важных компонентов. Во-первых, 
+каналы связи (посредники) являются первым элементом - то есть, вы отправляете сообщения через посредников, а не актору напрямую. Во-вторых, Сделка/Посредник является синхронным механизмом: общение синхронизировано. Это значит, мы можем использовать брокеров в качестве механизма координации: когда процесс `a` отправляет сообщение процессу `b`, оба процесса и `a` и `b` располагают состоянием системы. И наконец, связь может осуществляться *выборочно*: процесс может предложить несколько различных способов коммуникаций, и получит ровно один
+из них.
 
-In order to support selective communication (as well as other
-composition) in a general way, we need to decouple the description of
-a communication from the act of communicating. This is what an `Offer`
-does -- it is a persistent value that describes a communication; in
-order to perform that communication (act on the offer), we synchronize
-via its `sync()` method
+Для того, чтобы поддерживать выборочные связи (а также другие соединения) в общем случае, мы должны отделить описание связи от процесса общения. Это то, что делает `Сделка` - это постоянная величина, которая описывает связи, для выполнения коммуникации (действующей на Сделку), мы синхронизируем процесс через метод `sync()`
 
 	trait Offer[T] {
 	  def sync(): Future[T]
 	}
 
-.LP which returns a <code>Future[T]</code> that yields the exchanged value when the communication obtains.
+.LP который возвращает <code>Future[T]</code>, что дает возможность обменяться значениями, когда возникла связь.
 
-A `Broker` coordinates the exchange of values through offers -- it is the channel of communications:
+`Посредник` координирует обмен значениями через Связь(offers) - это канал связи
 
 	trait Broker[T] {
 	  def send(msg: T): Offer[Unit]
 	  val recv: Offer[T]
 	}
 
-.LP so that, when creating two offers
+.LP так что при создании двух сделок
 
 	val b: Broker[Int]
 	val sendOf = b.send(1)
 	val recvOf = b.recv
 
-.LP and <code>sendOf</code> and <code>recvOf</code> are both synchronized
+.LP и <code>sendOf</code> и <code>recvOf</code> оба синхронизированы
 
 	// In process 1:
 	sendOf.sync()
@@ -1201,52 +1185,46 @@ A `Broker` coordinates the exchange of values through offers -- it is the channe
 	// In process 2:
 	recvOf.sync()
 
-.LP both offers obtain and the value <code>1</code> is exchanged.
+.LP обе сделки обменяются значением <code>1</code>.
 
-Selective communication is performed by combining several offers with
-`Offer.choose`
+Выборочная связь осуществляется путем объединения нескольких сделок с помощью `Offer.choose`
 
 	def choose[T](ofs: Offer[T]*): Offer[T]
 
-.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.
+.LP что дает новые сделки, которые, при синхронизации, получают только один из <code>ofs</code> &mdash; первая из них станет доступной для дальнейших действий. Когда несколько доступны одновременно, один из них выбирается случайным образом.
 
-The `Offer` object has a number of one-off Offers that are used to compose with Offers from a Broker.
+Объект `Сделка` имеет ряд одноразовых сделок, которые используются для объединения со сделками посредника.
 
 	Offer.timeout(duration): Offer[Unit]
 
-.LP Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
+.LP эта сделка, которая активируется после передачи данного периода времени (duration). <code>Offer.never</code> никогда не получит данного значения, и <code>Offer.const(value)</code> сразу получает заданное значение. Они полезны при объединении, когда используется выборочная свзяь. Например, чтобы использовать задержку по времени операции отправки:
 
 	Offer.choose(
 	  Offer.timeout(10.seconds),
 	  broker.send("my value")
 	).sync()
 
-It may be tempting to compare the use of Offer/Broker to
-[SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
-but they are different in subtle but important ways. Offers can be composed in ways that such queues simply cannot. For example, consider a set of queues, represented as Brokers:
+Это может быть заманчивым, при использовании сравнения Сделка/Посредник с [SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
+но они отличаются небольшими, но важными деталями. Сделки могут быть составлены таким образом, что таких очередей просто не существует. Например, рассмотрим набор очередей, представленых как Посредников:
 
 	val q0 = new Broker[Int]
 	val q1 = new Broker[Int]
 	val q2 = new Broker[Int]
 	
-.LP Now let's create a merged queue for reading:
+.LP Теперь давайте создадим общую очередь для чтения:
 
 	val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
 	
-.LP <code>anyq</code> is an offer that will read from first available queue. Note that <code>anyq</code> is <em>still synchronous</em> &mdash; we still have the semantics of the underlying queues. Such composition is simply not possible using queues.
+.LP <code>anyq</code> является сделкой, которая будет читать из первой доступной очереди. Обратите внимание, что <code>anyq</code> является <em>все еще синхронизированной</em> - кроме этого у нас еще есть основная очередь. Такая композиция просто не возможна с использованием очередей.
 	
-#### Example: A Simple Connection Pool
+#### Пример: Простой пул соединений
 
-Connection pools are common in network applications, and they're often
-tricky to implement -- for example, it's often desirable to have
-timeouts on acquisition from the pool since various clients have different latency
-requirements. Pools are simple in principle: we maintain a queue of
-connections, and we satisfy waiters as they come in. With traditional
-synchronization primitives this typically involves keeping two queues:
-one of waiters (when there are no connections), and one of connections
-(when there are no waiters).
+Пулы подключений очень распространены в сетевых приложениях, и они часто
+сложно реализованы - например, часто желательно иметь задержку при запрос из пула, так как различные клиенты имеют разные задержки запросов. Пулы сами по себе просты: мы поддерживаем очереди соединений, и мы обслуживаем ожидающие объекты, как только они приходят. С традиционными
+примитивами синхронизации, это обычно подразумевает сохранение двух очередей: одна из ожидающих (когда у них нет соединений), и одна
+а из соединений (при отсутствии ожидающих).
 
-Using Offer/Brokers, we can express this quite naturally:
+Используя Сделка/Посредник, мы можем выразить это вполне естественно:
 
 	class Pool(conns: Seq[Conn]) {
 	  private[this] val waiters = new Broker[Conn]
@@ -1268,37 +1246,20 @@ Using Offer/Brokers, we can express this quite naturally:
 	  loop(Queue.empty ++ conns)
 	}
 
-`loop` will always offer to have a connection returned, but only offer
-to send one when the queue is nonempty. Using a persistent queue simplifies
-reasoning further. The interface to the pool is also through an Offer, so if a caller
-wishes to apply a timeout, they can do so through the use of combinators:
+`loop` всегда будет сделкой, чтобы иметь возможность восстановления связи, но только сделка моэет отправить сообщение, когда очередь не пуста. Использование стойких очередь упрощает дальнейшие рассуждения. Взаимодействие с пулом идет через сделку, поэтому, если вызывающий объект хочет использовать тайм-аут, он может это сделать с помощью комбинаторов:
 
 	val conn: Future[Option[Conn]] = Offer.choose(
 	  pool.get { conn => Some(conn) },
 	  Offer.timeout(1.second) { _ => None }
 	).sync()
 
-No extra bookkeeping was required to implement timeouts; this is due to
-the semantics of Offers: if `Offer.timeout` is selected, there is no
-longer an offer to receive from the pool -- the pool and its caller
-never simultaneously agreed to receive and send, respectively, on the
-`waiters` broker.
+Никаких дополнительных телодвижений не требуется для реализации тайм-аутов, это связано с семантикой сделки: если выбран `Offer.timeout`, не требуется больше сделке получать информацию их пула - пул и вызывающая функция никак не могут одновременно получать и отправлять данные, особенно, для `ожидающих` посредников.
 
-#### Example: Sieve of Eratosthenes
+#### Пример: Решето Эратосфена
 
-It is often useful -- and sometimes vastly simplifying -- to structure
-concurrent programs as a set of sequential processes that communicate
-synchronously. Offers and Brokers provide a set of tools to make this simple
-and uniform. Indeed, their application transcends what one might think
-of as "classic" concurrency problems -- concurrent programming (with
-the aid of Offer/Broker) is a useful *structuring* tool, just as
-subroutines, classes, and modules are -- another important 
-idea from CSP.
+Часто бывает полезно - а иногда и значительно упрощает жизнь - представление параллельных программ в виде набора последовательных процессов, которые взаимодействуют синхронно. Сделки и Посредники  предоставляют набор инструментов, чтобы сделать эту просто и единообразно. В самом деле, их применение выходит за рамки того, что можно считать "классическими" проблемами параллелизма - параллельное программирование (с помощи Сделки/Посредника) является полезным *структурированным* инструментом, таким же как подпрограммы, классы и модули.
 
-One example of this is the [Sieve of
-Eratosthenes](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes),
-which can be structured as a successive application of filters to a
-stream of integers. First, we'll need a source of integers:
+Одним из этих примеров является [Решето Эратосфена](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes), которая может быть структурирована как последовательное применение фильтров для потоков целых чисел. Во-первых, мы должны иметь источник целых чисел:
 
 	def integers(from: Int): Offer[Int] = {
 	  val b = new Broker[Int]
@@ -1307,7 +1268,7 @@ stream of integers. First, we'll need a source of integers:
 	  b.recv
 	}
 
-.LP <code>integers(n)</code> is simply the offer of all consecutive integers starting at <code>n</code>. Then we need a filter:
+.LP <code>integers(n)</code> это просто сделка всех последовательных целых чисел, начиная с <code>n</code>. Затем нужно отфильтровать:
 
 	def filter(in: Offer[Int], prime: Int): Offer[Int] = {
 	  val b = new Broker[Int]
@@ -1324,7 +1285,7 @@ stream of integers. First, we'll need a source of integers:
 	  b.recv
 	}
 
-.LP <code>filter(in, p)</code> returns the offer that removes multiples of the prime <code>p</code> from <code>in</code>. Finally, we define our sieve:
+.LP <code>filter(in, p)</code> возвращает сделку, которая извлекает множество простых чисел <code>p</code> из <code>in</code>. В конце концов мы составляем наше решето:
 
 	def sieve = {
 	  val b = new Broker[Int]
@@ -1336,25 +1297,20 @@ stream of integers. First, we'll need a source of integers:
 	  b.recv
 	}
 
-.LP <code>loop()</code> works simply: it reads the next (prime) number from <code>of</code>, and then applies a filter to <code>of</code> that excludes this prime. As <code>loop</code> recurses, successive primes are filtered, and we have a Sieve. We can now print out the first 10000 primes:
+.LP <code>loop()</code> работает просто: он читает следующее (простое) число из <code>of</code>, потом применяет фильтр <code>of</code>, который исключает это число. Так как <code>loop</code> - это рекурсия, то отфильтровывая последовательно простые числа, мы получваем наше решето. Теперь мы можем напечатать первые 10000 простых чисел:
 
 	val primes = sieve
 	0 until 10000 foreach { _ =>
 	  println(primes.sync()())
 	}
 
-Besides being structured into simple, orthogonal components, this
-approach gives you a streaming Sieve: you do not a-priori need to
-compute the set of primes you are interested in, further enhancing
-modularity.
+Помимо того, что все структурировано с помощью простых, базовых составляющих, этот подход дает вам потоковое решето: вам не нужна априорная информация, вычисляйте множество простых чисел, которые вам нужны, в дальнейшем повышая модульность.
 
-## Acknowledgments
+## Благодарности
 
-The lessons herein are those of Twitter's Scala community -- I hope
-I've been a faithful chronicler.
+Уроки в этом документе, принадлежат Scala сообществу в Twitter, - я надеюсь, Я был верным летописцем.
 
-Blake Matheny, Nick Kallen, Steve Gury, and Raghavendra Prabhu
-provided much helpful guidance and many excellent suggestions.
+Blake Matheny, Nick Kallen, Steve Gury, и Raghavendra Prabhu предоставили множество полезных советов и превосходных предложений
 
 [Scala]: http://www.scala-lang.org/
 [Finagle]: http://github.com/twitter/finagle
