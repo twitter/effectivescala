@@ -10,6 +10,7 @@
 
 <h2>Other languages</h2>
 <a href="index-ja.html">日本語</a>
+<a href="index-ru.html">Русский</a>
 
 
 ## Introduction
@@ -514,7 +515,7 @@ structures. Excessive focus on optimization is typically wasted
 effort. Remember Knuth's maxim: "Premature optimisation is the root of
 all evil."
 
-It is often approriate to use lower level collections in situations
+It is often appropriate to use lower level collections in situations
 that require better performance or space efficiency. Use arrays
 instead of lists for large sequences (the immutable `Vector`
 collections provides a referentially transparent interface to arrays);
@@ -1049,7 +1050,7 @@ are `private[this]`)
 	  _theField.get
 	}
 
-.LP i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
+.LP i.e., it computes a results and memorizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
 
 Lazy fields are thread safe.
 
@@ -1223,7 +1224,7 @@ A class member marked `private`,
 
 	private[this] val: Int = ..
 
-.LP which limits visibilty to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.
+.LP which limits visibility to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.
 
 #### Singleton class types
 
@@ -1546,7 +1547,7 @@ Selective communication is performed by combining several offers with
 
 	def choose[T](ofs: Offer[T]*): Offer[T]
 
-.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.
+.LP which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediately, one is chosen at random to obtain.
 
 The `Offer` object has a number of one-off Offers that are used to compose with Offers from a Broker.
 
