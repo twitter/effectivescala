@@ -136,7 +136,8 @@
 
 <h2>Other languages</h2>
 
-<p><a href="index-ja.html">日本語</a></p>
+<p><a href="index-ja.html">日本語</a>
+<a href="index-ru.html">Русский</a></p>
 
 <p><a id="Introduction" /></p>
 
@@ -682,7 +683,7 @@ structures. Excessive focus on optimization is typically wasted
 effort. Remember Knuth&rsquo;s maxim: &ldquo;Premature optimisation is the root of
 all evil.&rdquo;</p>
 
-<p>It is often approriate to use lower level collections in situations
+<p>It is often appropriate to use lower level collections in situations
 that require better performance or space efficiency. Use arrays
 instead of lists for large sequences (the immutable <code>Vector</code>
 collections provides a referentially transparent interface to arrays);
@@ -1479,7 +1480,7 @@ binary compatibility of your code.</p>
 <pre><code>private[this] val: Int = ..
 </code></pre>
 
-<p class="LP">which limits visibilty to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.</p>
+<p class="LP">which limits visibility to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.</p>
 
 <h4>Singleton class types</h4>
 
@@ -1832,7 +1833,7 @@ recvOf.sync()
 <pre><code>def choose[T](ofs: Offer[T]*): Offer[T]
 </code></pre>
 
-<p class="LP">which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediatley, one is chosen at random to obtain.</p>
+<p class="LP">which yields a new offer that, when synchronized, obtains exactly one of <code>ofs</code> &mdash; the first one to become available. When several are available immediately, one is chosen at random to obtain.</p>
 
 <p>The <code>Offer</code> object has a number of one-off Offers that are used to compose with Offers from a Broker.</p>
 
