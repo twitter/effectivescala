@@ -1553,7 +1553,7 @@ The `Offer` object has a number of one-off Offers that are used to compose with 
 
 	Offer.timeout(duration): Offer[Unit]
 
-.LP Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
+.LP Is an offer that activates after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
 
 	Offer.choose(
 	  Offer.timeout(10.seconds),
