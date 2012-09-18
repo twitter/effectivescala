@@ -11,6 +11,7 @@
 <h2>Перевод на другие языки</h2>
 <a href="index.html">English</a>
 <a href="index-ja.html">日本語</a>
+<a href="index-cn.html">简体中文</a>
 
 ## Введение
 
