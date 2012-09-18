@@ -137,7 +137,8 @@
 <h2>Other languages</h2>
 
 <p><a href="index-ja.html">日本語</a>
-<a href="index-ru.html">Русский</a></p>
+<a href="index-ru.html">Русский</a>
+<a href="index-cn.html">简体中文</a></p>
 
 <p><a id="Introduction" /></p>
 
@@ -1840,7 +1841,7 @@ recvOf.sync()
 <pre><code>Offer.timeout(duration): Offer[Unit]
 </code></pre>
 
-<p class="LP">Is an offer that activates after the given duration after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:</p>
+<p class="LP">Is an offer that activates after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:</p>
 
 <pre><code>Offer.choose(
   Offer.timeout(10.seconds),
