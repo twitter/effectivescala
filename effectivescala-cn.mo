@@ -67,7 +67,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <dt>不必重复名称在已经在package或object名称封装过的：</dt>
 <dd><pre><code>object User {
   def getUser(id: Int): Option[User]
-}</code></pre>よりも、
+}</code></pre>
 <pre><code>object User {
   def get(id: Int): Option[User]
 }</code></pre>相对 <code>get</code> 方法 <code>getUser</code> 中的User是多余的，并不能提供额外的信息。
@@ -950,7 +950,7 @@ scala固有的问题，你能够缓解GC的方法是产生更少的垃圾；但�
      // 改为这样:
      abstract class JavaAnimal extends Animal
 
-## Twitterの標準ライブラリ
+## Twitter标准库
 
 Twitter最重要的标准库是 [Util](http://github.com/twitter/util) 和 [Finagle](https://github.com/twitter/finagle)。Util 可以理解为Scala和Java的标准库扩展，提供了标准库中没有的功能或更合适的实现。Finagle 是我们的RPC系统，核心分布式系统组件。
 
