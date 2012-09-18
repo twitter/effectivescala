@@ -15,7 +15,7 @@
 
 ## 序言
 
-[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用scala些的，[我们也有一些大的库](http://github.com/twitter/)支持我们使用。虽然非常有效, Scala也是一门大的语言,经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：我们发现哪些可以高效的使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是法律，但不当的使用应该被调整。
+[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用scala写的，[我们也有一些大的库](http://github.com/twitter/)支持我们使用。虽然非常有效, Scala也是一门大的语言,经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：我们发现哪些可以高效的使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是法律，但不当的使用应该被调整。
 
 Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读的少就能更快的读，因此简洁增强了代码的清晰。然而简洁也是一把钝器(blunt tool)也可能起到相反的效果：在考虑正确性之后，也要为读者着想。
 
@@ -90,7 +90,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <dd>避免<pre><code>import com.twitter
 import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twitter.concurrent</code></pre>(译注，实际上面的import不能编译通过，第二个import应该为：import twitter.concurrent
 即import一个包实际是定义了这个包的别名。)</dd>
-<dt>将import放在文件的头部：く</dt>
+<dt>将import放在文件的头部：</dt>
 <dd> 读者可以在一个地方参考所有的引用。</dd>
 </dl>
 
@@ -106,7 +106,7 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
        x * x
      }
     
-.LP 尽管它用在区分方法体的语句构成很诱人.第一种选择更少凌乱，更容易读。避免语句上的繁文缛节，除非需要阐明。</em>。
+.LP 尽管它用在区分方法体的语句构成很诱人.第一种选择更少凌乱，更容易读。避免语句上的繁文缛节，除非需要阐明。</em>
 
 ### 模式匹配
 
@@ -151,7 +151,7 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
 
 我们使用类型系统反映这一目标，但读者需要留心：正确的使用类型可以增加清晰度，而过份聪明只会迷乱。
 
-Scala的强大类型系统是学术探索和实践共同来源(eg.[Type level programming in Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/) 。但这是一个迷人的学术话题,这些技术很少在应用和正式产品代码中使用。它们应该避免。
+Scala的强大类型系统是学术探索和实践共同来源(eg.[Type level programming in Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)) 。但这是一个迷人的学术话题,这些技术很少在应用和正式产品代码中使用。它们应该避免。
 
 ### 返回类型注释
 
@@ -176,13 +176,13 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
 
 不可变(invariants)是scala类型系统中高级部分，但也是必须的一面，应该使用广泛的(并且正确的)，它有助于子类型化的应用。
 
-*不可变(Immutable)集合应该是协变的(covariant)。方法接受的类型应该适当的降级(downgrade)：
+*不可变(Immutable)集合应该是协变的(covariant)*。方法接受的类型应该适当的降级(downgrade)：
 
      trait Collection[+T] {
        def add[U >: T](other: U): Collection[U]
      }
 
-*可变(mutable)集合应该是不可变的(invariant) 协变对于可变集合是典型无效的。考虑：
+*可变(mutable)集合应该是不可变的(invariant)*. 协变对于可变集合是典型无效的。考虑：
 
      trait HashSet[+T] {
        def add[U >: T](item: U)
@@ -308,16 +308,16 @@ EOF
 
 ### 集合的使用
 
-*优先使用不可变集合。不可变集合适用于大多数情况，让程序易于理解和推断，因为它们是引用透明的( referentially transparent )因此缺省也是线程安全的。
+*优先使用不可变集合*.不可变集合适用于大多数情况，让程序易于理解和推断，因为它们是引用透明的( referentially transparent )因此缺省也是线程安全的。
 
-*使用可变集合时，明确的引用可变集合的命名空间。不要用使用import scala.collection.mutable._  然后引用 Set ，应该用下面的方式替代：
+*使用可变集合时，明确的引用可变集合的命名空间*。不要用使用import scala.collection.mutable._  然后引用 Set ，应该用下面的方式替代：
 
      import scala.collections.mutable
      val set = mutable.Set()
 
 .LP 这样更明确在使用一个可变集合。
 
-*使用集合类型缺省的构造函数。每当你需要一个有序的序列(不需要链表语义)，用 Seq() 等诸如此类的方法构造：
+*使用集合类型缺省的构造函数*。每当你需要一个有序的序列(不需要链表语义)，用 Seq() 等诸如此类的方法构造：
 
      val seq = Seq(1, 2, 3)
      val set = Set(1, 2, 3)
@@ -371,7 +371,7 @@ anything about streams?
 
 在关注于低层次的细节之前,确保你使用的集合适合你。 确保你的数据结构没有不期望的渐进复杂度。各种scala集合的复杂性描述在[这儿](http://www.scala-lang.org/docu/files/collections-api/collections_40.html)。
 
-性能优化的第一条原则是理解你的应用为什么这么慢。不要使用空数据操作。在执行前分析你的应用。关注的第一点是热循环(hot loops) 和大数据结构.过度关注优化通常是浪费精力。记住Knuth(高德纳)的格言：“过早优化是万恶之源”。
+性能优化的第一条原则是理解你的应用为什么这么慢。不要使用空数据操作。在执行前分析^[[Yourkit](http://yourkit.com) 是一个很好的profiler]你的应用。关注的第一点是热循环(hot loops) 和大数据结构.过度关注优化通常是浪费精力。记住Knuth(高德纳)的格言：“过早优化是万恶之源”。
 
 如果是需要更高性能或者空间效率的场景，通常更适合使用低级的集合。对大序列使用数组替代列表(List) (不可变Vector提供了一个指称透明的转换到数组的接口) ，并考虑使用buffers替代直接序列的构造来提高性能。
 
@@ -488,7 +488,7 @@ Async*?
 每次进入while循环，我们工作在前一次迭代时污染过的状态。每个变量的值是那一分支所进入函数，当找到正确的位置时会在循环中return。
 (敏锐的读者会在Dijkstra的[“Go To声明是有害的”](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html)一文找到相似的观点)
 
-考虑尾递归的实现：
+考虑尾递归的实现^[From [Finagle's heap balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41)]:
 
      @tailrec
      final def fixDown(heap: Array[T], i: Int, j: Int) {
