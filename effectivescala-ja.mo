@@ -11,6 +11,7 @@
 <h2>他の言語</h2>
 <a href="index.html">English</a>
 <a href="index-ru.html">Русский</a>
+<a href="index-cn.html">简体中文</a>
 
 ## 序章
 
