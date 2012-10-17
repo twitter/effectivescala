@@ -17,6 +17,7 @@
 <style>	
 	body {
 		font-family: "ff-meta-serif-web-pro", times, serif;
+		font-size: 17px;
 		margin: 0 1.0in 0 1.0in;
 /*		line-height: 1.3em;*/
 	}
