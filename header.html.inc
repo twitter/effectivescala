@@ -55,7 +55,7 @@
 	}
 	
 	h1 {
-		font-family: "prenton-condensed";
+		font-family: "proxima-nova";
 	}
 	
 	h2 {
