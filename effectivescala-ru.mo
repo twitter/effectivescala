@@ -1008,7 +1008,7 @@ Scala предоставляет синтаксический сахар для 
 	// А так можно:
 	abstract class JavaAnimal extends Animal
 
-## Стандартные билиотеки Twitter
+## Стандартные библиотеки Twitter
 
 Наиболее важными стандартными библиотеками в Twitter являются
 [Util](http://github.com/twitter/util) и [Finagle](https://github.com/twitter/finagle). Util должна 
