@@ -1311,7 +1311,7 @@ garbage collection concerns are largely similar to those of Java
 though idiomatic Scala code tends to generate more (short-lived)
 garbage than idiomatic Java code -- a byproduct of the functional
 style. Hotspot's generational garbage collection typically makes this
-a nonissue as short lived garbage effectively free in most circumstances
+a nonissue as short-lived garbage is effectively free in most circumstances.
 
 Before tackling GC performance issues, watch
 [this](http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter)
