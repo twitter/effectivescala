@@ -1253,6 +1253,57 @@ they provide a very nice shorthand for doing reflection.
 	val obj: AnyRef
 	obj.asInstanceOf[{def close()}].close()
 
+## Error handling
+
+Scala provides an exception facility, but do not use it for
+commonplace errors, when the programmer must handle errors properly
+for correctness. Instead, encode such errors explicitly: using
+`Option` or `com.twitter.util.Try` are good, idiomatic choices, as
+they harness the type system to ensure that the user is properly
+considering error handling.
+
+For example, when designing a repository, the following API may 
+be tempting:
+
+	trait Repository[Key, Value] {
+	  def get(key: Key): Value
+	}
+
+.LP but this would require the implementor to throw an exception when the key is absent. A better approach is to use an <code>Option</code>:
+
+	trait Repository[Key, Value] {
+	  def get(key: Key): Option[Value]
+	}
+
+.LP This interface makes it obvious that the repository may not contain every key, and that the programmer must handle missing keys.  Furthermore, <code>Option</code> has a number of combinators to handle these cases. For example, <code>getOrElse</code> is used to supply a default value for missing keys:
+
+	val repo: Repository[Int, String]
+	repo.get(123) getOrElse "defaultString"
+
+### Handling exceptions
+
+Because Scala's exception mechanism isn't *checked* -- the compiler
+cannot statically tell whether the programmer has covered the set of
+possible exceptions -- it is often tempting to cast a wide net when
+handling exceptions.
+
+However, some exceptions are *fatal* and should never be caught; the
+code
+
+	try {
+	  operation()
+	} catch {
+	  case _ => ...
+	}
+
+.LP is almost always wrong, as it would catch fatal errors that need to be propagated. Instead, use the <code>com.twitter.util.NonFatal</code> extractor to handle only nonfatal exceptions.
+
+	try {
+	  operation()
+	} catch {
+	  case NonFatal(exc) => ...
+	}
+
 ## Garbage collection
 
 We spend a lot of time tuning garbage collection in production. The

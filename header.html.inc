@@ -16,7 +16,7 @@
 
 <style>	
 	body {
-		font-family: "ff-meta-serif-web-pro", times, serif;
+		font-family: "ff-meta-serif-web-pro", Georgia, serif;
 		text-rendering: optimizeLegibility;
 		font-size: 17px;
 		margin: 0 1.0in 0 1.0in;
