@@ -16,7 +16,7 @@
 
 <style>	
 	body {
-		font-family: "ff-meta-serif-web-pro", times, serif;
+		font-family: "ff-meta-serif-web-pro", Georgia, serif;
 		text-rendering: optimizeLegibility;
 		font-size: 17px;
 		margin: 0 1.0in 0 1.0in;
@@ -130,6 +130,7 @@
 <li><strong><a href="#Control structures">Control structures</a></strong>: <em><a href="#Control structures-Recursion">Recursion</a></em>, <em><a href="#Control structures-Returns">Returns</a></em>, <em><a href="#Control structures-`for` loops and comprehensions"><code>for</code> loops and comprehensions</a></em>, <em><a href="#Control structures-`require` and `assert`"><code>require</code> and <code>assert</code></a></em></li>
 <li><strong><a href="#Functional programming">Functional programming</a></strong>: <em><a href="#Functional programming-Case classes as algebraic data types">Case classes as algebraic data types</a></em>, <em><a href="#Functional programming-Options">Options</a></em>, <em><a href="#Functional programming-Pattern matching">Pattern matching</a></em>, <em><a href="#Functional programming-Partial functions">Partial functions</a></em>, <em><a href="#Functional programming-Destructuring bindings">Destructuring bindings</a></em>, <em><a href="#Functional programming-Lazyness">Lazyness</a></em>, <em><a href="#Functional programming-Call by name">Call by name</a></em>, <em><a href="#Functional programming-`flatMap`"><code>flatMap</code></a></em></li>
 <li><strong><a href="#Object oriented programming">Object oriented programming</a></strong>: <em><a href="#Object oriented programming-Dependency injection">Dependency injection</a></em>, <em><a href="#Object oriented programming-Traits">Traits</a></em>, <em><a href="#Object oriented programming-Visibility">Visibility</a></em>, <em><a href="#Object oriented programming-Structural typing">Structural typing</a></em></li>
+<li><strong><a href="#Error handling">Error handling</a></strong>: <em><a href="#Error handling-Handling exceptions">Handling exceptions</a></em></li>
 <li><strong><a href="#Garbage collection">Garbage collection</a></strong></li>
 <li><strong><a href="#Java compatibility">Java compatibility</a></strong></li>
 <li><strong><a href="#Twitter's standard libraries">Twitter&rsquo;s standard libraries</a></strong>: <em><a href="#Twitter's standard libraries-Futures">Futures</a></em>, <em><a href="#Twitter's standard libraries-Offer/Broker">Offer/Broker</a></em></li>
@@ -575,7 +576,7 @@ distinctions for both <code>immutable</code> and <code>mutable</code> hierarchie
 
 <p><img src="coll.png" style="margin-left: 3em;" /></p>
 
-<p class="LP"><code>Iterable[T]</code> is any collection that may be iterated over, they provides an <code>iterator</code> method (and thus <code>foreach</code>). <code>Seq[T]</code>s are collections that are <em>ordered</em>, <code>Set[T]</code>s are mathematical sets (unordered collections of unique items), and <code>Map[T]</code>s are associative arrays, also unordered.</p>
+<p class="LP"><code>Iterable[T]</code> is any collection that may be iterated over, they provide an <code>iterator</code> method (and thus <code>foreach</code>). <code>Seq[T]</code>s are collections that are <em>ordered</em>, <code>Set[T]</code>s are mathematical sets (unordered collections of unique items), and <code>Map[T]</code>s are associative arrays, also unordered.</p>
 
 <p><a id="Collections-Use" /></p>
 
@@ -1514,6 +1515,66 @@ they provide a very nice shorthand for doing reflection.</p>
 
 <pre><code>val obj: AnyRef
 obj.asInstanceOf[{def close()}].close()
+</code></pre>
+
+<p><a id="Error handling" /></p>
+
+<h2>Error handling</h2>
+
+<p>Scala provides an exception facility, but do not use it for
+commonplace errors, when the programmer must handle errors properly
+for correctness. Instead, encode such errors explicitly: using
+<code>Option</code> or <code>com.twitter.util.Try</code> are good, idiomatic choices, as
+they harness the type system to ensure that the user is properly
+considering error handling.</p>
+
+<p>For example, when designing a repository, the following API may
+be tempting:</p>
+
+<pre><code>trait Repository[Key, Value] {
+  def get(key: Key): Value
+}
+</code></pre>
+
+<p class="LP">but this would require the implementor to throw an exception when the key is absent. A better approach is to use an <code>Option</code>:</p>
+
+<pre><code>trait Repository[Key, Value] {
+  def get(key: Key): Option[Value]
+}
+</code></pre>
+
+<p class="LP">This interface makes it obvious that the repository may not contain every key, and that the programmer must handle missing keys.  Furthermore, <code>Option</code> has a number of combinators to handle these cases. For example, <code>getOrElse</code> is used to supply a default value for missing keys:</p>
+
+<pre><code>val repo: Repository[Int, String]
+repo.get(123) getOrElse &quot;defaultString&quot;
+</code></pre>
+
+<p><a id="Error handling-Handling exceptions" /></p>
+
+<h3>Handling exceptions</h3>
+
+<p>Because Scala&rsquo;s exception mechanism isn&rsquo;t <em>checked</em> &mdash; the compiler
+cannot statically tell whether the programmer has covered the set of
+possible exceptions &mdash; it is often tempting to cast a wide net when
+handling exceptions.</p>
+
+<p>However, some exceptions are <em>fatal</em> and should never be caught; the
+code</p>
+
+<pre><code>try {
+  operation()
+} catch {
+  case _ =&gt; ...
+}
+</code></pre>
+
+<p class="LP">is almost always wrong, as it would catch fatal errors that need to be propagated. Instead, use the <code>com.twitter.util.NonFatal</code> extractor to handle only nonfatal exceptions.</p>
+
+<pre><code>try {
+  operation()
+} catch {
+  case NonFatal(exc) =&gt; ...
+}
 </code></pre>
 
 <p><a id="Garbage collection" /></p>
