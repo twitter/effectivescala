@@ -1180,7 +1180,7 @@ factory types.
 ### Traits
 
 Dependency injection does not at all preclude the use of common *interfaces*, or
-the implemention of common code in traits. Quite contrary-- the use of traits are
+the implementation of common code in traits. Quite contrary-- the use of traits are
 highly encouraged for exactly this reason: multiple interfaces
 (traits) may be implemented by a concrete class, and common code can
 be reused across all such classes.
@@ -1509,7 +1509,7 @@ and there is no default implementation. *Cancellation is but a hint*.
 Util's
 [`Local`](https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40)
 provides a reference cell that is local to a particular future dispatch tree. Setting the value of a local makes this
-value available to any computation deferred by a Future in the same thread. They are analagous to thread locals,
+value available to any computation deferred by a Future in the same thread. They are analogous to thread locals,
 except their scope is not a Java thread but a tree of "future threads". In
 
 	trait User {
