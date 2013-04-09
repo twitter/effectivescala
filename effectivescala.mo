@@ -206,7 +206,7 @@ provide API documentation. Use the following style:
 	 */
 
 Do not resort to ASCII art or other visual embellishments. Document
-APIs but do not add unecessary comments. If you find yourself adding
+APIs but do not add unnecessary comments. If you find yourself adding
 comments to explain the behavior of your code, ask first if it can be
 restructured so that it becomes obvious what it does. Prefer
 "obviously it works" to "it works, obviously" (with apologies to Hoare).
