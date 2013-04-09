@@ -206,7 +206,7 @@ provide API documentation. Use the following style:
 	 */
 
 Do not resort to ASCII art or other visual embellishments. Document
-APIs but do not add unecessary comments. If you find yourself adding
+APIs but do not add unnecessary comments. If you find yourself adding
 comments to explain the behavior of your code, ask first if it can be
 restructured so that it becomes obvious what it does. Prefer
 "obviously it works" to "it works, obviously" (with apologies to Hoare).
@@ -1180,7 +1180,7 @@ factory types.
 ### Traits
 
 Dependency injection does not at all preclude the use of common *interfaces*, or
-the implemention of common code in traits. Quite contrary-- the use of traits are
+the implementation of common code in traits. Quite contrary-- the use of traits are
 highly encouraged for exactly this reason: multiple interfaces
 (traits) may be implemented by a concrete class, and common code can
 be reused across all such classes.
@@ -1247,7 +1247,7 @@ It's common in Scala to create singleton class types, for example
 
 Do not use structural types in normal use. They are a convenient and
 powerful feature, but unfortunately do not have an efficient
-implementation on the JVM. However -- due to an implemenation quirk -- 
+implementation on the JVM. However -- due to an implementation quirk -- 
 they provide a very nice shorthand for doing reflection.
 
 	val obj: AnyRef
@@ -1509,7 +1509,7 @@ and there is no default implementation. *Cancellation is but a hint*.
 Util's
 [`Local`](https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40)
 provides a reference cell that is local to a particular future dispatch tree. Setting the value of a local makes this
-value available to any computation deferred by a Future in the same thread. They are analagous to thread locals,
+value available to any computation deferred by a Future in the same thread. They are analogous to thread locals,
 except their scope is not a Java thread but a tree of "future threads". In
 
 	trait User {
