@@ -1247,7 +1247,7 @@ It's common in Scala to create singleton class types, for example
 
 Do not use structural types in normal use. They are a convenient and
 powerful feature, but unfortunately do not have an efficient
-implementation on the JVM. However -- due to an implemenation quirk -- 
+implementation on the JVM. However -- due to an implementation quirk -- 
 they provide a very nice shorthand for doing reflection.
 
 	val obj: AnyRef
