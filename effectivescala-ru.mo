@@ -72,7 +72,7 @@ Scala предоставляет множество инструментов, к
 <dd>Используйте <code>typ</code> вместо <code>`type</code>`</dd>
 <dt>Используйте в имени active для операций с побочными эффектами</dt>
 <dd><code>user.activate()</code> вместо <code>user.setActive()</code></dd>
-<dt>Используйте описательные имен для методов, которые возвращают значения</dt>
+<dt>Используйте описательные имена для методов, которые возвращают значения</dt>
 <dd><code>src.isDefined</code> вместо <code>src.defined</code></dd>
 <dt>Не используйте у геттеров(getter) префикс <code>get</code></dt>
 <dd>В соответствии с предыдущим правилом: лучше применять <code>site.count</code> вместо <code>site.getCount</code></dd>
