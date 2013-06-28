@@ -22,7 +22,8 @@ out=/tmp/effectivescala.$$
 
 trap "rm -fr $out" 0 1 2
 
-git clone -b gh-pages git@github.com:twitter/effectivescala.git $out
+GITHUB_ORG=${GITHUB_ORG:-twitter}
+git clone -b gh-pages git@github.com:${GITHUB_ORG}/effectivescala.git $out
 cp $* $out
 cd $out
 git add .
