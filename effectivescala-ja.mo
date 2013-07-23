@@ -704,7 +704,7 @@ elaborate..
 	}
 
 
-ただ、2つのコンストラクタ(`apply`) を利用する場合のみ、[カスタム抽出子] (http://www.scala-lang.org/node/112) を書く。
+ただ、2つのコンストラクタ(`apply`) を利用する場合のみ、[カスタム抽出子](http://www.scala-lang.org/node/112) を書く。
 さもなければ不自然になる可能性がある。
 
 
