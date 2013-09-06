@@ -15,13 +15,13 @@
 
 ## 序言
 
-[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用scala写的，[我们也有一些大的库](http://github.com/twitter/)支持我们使用。虽然非常有效, Scala也是一门大的语言,经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：我们发现哪些可以高效的使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是法律，但不当的使用应该被调整。
+[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用Scala写的，[我们也有一些大的库](http://github.com/twitter/)支持我们使用。Scala是一门高效并且庞大(large)的语言，经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：我们发现哪些可以高效的使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用Scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是法律，但不当的使用应该被调整。
 
-Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读的少就能更快的读，因此简洁增强了代码的清晰。然而简洁也是一把钝器(blunt tool)也可能起到相反的效果：在考虑正确性之后，也要为读者着想。
+Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读的少就能读的快，简洁使代码更清晰。然而简洁也是一把钝器(blunt tool)也可能起到相反的效果：在考虑正确性之后，也要为读者着想。
 
-首先，用scala编程，你不是在写java，haskell或python；scala程序不像这其中的任何一种。为了高效的使用语言，你必须用其术语表达你的问题。 强制把java程序转成scala程序是无用的，因为大多数情况下它会不如原来的。
+首先，用Scala编程，你不是在写Java，Haskell或Python；Scala程序不像这其中的任何一种。为了高效的使用语言，你必须用其术语表达你的问题。 强制把Java程序转成Scala程序是无用的，因为大多数情况下它会不如原来的。
 
-这不是对scala的一篇介绍，我们假定读者熟悉这门语言。这儿有些学习scala的资源：
+这不是对Scala的一篇介绍，我们假定读者熟悉这门语言。这儿有些学习Scala的资源：
 
 * [Scala School](http://twitter.github.com/scala_school/)
 * [Learning Scala](http://www.scala-lang.org/node/1305)
@@ -36,13 +36,13 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 
 代码格式化的规范 - 只要它们实用，并不重要。它的定义形式没有先天的好与坏，几乎每个人都有自己的偏好。然而，对于一致的应用采用同一格式化规则的总会增加可读性。已经熟悉某种特定风格的读者不必非要去掌握另一套当地习惯，或译解另一个角落里的语言语法。
 
-这对scala来说也特别重要，因为它的语法高度的重叠。一个例子是方法调用：方法调用可以用"."后边跟圆括号，或不使用"."后边用空格加不带圆括号(针对空元或一元方法)方式调用。此外，不同风格的方法调用揭露了它们在语法上不同的分歧(ambiguities)。当然一致的应用慎重的选择一组格式化规则，对人和机器来说都会消除大量的歧义。
+这对Scala来说也特别重要，因为它的语法高度的重叠。一个例子是方法调用：方法调用可以用"."后边跟圆括号，或不使用"."后边用空格加不带圆括号(针对空元或一元方法)方式调用。此外，不同风格的方法调用揭露了它们在语法上不同的分歧(ambiguities)。当然一致的应用慎重的选择一组格式化规则，对人和机器来说都会消除大量的歧义。
 
-我们依着[scala style guide](http://docs.scala-lang.org/style/) 增加了以下规则：
+我们依着[Scala style guide](http://docs.scala-lang.org/style/) 增加了以下规则：
 
 ### 空格
 
-用两个空格缩紧。避免每行长度超过100列。在两个方法、类、对象定义之间使用一个空白行。
+用两个空格缩进。避免每行长度超过100列。在两个方法、类、对象定义之间使用一个空白行。
 
 ### 命名
 
@@ -54,23 +54,26 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 </dd>
 <dt>使用通用的缩写，避开隐秘难懂的缩写：</dt>
 <dd>例如每个人都知道 <code>ok</code>,<code>err</code>, <code>defn</code>等缩写的意思，而<code>sfri</code>是不常用的。</dd>
-<dt>不要重新绑定名字到不同的用处：</dt>
-<dd><code>vals</code>(注：scala中的不可变类型)</dd>
-<dt>避免用 <code>`</code>s </dt>
-<dd>用<code>typ</code>替代 <code>`type</code>`</dd>
-<dt>用active命名有副作用的操作：</dt>
+<dt>不要在不同用途时重用同样的名字：</dt>
+<dd>使用<code>val</code>(注：Scala中的不可变类型)</dd>
+<dt>避免用 <code>`</code>声明保留字变量：</dt>
+<dd>用<code>typ</code>替代 <code>`type`</code></dd>
+<dt>用主动语态(active)来命名有副作用的操作：</dt>
 <dd><code>user.activate()</code>而非 <code>user.setActive()</code> </dd>
 <dt>对有返回值的方法用可描述的名字：</dt>
 <dd><code>src.idDefined</code> 而非<code>src.defined</code></dd>
 <dt>getters不采用前缀<code>get</code>：</dt>
 <dd>用get是多余的: <code>site.count</code>而非<code>site.getCount</code></dd>
-<dt>不必重复名称在已经在package或object名称封装过的：</dt>
-<dd><pre><code>object User {
-  def getUser(id: Int): Option[User]
-}</code></pre>
+<dt>不必重复已经被package或object封装过的名字：</dt>
+<dd>使用：
 <pre><code>object User {
   def get(id: Int): Option[User]
-}</code></pre>相对 <code>get</code> 方法 <code>getUser</code> 中的User是多余的，并不能提供额外的信息。
+}</code></pre>
+而非：
+<pre><code>object User {
+  def getUser(id: Int): Option[User]
+}</code></pre>
+相比 <code>get</code> 方法 <code>getUser</code> 方法中的User是多余的，并不能提供额外的信息。
 </dd>
 </dl>
 
@@ -82,10 +85,11 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <dd>这对视觉上的检查很方便，对自动操作也很简单。</dd>
 <dt>当从一个包中引入多个时，用花括号：</dt>
 <dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
-<dt>当引入的超过6个，用通配符：</dt>
+<dt>当引入超过6个时使用通配符：</dt>
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />不要轻率的使用: 一些包导入了太多的名字</dd>
-<dt>当引入集合的时候，用import scala.collections.immutable(不可变集合)或scala.collections.mutable(可变集合)限定名称可变和不可变集合有两个类名.限定名称让读者很明确知道使用的是哪个变量(e.g. "<code>immutable.Map</code>")</dd>
+<dt>当引入集合的时候，用<code>import scala.collections.immutable</code>(不可变集合)或<code>scala.collections.mutable</code>(可变集合)修饰集合类名</dt>
+<dd>可变集合和不可变集合有同样的类名.修饰名让读者能明确知道使用的是哪个变体(variant)(e.g. "<code>immutable.Map</code>")</dd>
 <dt>不要使用来自其它包的相对引用：</dt>
 <dd>避免<pre><code>import com.twitter
 import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twitter.concurrent</code></pre>(译注，实际上面的import不能编译通过，第二个import应该为：import twitter.concurrent
@@ -99,18 +103,18 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
 花括号用于创建复合表达式，复合表达式的返回值是最后一个表达式。避免对简单的表达式采用花括号；写成：
 
      def square(x: Int) = x*x
-    
+
 .LP 而不是：
 
      def square(x: Int) = {
        x * x
      }
-    
-.LP 尽管它用在区分方法体的语句构成很诱人.第一种选择更少凌乱，更容易读。避免语句上的繁文缛节，除非需要阐明。</em>
+
+.LP 尽管它用在区分方法体的语句构成很诱人。第一种选择更少凌乱，更容易读。避免语句上的繁文缛节，除非需要阐明。</em>
 
 ### 模式匹配
 
-每当可应用的时候，直接在函数定义的地方使用模式匹配。例如，下面的写法 match应该被折叠起来(collapse)
+尽可能直接在函数定义的地方使用模式匹配。例如，下面的写法 match应该被折叠起来(collapse)
 
      list map { item =>
        item match {
@@ -118,7 +122,7 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
          case None => default
        }
      }
-    
+
 .LP 用下面的写法替代：
 
      list map {
@@ -136,7 +140,7 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
       * ServiceBuilder builds services
       * ...
       */
-     
+
 .LP 而非标准的ScalaDoc风格：
 
      /** ServiceBuilder builds services
@@ -149,22 +153,22 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
 
 类型系统的首要目的是检测程序错误，类型系统有效的提供了一个静态检测的有限形式，允许我们代码中明确某种类型的变量并且编译器可以验证。类型系统当然也提供了其他好处，但错误检测是他存在的理由(Raison d’Être)
 
-我们使用类型系统反映这一目标，但读者需要留心：正确的使用类型可以增加清晰度，而过份聪明只会迷乱。
+我们对类型系统的使用反映了这一目标，但需要留心读者：明智的使用类型可以增加清晰度，而过于聪明只会使人迷惑（译注：应该是指过分使用Scala的类型推断而省略了太多类型声明）。
 
 Scala的强大类型系统是学术探索和实践共同来源(eg.[Type level programming in Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)) 。但这是一个迷人的学术话题,这些技术很少在应用和正式产品代码中使用。它们应该避免。
 
-### 返回类型注释
+### 返回类型注解(annotation)
 
-Scala允许返回类型是可以省略的，而注释提供了很好的文档：这对public方法特别重要。而一个方法不需要对外暴露并且它的返回值类型是显而易见的，则可以直接省略。
+Scala允许返回类型是可以省略的，而注解提供了很好的文档：这对public方法特别重要。而一个方法不需要对外暴露并且它的返回值类型是显而易见的，则可以直接省略。
 
-这对用混入(mixin)实例化对象时很重要，scala编译器为这些创造了单类。例如：
+在使用混入(mixin)实例化对象时这一点尤其重要，Scala编译器为这些创造了单类。例如：
 
      trait Service
      def make() = new Service {
        def getId = 123
      }
 
-.LP 上面的make不需要不需要定义返回类型为Service；编译器会创建一个加工过的类型: Object with Service{def getId:Int}. (译注:with是scala里的mixin的语法)而不必用一个显式的注释：
+.LP 上面的make<em>不需要</em>定义返回类型为Service；编译器会创建一个加工过的类型: Object with Service{def getId:Int}. (译注:with是Scala里的mixin的语法)而不必用一个显式的注解：
 
      def make(): Service = new Service{}
 
@@ -172,9 +176,9 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
 
 ### 变型
 
-变型(Variance)发生在泛型与子类型化(subtyping)结合的时候。与容器类型的子类型化有关，它们定义了对所包含的类型如何子类型化。因为scala有声明点变型(declaration site variance)注释，公共库的作者——特别是集合——必须有丰富的注释器。这些注释对共享代码的可用性很重要，但滥用也会很危险。
+变型(Variance)发生在泛型与子类型化(subtyping)结合的时候。与容器类型的子类型化有关，它们定义了对所包含的类型如何子类型化。因为Scala有声明点变型(declaration site variance)注释，公共库的作者——特别是集合——必须有丰富的注释器。这些注释对共享代码的可用性很重要，但滥用也会很危险。
 
-不可变(invariants)是scala类型系统中高级部分，但也是必须的一面，应该使用广泛的(并且正确的)，它有助于子类型化的应用。
+不可变(invariants)是Scala类型系统中高级部分，但也是必须的一面，应该使用广泛的(并且正确的)，它有助于子类型化的应用。
 
 *不可变(Immutable)集合应该是协变的(covariant)*。方法接受的类型应该适当的降级(downgrade)：
 
@@ -234,7 +238,7 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
 当使用类型别名的时候不要使用子类型化(subtyping)
 
      trait SocketFactory extends (SocketAddress => Socket)
-    
+
 .LP SocketFactory 是一个生产Socket的方法。使用一个类型别名更好：
 
      type SocketFactory = SocketAddress => Socket
@@ -259,7 +263,7 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
 
 隐式转换是类型系统里一个强大的功能，但应当谨慎的使用。它们有复杂的解决规则为难你——通过简单的词法检查——领会实际发生了什么。在下面的场景使用隐式转换是OK的：
 
-* 扩展或增加一个scala风格的集合
+* 扩展或增加一个Scala风格的集合
 * 适配或扩展一个对象(pimp my library模式）（译注参见：http://www.artima.com/weblogs/viewpost.jsp?thread=179766)
 * 通过提供约束证据来加强类型安全。(Use to enhance type safety by providing constraint evidence)
 * To provide type evidence (typeclassing，不知怎么翻译，haskell中的概念，主要通过隐式转换来实现)
@@ -273,7 +277,7 @@ variance, invariant 也翻译为 可变和不可变，（variance也翻译为“
 
 ## 集合
 
-Scala有一个非常通用，丰富，强大，可组合的集合库；集合是高阶的(high level)并暴露了一大套操作方法。很多集合的处理和转换可以被表达的简洁又可读，但粗心的用它的功能也导致相反的结果。每个scala程序员应该阅读 集合设计文档；通过它可以很好的洞察集合库，并了解设计动机。
+Scala有一个非常通用，丰富，强大，可组合的集合库；集合是高阶的(high level)并暴露了一大套操作方法。很多集合的处理和转换可以被表达的简洁又可读，但粗心的用它的功能也导致相反的结果。每个Scala程序员应该阅读 集合设计文档；通过它可以很好的洞察集合库，并了解设计动机。
 
 总使用最简单的集合来满足你的需求
 
@@ -335,8 +339,8 @@ anything about streams?
 
 ### 风格
 
-函数式编程鼓励使用流水线转换将一个不可变的集合塑造为想要的结果。这常常会有非常简明的方案，但也容易迷糊读者——很难领悟作者的意图，或跟踪所有隐含的中间结果。例如，我们想要汇集不同的程序语言的投票从一组语言中(语言，票数)，按照得票的顺序显示：
-    
+函数式编程鼓励使用流水线转换将一个不可变的集合塑造为想要的结果。这常常会有非常简明的方案，但也容易迷惑读者——很难领悟作者的意图，或跟踪所有隐含的中间结果。例如，我们想要从一组投票结果(语言，票数)中统计不同程序语言的票数并按照得票的顺序显示：
+
      val votes = Seq(("scala", 1), ("java", 4), ("scala", 10), ("scala", 1), ("python", 10))
      val orderedVotes = votes
        .groupBy(_._1)
@@ -369,7 +373,7 @@ anything about streams?
 
 高阶集合库（通常也伴随高阶构造)使推理性能更加困难：你越偏离直接指示计算机——即命令式风格——就越难准确预测一段代码的性能影响。然而推理正确性通常很容易；可读性也是加强的。在java运行时使用Scala使得情况更加复杂，Scala对你隐藏了装箱(boxing)/拆箱(unboxing)操作，可能引发严重的性能或内存空间问题。
 
-在关注于低层次的细节之前,确保你使用的集合适合你。 确保你的数据结构没有不期望的渐进复杂度。各种scala集合的复杂性描述在[这儿](http://www.scala-lang.org/docu/files/collections-api/collections_40.html)。
+在关注于低层次的细节之前,确保你使用的集合适合你。 确保你的数据结构没有不期望的渐进复杂度。各种Scala集合的复杂性描述在[这儿](http://www.scala-lang.org/docu/files/collections-api/collections_40.html)。
 
 性能优化的第一条原则是理解你的应用为什么这么慢。不要使用空数据操作。在执行前分析^[[Yourkit](http://yourkit.com) 是一个很好的profiler]你的应用。关注的第一点是热循环(hot loops) 和大数据结构.过度关注优化通常是浪费精力。记住Knuth(高德纳)的格言：“过早优化是万恶之源”。
 
@@ -380,7 +384,7 @@ anything about streams?
 使用 scala.collection.JavaConverters 与java集合交互。有一系列的隐式的用于Java与Scala的转换。有助于读者，使用下面的方式确保转换是显式的：
 
      import scala.collection.JavaConverters._
-    
+
      val list: java.util.List[Int] = Seq(1,2,3,4).asJava
      val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
 
@@ -493,7 +497,7 @@ Async*?
      @tailrec
      final def fixDown(heap: Array[T], i: Int, j: Int) {
        if (j < i*2) return
-    
+
        val m = if (j == i*2 || heap(2*i) < heap(2*i+1)) 2*i else 2*i + 1
        if (heap(m) < heap(i)) {
          swap(heap, i, m)
@@ -517,11 +521,11 @@ Returns可以用于切断分支建立不变量(establish invariants)。这帮助
      def compare(a: AnyRef, b: AnyRef): Int = {
        if (a eq b)
          return 0
-    
+
        val d = System.identityHashCode(a) compare System.identityHashCode(b)
        if (d != 0)
          return d
-        
+
        // slow path..
      }
 
@@ -534,7 +538,7 @@ Returns可以用于切断分支建立不变量(establish invariants)。这帮助
        else             return "th"
      }
 
-.LP 上面是针对命令式语言的，在scala中鼓励省略return
+.LP 上面是针对命令式语言的，在Scala中鼓励省略return
 
      def suffix(i: Int) =
        if      (i == 1) "st"
@@ -556,10 +560,10 @@ Returns可以用于切断分支建立不变量(establish invariants)。这帮助
      seq foreach { elem =>
        if (elem.isLast)
          return
-      
+
        // process...
      }
-    
+
 .LP 在字节码层实现时会包含一个异常的捕获/声明(catching/throwing)对，用在频繁的执行的代码中，会有性能影响。
 
 ### for循环和for推导
@@ -663,14 +667,14 @@ Option还有一个方便的构造器用于包装空值(nullable value)
 
 ### 模式匹配
 
-模式匹配(x match { …) 在scala代码中无处不在：用于合并条件执行、解构(destructuring) 、在构造中造型。使用好模式匹配可以增加程序的明晰和安全。
+模式匹配(x match { …) 在Scala代码中无处不在：用于合并条件执行、解构(destructuring) 、在构造中造型。使用好模式匹配可以增加程序的明晰和安全。
 使用模式匹配实现类型转换：
 
      obj match {
        case str: String => ...
        case addr: SocketAddress => ...
 
- 
+
 模式匹配联合使用解构(destructuring)时效果最好（例如你要匹配case类）；下面的写法
 
      animal match {
@@ -758,7 +762,7 @@ Scala提供了定义偏函数(PartialFunction)的语法快捷：
 
 ### 惰性赋值
 
-当使用lazy修饰一个val成员时，其赋值情况是在需要时才赋值的(by need) 因为scala中成员与方法是等价的（除了private[this]成员）
+当使用lazy修饰一个val成员时，其赋值情况是在需要时才赋值的(by need) 因为Scala中成员与方法是等价的（除了private[this]成员）
 
      lazy val field = computation()
 
@@ -789,13 +793,13 @@ Lazy成员是线程安全的。
 ### `flatMap`
 
 flatMap——结合了map 和 flatten —— 要特别小心，它有着难以琢磨的威力和强大的实用性。类似它的兄弟 map，它也是经常在非传统的集合中使用的，例如 Future , Option.它的行为由它的签名揭示；对于一些容器 Container[A]
- 
+
      flatMap[B](f: A => Container[B]): Container[B]
 
 .LP flatMap对集合中的每个元素调用了 函数 f 产生一个新的集合，将它们全部 flatten 后放入结果中
 
 例如，获取两个字符的所有排列，相同的字符不能出现两次
- 
+
      val chars = 'a' to 'z'
      val perms = chars flatMap { a =>
        chars flatMap { b =>
@@ -805,7 +809,7 @@ flatMap——结合了map 和 flatten —— 要特别小心，它有着难以�
      }
 
 .LP 等价于下面这段更简洁的 for-comprehension （基本就是针对上面的语法糖）
- 
+
      val perms = for {
        a <- chars
        b <- chars
@@ -813,10 +817,10 @@ flatMap——结合了map 和 flatten —— 要特别小心，它有着难以�
      } yield "%c%c".format(a, b)
 
 `flatMap`在处理Options时频繁使用—— 它将options链合并为一个，
- 
+
      val host: Option[String] = ..
      val port: Option[Int] = ..
-    
+
      val addr: Option[InetSocketAddress] =
        host flatMap { h =>
          port map { p =>
@@ -825,7 +829,7 @@ flatMap——结合了map 和 flatten —— 要特别小心，它有着难以�
        }
 
 .LP 也可以使用更简洁的for来实现：
- 
+
      val addr: Option[InetSocketAddress] = for {
        h <- host
        p <- port
@@ -835,12 +839,12 @@ flatMap——结合了map 和 flatten —— 要特别小心，它有着难以�
 
 ## 面向对象的编程
 
-scala的博大很大程度上在于它的对象系统。scala中所有的值都是对象，就这一意义而言scala是门纯粹的语言；基本类型和组合类型没有区别。scala也提供了mixin的特性允许更多正交的、细粒度的构造一些在编译时受益于静态类型检测的可被灵活组装的模块。
+Scala的博大很大程度上在于它的对象系统。Scala中所有的值都是对象，就这一意义而言Scala是门纯粹的语言；基本类型和组合类型没有区别。Scala也提供了mixin的特性允许更多正交的、细粒度的构造一些在编译时受益于静态类型检测的可被灵活组装的模块。
 mixin系统的背后动机之一是消除传统的依赖注入。这种“组件风格(component style)”编程的高潮是是[the cake pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
 
 ### 依赖注入
 
-在我们用来，发现scala本身删除了很多经典(构造函数)依赖注入的语法开销，我们更愿意就这样用: 它更清晰，依赖仍然通过类型编码，类构造语法是如此微不足道而变得轻而易举。有些无聊，简单，但有效。对模块化编程时使用依赖注入，特别是，组合优于继承—这使得程序更加模块化和可测试的。当遇到需要继承的情况，问问自己：在语言缺乏对继承支持的情况下如何构造程序？答案可能是令人信服的。
+在我们用来，发现Scala本身删除了很多经典(构造函数)依赖注入的语法开销，我们更愿意就这样用: 它更清晰，依赖仍然通过类型编码，类构造语法是如此微不足道而变得轻而易举。有些无聊，简单，但有效。对模块化编程时使用依赖注入，特别是，组合优于继承—这使得程序更加模块化和可测试的。当遇到需要继承的情况，问问自己：在语言缺乏对继承支持的情况下如何构造程序？答案可能是令人信服的。
 
 依赖注入典型的使用到 trait
 
@@ -928,16 +932,16 @@ Scala有很丰富的可见性修饰。使用这些可见性修饰很重要，它
 
 ## 垃圾回收
 
-我们对生产模式的应用花了很多时间来调整垃圾回收。垃圾回收的关注点与java大致相似，尽管一些惯用的scala代码比起惯用的java代码会容易产生更多(短暂的)垃圾——函数式风格的副产品。Hotspot的分代垃圾收集通常使这不成问题，因为短暂的(short-lived)垃圾在大多情形下会被有效的释放掉。
+我们对生产模式的应用花了很多时间来调整垃圾回收。垃圾回收的关注点与java大致相似，尽管一些惯用的Scala代码比起惯用的java代码会容易产生更多(短暂的)垃圾——函数式风格的副产品。Hotspot的分代垃圾收集通常使这不成问题，因为短暂的(short-lived)垃圾在大多情形下会被有效的释放掉。
 
 在谈GC调优话题前，先看看[这个](http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter)由Attila举例说明我们在GC方面的一些经验的介绍。
 
-scala固有的问题，你能够缓解GC的方法是产生更少的垃圾；但不要在没有数据的情况下行动。除非你做了某些明显的恶化。使用各种java的profiling工具——我们拥有的包括[heapster](https://github.com/mariusaeriksen/heapster)和[gcprof](https://github.com/twitter/jvmgcprof)。
+Scala固有的问题，你能够缓解GC的方法是产生更少的垃圾；但不要在没有数据的情况下行动。除非你做了某些明显的恶化。使用各种java的profiling工具——我们拥有的包括[heapster](https://github.com/mariusaeriksen/heapster)和[gcprof](https://github.com/twitter/jvmgcprof)。
 
 
 ## Java 兼容性
 
-当我们写的scala代码被java调用时，我们要确保从java来用仍然习惯。这常常不需要额外的努力——class和trait明确的等价于java的中的对应类型 —— 但有时需要提供独立的Java Api。一种感受你的库中的java api好的方式是用java写单元测试(只是为了兼容性);这也确保了你的库中的java视图保持稳定，在这一点上不会随着时间因scala编译器的波动而影响。
+当我们写的Scala代码被java调用时，我们要确保从java来用仍然习惯。这常常不需要额外的努力——class和trait明确的等价于java的中的对应类型 —— 但有时需要提供独立的Java Api。一种感受你的库中的java api好的方式是用java写单元测试(只是为了兼容性);这也确保了你的库中的java视图保持稳定，在这一点上不会随着时间因Scala编译器的波动而影响。
 
 包含部分实现的Trait不能直接被java使用： 改为 extends 一个抽象类
 
@@ -964,12 +968,12 @@ Futue清晰简单：它们持有一个尚未完成运算结果的 promise 。它
 
 <div class="explainer">
 <h3>闲话: <em>组合(composition)</em></h3>
-<p>让我们重新审视我们所说的组合：将简单的组件合成一个更复杂的。函数组合的一个权威的例子：给定函数 f 和 g，组合函数 (g∘f)(x) = g(f(x))  ——结果先对 x使用f函数，然后在使用g函数——用scala来写：</p>
+<p>让我们重新审视我们所说的组合：将简单的组件合成一个更复杂的。函数组合的一个权威的例子：给定函数 f 和 g，组合函数 (g∘f)(x) = g(f(x))  ——结果先对 x使用f函数，然后在使用g函数——用Scala来写：</p>
 
 <pre><code>val f = (i: Int) => i.toString
 val g = (s: String) => s+s+s
 val h = g compose f  // : Int => String
-    
+
 scala> h(123)
 res0: java.lang.String = 123123123</code></pre>
 
@@ -998,7 +1002,7 @@ List可以被 flatten：
 Future (类似List) 也定义了flatMap；Future[A] 定义方法flatMap的签名
 
      flatMap[B](f: A => Future[B]): Future[B]
-    
+
 .LP 如同组合 map 和 flatten，我们可以这样实现：
 
      def flatMap[B](f: A => Future[B]): Future[B] = {
@@ -1011,7 +1015,7 @@ Future (类似List) 也定义了flatMap；Future[A] 定义方法flatMap的签名
 
      def getUser(id: Int): Future[User]
      def authenticate(user: User): Future[Boolean]
-    
+
      def isIdAuthed(id: Int): Future[Boolean] =
        getUser(id) flatMap { user => authenticate(user) }
 
@@ -1073,7 +1077,7 @@ Util的[Local](https://github.com/twitter/util/blob/master/util-core/src/main/sc
 .LP 在 ensure块中的 user()  将在回调被添加的时候引用 user local的值。
 
 就thread locals来说，Locals非常的方便，但要避免：确信通过显式传递数据时问题不能被充分的解决，甚至有些繁重的。
- 
+
 Locals有效的被核心库使用在非常常见的问题上——线程通过RPC跟踪，传播监视器，为future的回调创建stack traces——任何其他解决方法都使得用户负担过度。Locals在几乎任何其他情况下都不适合。
 
 ### Offer/Broker
@@ -1135,13 +1139,13 @@ Offer对象有些一次性的Offers用于与来自Broker的Offer构建。
      val q0 = new Broker[Int]
      val q1 = new Broker[Int]
      val q2 = new Broker[Int]
-    
+
 .LP 现在让我们为reading创建一个合并的queue
 
      val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
-    
+
 .LP anyq是一个将从第一个可用的queue中读取的offer。注意 anyq 仍是同步的——我们仍然拥有底层队列的语义。这类组合是不可能用queue的。
-    
+
 #### 例子：一个简单的连接池
 
 连接池在网络应用中很常见，并且它们的实现常常需要技巧——例如，通常需要超时机制在从池中获取一个连接的时候，因为不同的客户端有不同的延迟需求。池的简单原则：维护一个连接队列，满足那些进入的等待者。使用传统的同步原语，这通常需要2个队列(queues)：一个用于等待者(当没有连接可用时)，一个用于连接(当没有等待者时)。
@@ -1154,7 +1158,7 @@ Offer对象有些一次性的Offers用于与来自Broker的Offer构建。
 
        val get: Offer[Conn] = waiters.recv
        def put(c: Conn) { returnConn ! c }
-    
+
        private[this] def loop(connq: Queue[Conn]) {
          Offer.choose(
            if (connq.isEmpty) Offer.never else {
@@ -1164,7 +1168,7 @@ Offer对象有些一次性的Offers用于与来自Broker的Offer构建。
            returnConn.recv { c => loop(connq enqueue c) }
          ).sync()
        }
-    
+
        loop(Queue.empty ++ conns)
      }
 
@@ -1203,7 +1207,7 @@ loop总是提供一个归还的连接，但只有queue非空的时候才会send�
          }
        }
        loop()
-    
+
        b.recv
      }
 
