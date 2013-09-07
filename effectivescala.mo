@@ -439,9 +439,9 @@ use the `Seq()` constructor, and so on:
 	val set = Set(1, 2, 3)
 	val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
 
-.LP This style separates the semantics of the collection from its implementation, letting the collections library uses the most appropriate type: you need a <code>Map</code>, not necessarily a Red-Black Tree. Furthermore, these default constructors will often use specialized representations: for example, <code>Map()</code> will use a 3-field object for maps with 3 keys.
+.LP This style separates the semantics of the collection from its implementation, letting the collections library use the most appropriate type: you need a <code>Map</code>, not necessarily a Red-Black Tree. Furthermore, these default constructors will often use specialized representations: for example, <code>Map()</code> will use a 3-field object for maps with 3 keys.
 
-The corrolary to the above is: in your own methods and constructors, *receive the most generic collection
+The corollary to the above is: in your own methods and constructors, *receive the most generic collection
 type appropriate*. This typically boils down to one of the above:
 `Iterable`, `Seq`, `Set`, or `Map`. If your method needs a sequence,
 use `Seq[T]`, not `List[T]`.
@@ -583,7 +583,7 @@ the encouraged style.
 
 *Prefer transforming futures over creating your own.* Future
 transformations ensure that failures are propagated, that
-cancellations are signalled, and frees the programmer from thinking
+cancellations are signalled, and free the programmer from thinking
 about the implications of the Java memory model. Even a careful
 programmer might write the following to issue an RPC 10 times in
 sequence and then print the results:
@@ -998,7 +998,7 @@ methods
 	  def subscribe(f: PartialFunction[T, Unit])
 	}
 
-	val publisher: Publisher[Int] = ..
+	val publisher: Publisher[Int] = ...
 	publisher.subscribe {
 	  case i if isPrime(i) => println("found prime", i)
 	  case i if i%2 == 0 => count += 2
@@ -1035,7 +1035,7 @@ tuples and case classes.
 	val tweet = Tweet("just tweeting", Time.now)
 	val Tweet(text, timestamp) = tweet
 
-### Lazyness
+### Laziness
 
 Fields in scala are computed *by need* when `val` is prefixed with
 `lazy`. Because fields and methods are equivalent in Scala (lest the fields
@@ -1051,7 +1051,7 @@ are `private[this]`)
 	  _theField.get
 	}
 
-.LP i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using lazyness when lazyness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
+.LP i.e., it computes a results and memoizes it. Use lazy fields for this purpose, but avoid using laziness when laziness is required by semantics. In these cases it's better to be explicit since it makes the cost model explicit, and side effects can be controlled more precisely.
 
 Lazy fields are thread safe.
 
@@ -1108,8 +1108,8 @@ is revealed by its signature; for some `Container[A]`
 `flatMap` is frequently useful when dealing with `Options` -- it will
 collapse chains of options down to one,
 
-	val host: Option[String] = ..
-	val port: Option[Int] = ..
+	val host: Option[String] = ...
+	val port: Option[Int] = ...
 	
 	val addr: Option[InetSocketAddress] =
 	  host flatMap { h =>
@@ -1162,7 +1162,7 @@ Dependency injection typically makes use of traits,
 	  def subscribe(f: Tweet => Unit)
 	}
 	class HosebirdStream extends TweetStream ...
-	class FileStream extends TweetStream ..
+	class FileStream extends TweetStream ...
 	
 	class TweetCounter(stream: TweetStream) {
 	  stream.subscribe { tweet => count += 1 }
@@ -1180,7 +1180,7 @@ factory types.
 ### Traits
 
 Dependency injection does not at all preclude the use of common *interfaces*, or
-the implementation of common code in traits. Quite contrary-- the use of traits are
+the implementation of common code in traits. Quite the contrary -- the use of traits are
 highly encouraged for exactly this reason: multiple interfaces
 (traits) may be implemented by a concrete class, and common code can
 be reused across all such classes.
@@ -1223,7 +1223,7 @@ A class member marked `private`,
 	
 .LP is visible to all <em>instances</em> of that class (but not their subclasses). In most cases, you want <code>private[this]</code>.
 
-	private[this] val: Int = ..
+	private[this] val: Int = ...
 
 .LP which limits visibility to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.
 
@@ -1412,12 +1412,12 @@ is necessarily also deferred; in
 
 Lists can be flattened;
 
-	val listOfList: List[List[Int]] = ..
+	val listOfList: List[List[Int]] = ...
 	val list: List[Int] = listOfList.flatten
 
 .LP and this makes sense for futures, too:
 
-	val futureOfFuture: Future[Future[Int]] = ..
+	val futureOfFuture: Future[Future[Int]] = ...
 	val future: Future[Int] = futureOfFuture.flatten
 
 .LP since futures are deferred, the implementation of <code>flatten</code> &mdash; it returns immediately &mdash; has to return a future that is the result of waiting for the completion of the outer future (<code><b>Future[</b>Future[Int]<b>]</b></code>) and after that the inner one (<code>Future[<b>Future[Int]</b>]</code>). If the outer future fails, the flattened future must also fail.
@@ -1735,7 +1735,7 @@ stream of integers. First, we'll need a source of integers:
 	}
 
 Besides being structured into simple, orthogonal components, this
-approach gives you a streaming Sieve: you do not a-priori need to
+approach gives you a streaming Sieve: you do not a priori need to
 compute the set of primes you are interested in, further enhancing
 modularity.
 
