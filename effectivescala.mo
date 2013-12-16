@@ -254,7 +254,7 @@ compatibility.
 
 ### Variance
 
-Variance arises when generics are combined with subtyping. They define
+Variance arises when generics are combined with subtyping. Variance annotations define
 how subtyping of the *contained* type relate to subtyping of the
 *container* type. Because Scala has declaration site variance
 annotations, authors of common libraries -- especially collections --
@@ -375,7 +375,7 @@ the reader should beware of these implications.
 Scala has a very generic, rich, powerful, and composable collections
 library; collections are high level and expose a large set of
 operations. Many collection manipulations and transformations can be
-expressed succinctly and readably, but careless application of its
+expressed succinctly and readably, but careless application of these
 features can often lead to the opposite result. Every Scala programmer
 should read the [collections design
 document](http://www.scala-lang.org/docu/files/collections-api/collections.html);
@@ -526,7 +526,7 @@ performance matters.
 ### Java Collections
 
 Use `scala.collection.JavaConverters` to interoperate with Java collections.
-These are a set of implicits that add conversion `asJava` and `asScala` conversion
+These are a set of implicits that add `asJava` and `asScala` conversion
 methods. The use of these ensures that such conversions are explicit, aiding
 the reader:
 
@@ -577,7 +577,7 @@ most programmers.
 
 Futures allow the programmer to express concurrent computation in a
 declarative style, are composable, and have principled handling of
-failure. These qualities has convinced us that they are especially
+failure. These qualities have convinced us that they are especially
 well suited for use in functional programming languages, where this is
 the encouraged style.
 
@@ -677,7 +677,7 @@ Async*?
 ## Control structures
 
 Programs in the functional style tends to require fewer traditional
-control structure, and read better when written in the declarative
+control structures, and read better when written in the declarative
 style. This typically implies breaking your logic up into several
 small methods or functions, and gluing them together with `match`
 expressions. Functional programs also tend to be more
@@ -860,7 +860,7 @@ Use the following pattern when encoding ADTs with case classes:
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
 	
-.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
+.LP The type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
 both succinct and "obviously correct":
@@ -877,9 +877,9 @@ readily modelled with ADTs; these occur frequently in state machines.
 ### Options
 
 The `Option` type is a container that is either empty (`None`) or full
-(`Some(value)`). They provide a safe alternative to the use of `null`,
-and should be used in their stead whenever possible. They are a 
-collection (of at most one item) and they are embellished with 
+(`Some(value)`). It provides a safe alternative to the use of `null`,
+and should be used instead of `null` whenever possible. It is a 
+collection (of at most one item) and is embellished with 
 collection operations -- use them!
 
 Write
@@ -1068,7 +1068,7 @@ Only use call-by-name for such control constructs, where it is obvious
 to the caller that what is being passed in is a "block" rather than
 the result of an unsuspecting computation. Only use call-by-name arguments
 in the last position of the last argument list. When using call-by-name,
-ensure that method is named so that it is obvious to the caller that 
+ensure that the method is named so that it is obvious to the caller that 
 its argument is call-by-name.
 
 When you do want a value to be computed multiple times, and especially
@@ -1076,7 +1076,7 @@ when this computation is side effecting, use explicit functions:
 
 	class SSLConnector(mkEngine: () => SSLEngine)
 	
-.LP The intent remains obvious and caller is left without surprises.
+.LP The intent remains obvious and the caller is left without surprises.
 
 ### `flatMap`
 
@@ -1364,7 +1364,7 @@ Futures have been <a href="#Concurrency-Futures">discussed</a>
 briefly in the <a href="#Concurrency">concurrency section</a>. They 
 are the central mechanism for coordination asynchronous
 processes and are pervasive in our codebase and core to Finagle.
-Futures allow for the composition of concurrent events, and simplifies
+Futures allow for the composition of concurrent events, and simplify
 reasoning about highly concurrent operations. They also lend themselves
 to a highly efficient implementation on the JVM.
 
@@ -1386,8 +1386,8 @@ also be encoded: a Future can be in exactly one of 3 states: *pending*,
 into more complicated ones. The canonical example of this is function
 composition: Given functions <em>f</em> and
 <em>g</em>, the composite function <em>(g&#8728;f)(x) = g(f(x))</em> &mdash; the result
-of applying <em>x</em> to <em>f</em> first, and then the result of that
-to <em>g</em> &mdash; can be written in Scala:</p>
+of applying <em>f</em> to <em>x</em> first, and then applying <em>g</em> to the result of that
+<em>g</em> &mdash; can be written in Scala:</p>
 
 <pre><code>val f = (i: Int) => i.toString
 val g = (s: String) => s+s+s
@@ -1605,7 +1605,7 @@ The `Offer` object has a number of one-off Offers that are used to compose with 
 
 	Offer.timeout(duration): Offer[Unit]
 
-.LP Is an offer that activates after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
+.LP is an offer that activates after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
 
 	Offer.choose(
 	  Offer.timeout(10.seconds),
