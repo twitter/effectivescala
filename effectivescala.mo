@@ -1387,7 +1387,7 @@ into more complicated ones. The canonical example of this is function
 composition: Given functions <em>f</em> and
 <em>g</em>, the composite function <em>(g&#8728;f)(x) = g(f(x))</em> &mdash; the result
 of applying <em>f</em> to <em>x</em> first, and then applying <em>g</em> to the result of that
-<em>g</em> &mdash; can be written in Scala:</p>
+&mdash; can be written in Scala:</p>
 
 <pre><code>val f = (i: Int) => i.toString
 val g = (s: String) => s+s+s
