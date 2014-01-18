@@ -798,7 +798,7 @@ the declarative style:</p>
     if (results.length &lt; 9)
       collect(result :: results)
     else
-      result :: results
+      Future.value(result :: results)
   }
 
 collect() onSuccess { results =&gt;
