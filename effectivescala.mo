@@ -577,7 +577,7 @@ most programmers.
 
 Futures allow the programmer to express concurrent computation in a
 declarative style, are composable, and have principled handling of
-failure. These qualities has convinced us that they are especially
+failure. These qualities have convinced us that they are especially
 well suited for use in functional programming languages, where this is
 the encouraged style.
 
@@ -676,8 +676,8 @@ Async*?
 
 ## Control structures
 
-Programs in the functional style tends to require fewer traditional
-control structure, and read better when written in the declarative
+Programs in the functional style tend to require fewer traditional
+control structures, and read better when written in the declarative
 style. This typically implies breaking your logic up into several
 small methods or functions, and gluing them together with `match`
 expressions. Functional programs also tend to be more
@@ -1364,7 +1364,7 @@ Futures have been <a href="#Concurrency-Futures">discussed</a>
 briefly in the <a href="#Concurrency">concurrency section</a>. They 
 are the central mechanism for coordination asynchronous
 processes and are pervasive in our codebase and core to Finagle.
-Futures allow for the composition of concurrent events, and simplifies
+Futures allow for the composition of concurrent events, and simplify
 reasoning about highly concurrent operations. They also lend themselves
 to a highly efficient implementation on the JVM.
 
