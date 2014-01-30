@@ -444,7 +444,16 @@ use the `Seq()` constructor, and so on:
 The corollary to the above is: in your own methods and constructors, *receive the most generic collection
 type appropriate*. This typically boils down to one of the above:
 `Iterable`, `Seq`, `Set`, or `Map`. If your method needs a sequence,
-use `Seq[T]`, not `List[T]`.
+use `Seq[T]`, not `List[T]`. (A word of caution: the *default* 
+`Traversable`, `Iterable` and `Seq` types in scope – defined in 
+`scala.package` – are the `scala.collection` versions, as opposed to 
+`Map` and `Set` – defined in `Predef.scala` – which are the `scala.collection.immutable` 
+versions. This means that, for example, the default `Seq` type can 
+be both the immutable *and* mutable implementations. Thus, if your 
+method relies on a collection parameter being immutable, and you are 
+using `Traversable`, `Iterable` or `Seq`, you *must* specifically 
+require/import the immutable variant, otherwise someone *may* pass 
+you the mutable version.)
 
 <!--
 something about buffers for construction?
