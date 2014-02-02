@@ -867,7 +867,7 @@ Scala のフィールドは、`val` が `lazy` プレフィックスと共に使
 	  p <- port
 	} yield new InetSocketAddress(h, p)
 
-`Future` における `flatMap` の利用については、<a href="#Twitter's%20standard%20libraries-Futures">futures section</a> で議論されている。
+`Future` における `flatMap` の利用については、<a href="#Twitterの標準ライブラリ-Future">futures section</a> で議論されている。
 
 ## オブジェクト指向プログラミング
 
