@@ -119,7 +119,7 @@
 
 <h1 class="header">Effective Scala</h1>
 
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by Yuta Okamoto(<a href="http://github.com/okapies">@okapies</a>) and Satoshi Kobayashi(<a href="https://github.com/scova0731">@scova0731</a>)]</address>
+<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by Yuta Okamoto (<a href="http://github.com/okapies">@okapies</a>) and Satoshi Kobayashi (<a href="https://github.com/scova0731">@scova0731</a>)]</address>
 
 <h2>Table of Contents</h2>
 
@@ -127,14 +127,15 @@
 <li><strong><a href="#序章">序章</a></strong></li>
 <li><strong><a href="#書式">書式</a></strong>: <em><a href="#書式-ホワイトスペース">ホワイトスペース</a></em>, <em><a href="#書式-命名">命名</a></em>, <em><a href="#書式-インポート">インポート</a></em>, <em><a href="#書式-中カッコ">中カッコ</a></em>, <em><a href="#書式-パターンマッチ">パターンマッチ</a></em>, <em><a href="#書式-コメント">コメント</a></em></li>
 <li><strong><a href="#型とジェネリクス">型とジェネリクス</a></strong>: <em><a href="#型とジェネリクス-戻り型アノテーション">戻り型アノテーション</a></em>, <em><a href="#型とジェネリクス-変位">変位</a></em>, <em><a href="#型とジェネリクス-型エイリアス">型エイリアス</a></em>, <em><a href="#型とジェネリクス-暗黙">暗黙</a></em></li>
-<li><strong><a href="#コレクション">コレクション</a></strong>: <em><a href="#コレクション-階層">階層</a></em>, <em><a href="#コレクション-使う">使う</a></em>, <em><a href="#コレクション-スタイル">スタイル</a></em>, <em><a href="#コレクション-性能">性能</a></em>, <em><a href="#コレクション-Javaコレクション">Javaコレクション</a></em></li>
+<li><strong><a href="#コレクション">コレクション</a></strong>: <em><a href="#コレクション-階層">階層</a></em>, <em><a href="#コレクション-使う">使う</a></em>, <em><a href="#コレクション-スタイル">スタイル</a></em>, <em><a href="#コレクション-性能">性能</a></em>, <em><a href="#コレクション-Java コレクション">Java コレクション</a></em></li>
 <li><strong><a href="#並行性">並行性</a></strong>: <em><a href="#並行性-Future">Future</a></em>, <em><a href="#並行性-コレクション">コレクション</a></em></li>
-<li><strong><a href="#制御構造">制御構造</a></strong>: <em><a href="#制御構造-再帰">再帰</a></em>, <em><a href="#制御構造-Return">Return</a></em>, <em><a href="#制御構造-`for`ループと内包"><code>for</code>ループと内包</a></em>, <em><a href="#制御構造-`require`と`assert`"><code>require</code>と<code>assert</code></a></em></li>
-<li><strong><a href="#関数型プログラミング">関数型プログラミング</a></strong>: <em><a href="#関数型プログラミング-代数的データ型としてのケースクラス">代数的データ型としてのケースクラス</a></em>, <em><a href="#関数型プログラミング-オプション">オプション</a></em>, <em><a href="#関数型プログラミング-パターンマッチ">パターンマッチ</a></em>, <em><a href="#関数型プログラミング-部分関数">部分関数</a></em>, <em><a href="#関数型プログラミング-Destructuring bindings">Destructuring bindings</a></em>, <em><a href="#関数型プログラミング-遅延評価">遅延評価</a></em>, <em><a href="#関数型プログラミング-名前呼び出し">名前呼び出し</a></em>, <em><a href="#関数型プログラミング-`flatMap`"><code>flatMap</code></a></em></li>
+<li><strong><a href="#制御構造">制御構造</a></strong>: <em><a href="#制御構造-再帰">再帰</a></em>, <em><a href="#制御構造-Return">Return</a></em>, <em><a href="#制御構造-`for`ループと内包"><code>for</code>ループと内包</a></em>, <em><a href="#制御構造-`require` と `assert`"><code>require</code> と <code>assert</code></a></em></li>
+<li><strong><a href="#関数型プログラミング">関数型プログラミング</a></strong>: <em><a href="#関数型プログラミング-代数的データ型としてのケースクラス">代数的データ型としてのケースクラス</a></em>, <em><a href="#関数型プログラミング-Option">Option</a></em>, <em><a href="#関数型プログラミング-パターンマッチ">パターンマッチ</a></em>, <em><a href="#関数型プログラミング-部分関数">部分関数</a></em>, <em><a href="#関数型プログラミング-構造化代入">構造化代入</a></em>, <em><a href="#関数型プログラミング-遅延評価">遅延評価</a></em>, <em><a href="#関数型プログラミング-名前呼び出し">名前呼び出し</a></em>, <em><a href="#関数型プログラミング-`flatMap`"><code>flatMap</code></a></em></li>
 <li><strong><a href="#オブジェクト指向プログラミング">オブジェクト指向プログラミング</a></strong>: <em><a href="#オブジェクト指向プログラミング-依存性注入">依存性注入</a></em>, <em><a href="#オブジェクト指向プログラミング-トレイト">トレイト</a></em>, <em><a href="#オブジェクト指向プログラミング-可視性">可視性</a></em>, <em><a href="#オブジェクト指向プログラミング-構造的部分型">構造的部分型</a></em></li>
+<li><strong><a href="#エラー処理">エラー処理</a></strong>: <em><a href="#エラー処理-例外処理">例外処理</a></em></li>
 <li><strong><a href="#ガベージコレクション">ガベージコレクション</a></strong></li>
-<li><strong><a href="#Java 互換性">Java 互換性</a></strong></li>
-<li><strong><a href="#Twitterの標準ライブラリ">Twitterの標準ライブラリ</a></strong>: <em><a href="#Twitterの標準ライブラリ-Future">Future</a></em>, <em><a href="#Twitterの標準ライブラリ-OfferとBroker">OfferとBroker</a></em></li>
+<li><strong><a href="#Java との互換性">Java との互換性</a></strong></li>
+<li><strong><a href="#Twitterの標準ライブラリ">Twitterの標準ライブラリ</a></strong>: <em><a href="#Twitterの標準ライブラリ-Future">Future</a></em>, <em><a href="#Twitterの標準ライブラリ-Offer と Broker">Offer と Broker</a></em></li>
 <li><strong><a href="#謝辞">謝辞</a></strong>: <em><a href="#謝辞-日本語版への謝辞">日本語版への謝辞</a></em></li>
 </ul>
 
@@ -148,13 +149,13 @@
 
 <h2>序章</h2>
 
-<p><a href="http://www.scala-lang.org/">Scala</a>は、Twitterで使われている主なアプリケーションプログラミング言語の一つだ。TwitterのインフラのほとんどはScalaで書かれているし、我々の業務を支える<a href="http://github.com/twitter/">大規模ライブラリ</a>をいくつか持っている。Scalaは極めて効率的だが、一方で大きな言語でもある。我々の経験上、Scalaの適用には細心の注意が必要だ。Scalaの落とし穴は何か？ どの機能を採用し、どれを避けるべきか？ いつ&ldquo;純粋関数型スタイル&rdquo;を用い、いつ控えるべきか？ つまり、我々が見出した&ldquo;Scalaの効果的(effective)な使い方&rdquo;とは何か？ このガイドは、我々の経験を抽出し、一連の<em>ベストプラクティス</em>を提供する小論文にまとめようとするものだ。Twitterは、Scalaを、主に分散システムを構成する大容量サービスの作成に利用している。だから、我々の助言にはバイアスがかかっている。しかし、ここにあるアドバイスのほとんどは、他の問題領域へも自然に置き換えることができるはずだ。これは法律じゃない、だから逸脱は正当化されるべきだ。</p>
+<p><a href="http://www.scala-lang.org/">Scala</a> は Twitter で使われている主要なアプリケーションプログラミング言語の一つだ。Twitter のインフラの大部分は Scala で書かれているし、我々の業務を支える<a href="http://github.com/twitter/">大規模ライブラリ</a>をいくつか持っている。Scala は極めて効果的だが、一方で巨大な言語でもある。我々の経験では、Scala の適用には十分な注意が必要だ。落とし穴は何か？ どの機能を活用して、どれを控えるべきか？ いつ&ldquo;純粋関数型のスタイル&rdquo;を採用して、いつ避けるべきか？ 言い換えるなら、我々が見出した&ldquo;Scala の効果的 (effective) な使い方&rdquo;とは何か？ 本ガイドの目的は、我々の経験から抜き出された一連の<em>ベストプラクティス</em>を提供することだ。Twitter では、主に Scala を分散システムを構成する大容量サービス群の作成に使っているので、我々の助言にはバイアスがかかっている。しかし、ここにあるアドバイスの大半は、他の問題領域へ自然に移し替えられるはずだ。これは規則ではない。だから逸脱は正当化されるべきだ。</p>
 
-<p>Scalaは、簡潔な表現を可能にする数多くのツールを提供している。タイピングが少なければ、読む量も少なくなり、読む量が少なくなれば、大抵はより早く読める。故に、簡潔さは明瞭さを高める。しかし、簡潔さはまた、正反対の効果をもたらす使い勝手の悪い道具ともなりえる。正確さの次に、いつも読み手のことを考えよう。</p>
+<p>Scala が提供するたくさんの道具は、簡潔な表現を可能にする。タイピングが減れば読む量が減り、大抵は読む量が減ればより速く読める。故に、簡潔であるほどより明快になる。しかしまた、簡潔さは正反対の効果をもたらす”なまくら道具”ともなりえる: 正確さの次には、いつも読み手のことを考えよう。</p>
 
-<p>何よりも、<em>Scalaでプログラムするのだ</em>。君が書いているのはJavaではないし、Haskellでも、Pythonでもない。Scalaのプログラムは、それらのうちのいずれの言語で書かれたものとも違っている。Scalaを効果的に使うには、君の問題をScalaの用語で表現しなければならない。Javaのプログラムを、無理矢理にScalaになおしても仕方がない。ほとんどのやり方で、それはオリジナルより劣ったものになるだろう。</p>
+<p>何よりも <em>Scala でプログラムしよう</em>。君が書いているのは Java ではないし、Haskell でも、Python でもない。Scala のプログラムは、いずれの言語で書かれたものとも異なっている。プログラミング言語を効果的に使うには、君の問題をその言語の用語で表現するべきだ。Java のプログラムを無理矢理 Scala で表現しても、ほとんどの場合オリジナルより劣ったものになるだろう。</p>
 
-<p>これは、Scalaの入門じゃない。読者は、Scalaに慣れ親しんでいることを前提としている。これからScalaを学びたい人は、以下のサイトを参照するといいだろう:</p>
+<p>これは Scala の入門ではない。本ガイドは Scala に慣れ親しんだ読者を前提としている。これから Scala を学びたい読者には以下のような教材がある:</p>
 
 <ul>
 <li><a href="http://twitter.github.com/scala_school/">Scala School</a></li>
@@ -162,7 +163,7 @@
 <li><a href="http://matt.might.net/articles/learning-scala-in-small-bites/">Learning Scala in Small Bites</a></li>
 </ul>
 
-<p>このガイドは生きたドキュメントであり、現在の「ベストプラクティス」が反映されていく。けれども、核となるアイデアは変わらない。常に可読性を優先せよ。ジェネリックなコードを書き、しかし明瞭さを犠牲にするな。シンプルな言語機能を利用せよ。それは偉大な力を与え、難解さを防ぐ（型システムでは特に）。とりわけ、トレードオフを常に意識すべきだ。洗練された言語は複雑な実装を必要とし、判断や、動作や、機能間の相互作用や、そして君の協力者に対する理解を困難にする。つまり、複雑さは洗練の税金なのだ。効用がコストを上回っていることを、常に確認しなければいけない。</p>
+<p>本ガイドは生きたドキュメントなので、我々の最新の”ベストプラクティス”を反映するために変更されるかもしれない。しかし、中核となるアイデアが変わることはないだろう: 可読性を常に優先せよ; 汎用的なコードを書き、しかし明瞭さを損なわないこと; シンプルな言語機能を活用せよ。シンプルさは偉大な力をもたらし、また（特に型システムにおける）難解さを回避できる。とりわけ、常にトレードオフを意識しよう。洗練された言語は複雑な実装を要求し、複雑さは複雑さを生む。推論の複雑さ、意味論の複雑さ、機能間相互作用の複雑さ、そして君の協力者への理解の複雑さを。したがって、複雑さは洗練がもたらす税金であり、効用がコストを上回っていることを常に確認すべきだ。</p>
 
 <p>では、楽しんでほしい。</p>
 
@@ -170,47 +171,47 @@
 
 <h2>書式</h2>
 
-<p>コードの<em>書式</em>の詳細は（それが実際的である限りは）重要じゃない。当然だが、スタイルに本質的な良し悪しはないし、たいてい人それぞれの個人的嗜好は異なる。しかし、同じ整形ルールを<em>一貫して</em>適用することは、ほぼ全ての場合で可読性を高める。特定のスタイルに馴染んだ読み手は、さらに他のローカルな慣習を理解したり、言語の文法の隅を解読したりする必要がない。</p>
+<p>コードの<em>書式</em>の細かい話は（それが実践的である限りは）重要ではない。当然だが、スタイルに本質的な良し悪しはないし、個人的な好みはほぼ人によって異なる。しかし、同じ整形ルールを<em>一貫して</em>適用すれば、ほとんどの場合で可読性が高まる。特定のスタイルに馴染んだ読み手は、さらに別のローカルな慣習を把握したり、言語の文法の隅を解読したりする必要がない。</p>
 
-<p>これは文法の重複度が高いScalaにおいては特に重要だ。メソッド呼び出しを例に挙げよう。メソッドは、&ldquo;<code>.</code>&rdquo;を付けても、ホワイトスペースを付けても呼び出せる。同様に、ゼロまたは一つの引数を取るメソッドでは丸カッコを付けても良いし、付けなくても良い、といった風に。さらに、様々なスタイルのメソッド呼び出しは、様々な文法上の曖昧さを露呈する！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとって、多くの曖昧さを解決できるのは間違いない。</p>
+<p>これは、重複度の高い文法を持つ Scala においては特に重要だ。メソッド呼び出しは分かりやすい例だ: メソッドは &ldquo;<code>.</code>&rdquo; を付けても、ホワイトスペースで空けても呼び出せる。同様に、ゼロまたは一つ引数を取るメソッドでは、丸カッコを付けても良いし付けなくても良い、といった様に。さらに、メソッド呼び出しの様々なスタイルは、文法上の様々な曖昧さをさらけ出す！ 注意深く選ばれた整形ルールを一貫して適用することで、人間と機械の両方にとっての多くの曖昧さを解決できるのは間違いない。</p>
 
-<p>我々は、<a href="http://docs.scala-lang.org/style/">Scala style guide</a>を遵守すると同時に、以下に示すルールを追加した。</p>
+<p>我々は、<a href="http://docs.scala-lang.org/style/">Scala style guide</a> を順守すると共に以下のルールを追加した。</p>
 
 <p><a id="書式-ホワイトスペース" /></p>
 
 <h3>ホワイトスペース</h3>
 
-<p>インデントはホワイトスペース2個。100カラムを超える行は避けよう。メソッドやクラス、オブジェクトの定義の間は一行空ける。</p>
+<p>インデントは、スペース 2 つとする。100 カラムを超える行は避ける。メソッド、クラス、オブジェクトの定義同士の間に一行空ける。</p>
 
 <p><a id="書式-命名" /></p>
 
 <h3>命名</h3>
 
 <dl class="rules">
-<dt>小さなスコープでは、短い名前を使う</dt>
-<dd>ループでは、基本的に<code>i</code>や<code>j</code>や<code>k</code>を使おう。</dd>
-<dt>より大きなスコープでは、より長い名前を使う</dt>
-<dd>外部APIには、より長くて意味付けのできる説明的な名前を付けるべきだ。<code>Future.all</code>ではなく、<code>Future.collect</code>のように。
+<dt>小さいスコープでは短い名前を使う</dt>
+<dd>ループ内では <code>i</code>, <code>j</code>, <code>k</code> が期待される。</dd>
+<dt>より大きいスコープでは、より長い名前を使う</dt>
+<dd>外部APIは、より長く、説明的で意味付けされた名前を持つべきだ。例えば、<code>Future.all</code> ではなく <code>Future.collect</code> とした方がよい。
 </dd>
 <dt>一般的な略語を使い、難解な略語を避ける</dt>
-<dd>誰でも<code>ok</code>や<code>err</code>や<code>defn</code>が何を指すか知っている。一方で、<code>sfri</code>はそれほど一般的ではない。</dd>
+<dd><code>ok</code> や <code>err</code> や <code>defn</code> は誰もが知っている。しかし <code>sfri</code> はそれほど一般的ではない。</dd>
 <dt>異なる用途に名前を再利用しない</dt>
-<dd><code>val</code>を使おう。</dd>
-<dt>予約名を <code>`</code> を使ってオーバーロードするのは避ける</dt>
-<dd><code>`type</code>`の代わりに、<code>typ</code>とする。</dd>
-<dt>副作用を伴う操作には能動態で名前を付ける</dt>
-<dd><code>user.setActive()</code>ではなく、<code>user.activate()</code>とする。</dd>
-<dt>値を返すメソッドの名前は説明的に</dt>
-<dd><code>src.defined</code>ではなく、<code>src.isDefined</code>とする。</dd>
-<dt>getterの接頭に<code>get</code>を付けない</dt>
-<dd>上にも書いた通り、これは冗長だ。<code>site.getCount</code>ではなく、<code>site.count</code>とする。</dd>
-<dt>パッケージやオブジェクト内で既にカプセル化されている名前を繰り返さない</dt>
+<dd><code>val</code> を使おう。</dd>
+<dt>予約名を <code>`</code> でオーバーロードするのは避ける</dt>
+<dd><code>`type`</code> ではなく <code>typ</code> とする。</dd>
+<dt>副作用を起こす操作は能動態で命名する</dt>
+<dd><code>user.setActive()</code> ではなく <code>user.activate()</code> とする。</dd>
+<dt>値を返すメソッドは説明的に命名する</dt>
+<dd><code>src.defined</code> ではなく <code>src.isDefined</code> とする。</dd>
+<dt>ゲッター (getter) の名前の先頭に <code>get</code> を付けない</dt>
+<dd>以前のルールと同様にこれは冗長だ。<code>site.getCount</code> ではなく <code>site.count</code> とする。</dd>
+<dt>パッケージ名やオブジェクト名で既にカプセル化されている名前を繰り返さない</dt>
 <dd><pre><code>object User {
   def getUser(id: Int): Option[User]
-}</code></pre>よりも、
+}</code></pre> ではなく
 <pre><code>object User {
   def get(id: Int): Option[User]
-}</code></pre>とする。<code>User.get</code>と比べて<code>User.getUser</code>は冗長だし、何も情報を与えない。
+}</code></pre> とする。<code>User.getUser</code> は冗長だし、<code>User.get</code> よりも多くの情報を与えない。
 </dd>
 </dl>
 
@@ -219,45 +220,45 @@
 <h3>インポート</h3>
 
 <dl class="rules">
-<dt>インポート(import)行はアルファベット順にソートする</dt>
-<dd>このようにすると、目で調べやすいし自動化もしやすい。</dd>
-<dt>同じパッケージから複数の名前をインポートするときは中カッコを使う</dt>
+<dt>import 行はアルファベット順に並べ替える</dt>
+<dd>こうすると視覚的に調べやすいし自動化もしやすい。</dd>
+<dt>パッケージから複数の名前をインポートする際は中カッコを使う</dt>
 <dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
-<dt>6個より多くの名前をインポートするときはワイルドカードを使う</dt>
-<dd>e.g.: <code>import com.twitter.concurrent._</code>
-<br />ワイルドカードを濫用しないこと。一部のパッケージは、大量の名前をエクスポートする。</dd>
-<dt>コレクションを使う時は、<code>scala.collection.immutable</code> あるいは <code>scala.collection.mutable</code> をインポートして名前を修飾する</dt>
-<dd>可変(mutable)コレクションと不変(immutable)コレクションは同じ名前を二重に使っている。読み手のために、名前を修飾してどちらのコレクションを使っているか明確にしよう。 (e.g. "<code>immutable.Map</code>")</dd>
+<dt>6 個以上の名前をインポートする際はワイルドカードを使う</dt>
+<dd>例: <code>import com.twitter.concurrent._</code>
+<br />ワイルドカードを濫用しないこと。一部のパッケージは大量の名前をエクスポートする。</dd>
+<dt>コレクションを使う際は、<code>scala.collection.immutable</code> と <code>scala.collection.mutable</code> の一方あるいは両方をインポートして名前を修飾する</dt>
+<dd>可変 (mutable) コレクションと不変 (immutable) コレクションでは名前が重複している。名前を修飾して、どちらのコレクションを使っているか読み手に対して明らかにしよう。 (例: "<code>immutable.Map</code>")</dd>
 <dt>他のパッケージからの相対指定でインポートしない</dt>
 <dd><pre><code>import com.twitter
-import concurrent</code></pre>のようには書かず、以下のように曖昧さの無い書き方をしよう。<pre><code>import com.twitter.concurrent</code></pre></dd>
-<dt>インポートはファイルの先頭に置く</dt>
-<dd>読み手が、全てのインポートを一箇所で参照できるようにしよう。</dd>
+import concurrent</code></pre> とは書かずに曖昧さの無い書き方をしよう。<pre><code>import com.twitter.concurrent</code></pre></dd>
+<dt>import 文はファイルの先頭に置く</dt>
+<dd>全ての import を読み手が一箇所で参照できるようにしよう。</dd>
 </dl>
 
 <p><a id="書式-中カッコ" /></p>
 
 <h3>中カッコ</h3>
 
-<p>中カッコは、複合式を作るのに使われる（&ldquo;モジュール言語&rdquo;では他の用途にも使われる）。複合式の値は、リスト中の最後の式となる。単純な式に中カッコを使うのは避けよう。例えば、</p>
+<p>中カッコは複合式を作るのに使われる（&ldquo;モジュール言語&rdquo;では他の用途にも使われる）。このとき、複合式の値はリスト中の最後の式だ。単純な式に中カッコを使うのはやめよう。</p>
 
 <pre><code>def square(x: Int) = x*x
 </code></pre>
 
-<p class="LP">と書く代わりに、メソッドの本文を構文的に見分けやすい</p>
+<p class="LP">と書く代わりに、メソッドの本体を構文的に見分けられるように</p>
 
 <pre><code>def square(x: Int) = {
   x * x
 }
 </code></pre>
 
-<p class="LP">と書きたくなるかもしれない。しかし、最初の記法の方がゴチャゴチャしておらず読みやすい。明確化が目的でないなら<em>仰々しい構文を使うのは避けよう</em>。</p>
+<p class="LP">と書きたくなるかもしれない。しかし、最初の方がゴチャゴチャしていなくて読みやすい。明確化が目的でないなら<em>仰々しい構文を使うのはやめよう</em>。</p>
 
 <p><a id="書式-パターンマッチ" /></p>
 
 <h3>パターンマッチ</h3>
 
-<p>関数の定義でパターンマッチを直接使える場合は、いつでもそうしよう。</p>
+<p>関数定義の中で、パターンマッチを直接使える場合はいつでもそうしよう。</p>
 
 <pre><code>list map { item =&gt;
   item match {
@@ -267,7 +268,7 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 }
 </code></pre>
 
-<p class="LP">という間接的な書き方は意図が明瞭でない。代わりにmatchを折り畳んで</p>
+<p class="LP">という間接的な書き方では意図がはっきりしない。代わりに match を折り畳んで</p>
 
 <pre><code>list map {
   case Some(x) =&gt; x
@@ -275,13 +276,13 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
 }
 </code></pre>
 
-<p class="LP">と書くと、リストの要素を写像(map over)しているのが分かりやすい。</p>
+<p class="LP">と書くと、リストの要素を写像 (map over) していることが分かりやすい。</p>
 
 <p><a id="書式-コメント" /></p>
 
 <h3>コメント</h3>
 
-<p><a href="https://wiki.scala-lang.org/display/SW/Scaladoc">ScalaDoc</a>を使ってAPIドキュメントを提供しよう。以下のスタイルで書こう:</p>
+<p><a href="https://wiki.scala-lang.org/display/SW/Scaladoc">ScalaDoc</a> を使って API ドキュメントを提供しよう。以下のスタイルで書こう:</p>
 
 <pre><code>/**
  * ServiceBuilder builds services 
@@ -289,35 +290,33 @@ import concurrent</code></pre>のようには書かず、以下のように曖�
  */
 </code></pre>
 
-<p class="LP">でも、標準のScalaDocスタイルは<em>使わない</em>方がいい:</p>
+<p class="LP">しかし、標準の ScalaDoc スタイルは<em>使わない</em>方がいい:</p>
 
 <pre><code>/** ServiceBuilder builds services
  * ...
  */
 </code></pre>
 
-<p>アスキーアートや視覚的な装飾に頼ってはいけない。また、APIではない不必要なコメントをドキュメント化してはいけない。もし、自分のコードの挙動を説明するためにコメントを追加しているのに気づいたら、まずは、それが何をするコードなのか明白になるよう書き直せないか考え直してみよう。「見るからに、それは動作する (it works, obviously)」よりも「明らかにそれは動作する(obviously it works)」方がいい（ホーアには申し訳ないけど）。</p>
-
-<p>（訳注: <a href="http://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%B3%E3%83%88%E3%83%8B%E3%83%BC%E3%83%BB%E3%83%9B%E3%83%BC%E3%82%A2">アントニー・ホーア</a>は、自身のチューリング賞受賞講演で<em>『極めて複雑に設計して「明らかな」欠陥を無くすより、非常に簡素に設計して「明らかに」欠陥が無いようにする方が遥かに難しい』</em>という趣旨の発言をしている。一方、著者は「コードから実装の意図を一目瞭然に読み取れるようにせよ」という立場であり、つまりホーアとは真逆の主張をしていると言える。）</p>
+<p>アスキーアートや視覚的な装飾に頼ってはいけない。また、API ではない不必要なコメントをドキュメント化すべきでない。もし、コードの挙動を説明するためにコメントを追加しているのに気づいたら、まずは、それが何をするコードなのか明白になるよう再構築できないか考えてみよう。”見るからに、それは動作する (it works, obviously)”よりも”明らかにそれは動作する (obviously it works)”方がいい（ホーアには申し訳ないけど<a class="noteref" id="fnref1" href="#fn1" title="Jump to note 1">[1]</a>）。</p>
 
 <p><a id="型とジェネリクス" /></p>
 
 <h2>型とジェネリクス</h2>
 
-<p>型システム(type system)の主な目的は、プログラミングの誤りを検出することだ。型システムは、制限された形態の静的検査を効果的に提供する。これにより、コードにおいてある種の不変条件(invariant)を記述でき、それをコンパイラで検証できる。型システムがもたらす恩恵はもちろん他にもあるが、エラーチェックこそ、その存在理由（レーゾンデートル）だ。</p>
+<p>型システム (type system) の主な目的は、プログラミングの誤りを検出することだ。型システムは、制限された静的検査を効果的に提供する。これを使うと、コードについてある種の不変条件 (invariant) を記述して、それをコンパイラで検証できる。型システムがもたらす恩恵はもちろん他にもあるが、エラーチェックこそ、その存在理由（レーゾンデートル）だ。</p>
 
 <p>我々が型システムを使う場合はこの目的を踏まえるべきだが、一方で、読み手にも気を配り続ける必要がある。型を慎重に使ったコードは明瞭さが高まるが、過剰に巧妙に使ったコードは読みにくいだけだ。</p>
 
-<p>Scalaの強力な型システムは、学術的な探求と演習においてよく題材とされる(eg. <a href="http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/">Type level programming in
+<p>Scala の強力な型システムは、学術的な探求と演習においてよく題材とされる (例: <a href="http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/">Type level programming in
 Scala</a>)。これらのテクニックは学術的に興味深いトピックだが、プロダクションコードでの応用において有用であることは稀だ。避けるべきだろう。</p>
 
 <p><a id="型とジェネリクス-戻り型アノテーション" /></p>
 
 <h3>戻り型アノテーション</h3>
 
-<p>Scalaでは戻り型アノテーション(return type annotation)を省略できるが、一方で、アノテーションは優れたドキュメンテーションを提供する。戻り型アノテーションは、publicメソッドでは特に重要だ。露出していないメソッドで、かつ戻り型が明白な場合は省略しよう。</p>
+<p>Scala では戻り型アノテーション (return type annotation) を省略できるが、一方でアノテーションは優れたドキュメンテーションを提供する。特に、public メソッドにとっては重要だ。戻り型が明白で露出していないメソッドの場合は省略しよう。</p>
 
-<p>これは、ミックスインを使ったオブジェクトをインスタンス化する際に、Scalaコンパイラがシングルトン型を生成する場合は特に重要だ。例えば、<code>make</code> 関数が:</p>
+<p>これは、ミックスインを使ったオブジェクトのインスタンス化において、Scala コンパイラがシングルトン型を生成する際に特に重要だ。例えば、<code>make</code> 関数が:</p>
 
 <pre><code>trait Service
 def make() = new Service {
@@ -325,54 +324,54 @@ def make() = new Service {
 }
 </code></pre>
 
-<p class="LP"><code>Service</code> という戻り型を<em>持たない</em>場合、コンパイラは細別型(refinement type)である <code>Object with Service{def getId: Int}</code> を生成する。代わりに、明示的なアノテーションを使うと:</p>
+<p class="LP"><code>Service</code> という戻り型を<em>持たない</em>場合、コンパイラは細別型 (refinement type) の <code>Object with Service{def getId: Int}</code> を生成する。代わりに、明示的なアノテーションを使うと:</p>
 
 <pre><code>def make(): Service = new Service{}
 </code></pre>
 
-<p><code>make</code> の公開する型を変更することなく、traitをさらに好きなだけミックスできる。つまり、後方互換性の管理が容易になる。</p>
+<p><code>make</code> の公開する型を変更することなく、トレイトをさらに好きなだけミックスできる。つまり、後方互換性の管理が容易になる。</p>
 
 <p><a id="型とジェネリクス-変位" /></p>
 
 <h3>変位</h3>
 
-<p>変位(variance)は、ジェネリクスが派生型(subtyping)と結びつく時に現れる。変位は、コンテナ型(<em>container</em> type)の派生型と、要素型(<em>contained</em> type)の派生型がどう関連するかを定義する。Scalaでは変位アノテーションを宣言できるから、コレクションに代表される共通ライブラリの作者は、多数のアノテーションを扱う必要がある。変位アノテーションは、共用コードの使い勝手を高める上で重要だが、誤用すると危険なものとなりうる。</p>
+<p>変位 (variance) は、ジェネリクスが派生型 (subtyping) と結びつく際に現れる。変位は、コンテナ型 (<em>container</em> type) の派生型と、要素型 (<em>contained</em> type) の派生型がどう関連するかを定義する。Scala では変位アノテーションを宣言できるので、コレクションに代表される共通ライブラリの作者は、多数のアノテーションを扱う必要がある。変位アノテーションは共有コードの使い勝手にとって重要だが、誤用すると危険なものになりうる。</p>
 
-<p>非変(invariant)は、Scalaの型システムにおいて高度だが必須の特徴だ。派生型の適用を助けるために、大いに（そして正しく）使うべきだ。</p>
+<p>非変 (invariant) は高度だが、Scala の型システムにとって必須の特徴であり、派生型の適用を助けるために広く（そして正しく）使われるべきだ。</p>
 
-<p><em>不変コレクションは共変(covariant)であるべきだ</em>。要素型を受け取るメソッドは、コレクションを適切に&ldquo;格下げ&rdquo;すべきだ:</p>
+<p><em>不変コレクションは共変 (covariant) であるべきだ</em>。要素型を受け取るメソッドは、コレクションを適切に&ldquo;格下げ&rdquo;すべきだ:</p>
 
 <pre><code>trait Collection[+T] {
   def add[U &gt;: T](other: U): Collection[U]
 }
 </code></pre>
 
-<p><em>可変コレクションは非変であるべきだ</em>。一般的に、可変コレクションにおいて共変は無効だ。この</p>
+<p><em>可変コレクションは非変であるべきだ</em>。共変は、通常は可変コレクションにおいては無効だ。この</p>
 
 <pre><code>trait HashSet[+T] {
   def add[U &gt;: T](item: U)
 }
 </code></pre>
 
-<p class="LP">と、以下の型階層を見てほしい:</p>
+<p class="LP">と、以下の型階層について考えてみよう:</p>
 
 <pre><code>trait Mammal
 trait Dog extends Mammal
 trait Cat extends Mammal
 </code></pre>
 
-<p class="LP">もし今、犬(Dog)のハッシュセットがあるなら、</p>
+<p class="LP">もしここに犬 (Dog) のハッシュセットがあるなら、</p>
 
 <pre><code>val dogs: HashSet[Dog]
 </code></pre>
 
-<p class="LP">それを哺乳類(Mammal)の集合として扱ったり、猫(Cat)を追加したりできる。</p>
+<p class="LP">それを哺乳類 (Mammal) の集合として扱ったり、猫 (Cat) を追加したりできる。</p>
 
 <pre><code>val mammals: HashSet[Mammal] = dogs
 mammals.add(new Cat{})
 </code></pre>
 
-<p class="LP">これはもはや、犬のHashSetではない！</p>
+<p class="LP">これはもはや、犬の HashSet ではない！</p>
 
 <!--
   * when to use abstract type members?
@@ -383,18 +382,18 @@ mammals.add(new Cat{})
 
 <h3>型エイリアス</h3>
 
-<p>型エイリアス(type alias)は、簡便な名前を提供したり、意味を明瞭にするために使う。しかし、一目瞭然な型はエイリアスしない。</p>
+<p>型エイリアス (type alias) を使うと、便利な名前を提供したり、意味を明瞭にしたりできる。しかし、一目瞭然な型をエイリアスすべきではない。</p>
 
 <pre><code>() =&gt; Int
 </code></pre>
 
-<p class="LP">は、簡潔かつ一般的な型を使っているので、</p>
+<p class="LP">は、短くて一般的な型を使っているので、</p>
 
 <pre><code>type IntMaker = () =&gt; Int
 IntMaker
 </code></pre>
 
-<p class="LP">よりも明瞭だ。しかし、</p>
+<p class="LP">よりも意味が明瞭だ。しかし、</p>
 
 <pre><code>class ConcurrentPool[K, V] {
   type Queue = ConcurrentLinkedQueue[V]
@@ -403,19 +402,19 @@ IntMaker
 }
 </code></pre>
 
-<p class="LP">は、意思疎通が目的で、簡潔さを高めたい場合に有用だ。</p>
+<p class="LP">は、意思疎通が目的で簡潔さを高めたい場合に有用だ。</p>
 
-<p>エイリアスが使える場合はサブクラス化を使ってはいけない。</p>
+<p>エイリアスが使える場合は、サブクラスにしてはいけない。</p>
 
 <pre><code>trait SocketFactory extends (SocketAddress =&gt; Socket)
 </code></pre>
 
-<p class="LP"><code>SocketFactory</code>は、<code>Socket</code>を生成する<em>関数</em>だ。型エイリアス</p>
+<p class="LP"><code>SocketFactory</code> は <code>Socket</code> を生成する<em>関数</em>だが、型エイリアス</p>
 
 <pre><code>type SocketFactory = SocketAddress =&gt; Socket
 </code></pre>
 
-<p class="LP">を使う方がいい。これで、<code>SocketFactory</code>型の値となる関数リテラルを定義できるので、関数合成が使える:</p>
+<p class="LP">を使う方がいい。これで、<code>SocketFactory</code> 型の値となる関数リテラルが提供されるので、関数合成が使える:</p>
 
 <pre><code>val addrToInet: SocketAddress =&gt; Long
 val inetToSocket: Long =&gt; Socket
@@ -423,7 +422,7 @@ val inetToSocket: Long =&gt; Socket
 val factory: SocketFactory = addrToInet andThen inetToSocket
 </code></pre>
 
-<p>パッケージオブジェクトを使うと、型エイリアスをトップレベル名に結びつけることができる:</p>
+<p>パッケージオブジェクトを使うと、型エイリアスをトップレベル名として束縛できる:</p>
 
 <pre><code>package com.twitter
 package object net {
@@ -431,68 +430,70 @@ package object net {
 }
 </code></pre>
 
-<p>なお、型エイリアスは、その型のエイリアス名を構文的に置換することと同等で、新しい型ではないことに留意しよう。</p>
+<p>型エイリアスは新しい型ではないことに注意しよう。型エイリアスは、エイリアスされた名前をその型へと構文的に置換することと同等だ。</p>
 
 <p><a id="型とジェネリクス-暗黙" /></p>
 
 <h3>暗黙</h3>
 
-<p>暗黙(implicit)は、型システムの強力な機能だが、慎重に使うべきだ。それらの解決ルールは複雑で、シンプルな字句検査においてさえ、実際に何が起きているか把握するのを困難にする。暗黙を間違いなく使ってもいいのは、以下の場面だ:</p>
+<p>暗黙 (implicit) は強力な型システムの機能だが、慎重に使うべきだ。それらの解決ルールは複雑で、シンプルな字句検査においてさえ、実際に何が起きているか把握するのを困難にする。暗黙を間違いなく使ってもいいのは以下の状況だ:</p>
 
 <ul>
-<li>Scalaスタイルのコレクションを拡張したり、追加したりするとき</li>
-<li>オブジェクトを適合(adapt)させたり、拡張(extend)したりするとき（&ldquo;pimp my library&rdquo;パターン）</li>
-<li><a href="http://www.ne.jp/asahi/hishidama/home/tech/scala/generics.html#h_generalized_type_constraints">制約エビデンス</a>を提供することで、<em>型安全を強化</em>するために使うとき</li>
+<li>Scala スタイルのコレクションを拡張したり、追加したりするとき</li>
+<li>オブジェクトを適合 (adapt) したり、拡張 (extend) したりするとき（&ldquo;pimp my library&rdquo; パターン）</li>
+<li><a href="http://www.ne.jp/asahi/hishidama/home/tech/scala/generics.html#h_generalized_type_constraints">制約エビデンス</a>を提供して<em>型安全を強化</em>するために使う</li>
 <li>型エビデンス（型クラス）を提供するため</li>
-<li><code>Manifest</code>のため</li>
+<li><code>Manifest</code>（Scala 2.10 以降は <code>TypeTag</code>）のため</li>
 </ul>
 
-<p>暗黙を使う場合は、暗黙を使わずに同じことを達成する方法がないか、常に確認しよう。</p>
+<p>暗黙を使おうとする時は、暗黙を使わずに同じことを達成する方法がないか常に確認しよう。</p>
 
-<p>似通ったデータ型同士を、自動的に変換するのに暗黙を使うのはやめよう（例えば、リストをストリームに変換する等）。それらの型はそれぞれ異なった動作をするので、読み手は暗黙の型変換が働いていないか注意しなくてはならなくなる。明示的に変換するべきだ。</p>
+<p>似通ったデータ型同士を、自動的に変換するために暗黙を使うのはやめよう（例えば、リストをストリームに変換する等）。明示的に変換するべきだ。それらの型はそれぞれ異なった動作をするので、読み手は暗黙の型変換が働いていないか注意しなくてはならなくなる。</p>
 
 <p><a id="コレクション" /></p>
 
 <h2>コレクション</h2>
 
-<p>Scalaが持つコレクションライブラリは、とても総称的(generic)で、機能豊富で、強力で、組み立てやすい。コレクションは高水準であり、多数の操作を提供している。多数のコレクション操作と変換を簡潔かつ読みやすく表現できるが、それらの機能を不注意に適用すると、しばしば正反対の結果を招く。全てのScalaプログラマは、<a href="http://scalajp.github.com/scala-collections-doc-ja/">collections design document</a>を読むべきだ。このドキュメントは、Scalaのコレクションライブラリに対する優れた洞察と意欲をもたらしてくれる。</p>
+<p>Scala のコレクションライブラリは非常に総称的 (generic) で、機能が豊富で、強力で、組み立てやすい。コレクションは高水準であり、多数の操作を公開している。多くのコレクション操作と変換を簡潔かつ読みやすく表現できるが、そうした機能を不注意に適用すると、しばしば正反対の結果を招く。全ての Scala プログラマは <a href="http://docs.scala-lang.org/ja/overviews/collections/introduction.html">collections design document</a> を読むべきだ。このドキュメントは、Scala のコレクションライブラリに対する優れた洞察とモチベーションをもたらしてくれる。</p>
 
-<p>常に、君のニーズを最もシンプルに満たすコレクションを使おう。</p>
+<p>常に、要求を最もシンプルに満たすコレクションを使おう。</p>
 
 <p><a id="コレクション-階層" /></p>
 
 <h3>階層</h3>
 
-<p>Scalaのコレクションライブラリは巨大だ。<code>Traversable[T]</code>を基底とする精密な階層に加えて、ほとんどのコレクションに<code>immutable</code>と<code>mutable</code>のバリエーションがある。どんなに複雑でも、以下の図は、<code>immutable</code>と<code>mutable</code>の双方の階層にとって重要な区別を含んでいる。</p>
+<p>Scala のコレクションライブラリは巨大だ。<code>Traversable[T]</code> を基底とする入り組んだ継承階層だけでなく、ほとんどのコレクションに <code>immutable</code> 版と <code>mutable</code> 版がある。どんなに複雑でも、以下の図は <code>immutable</code> と <code>mutable</code> の双方の階層にとって重要な区別を含んでいる。</p>
 
 <p><img src="coll.png" style="margin-left: 3em;" /></p>
 
-<p class="LP"><code>Iterable[T]</code>はイテレート(iterate)できるコレクションで、<code>iterator</code>(と<code>foreach</code>)メソッドを提供する。<code>Seq[T]</code>は<em>順序付けされた</em>コレクション。<code>Set[T]</code>は数学的集合（要素が一意な順序の無いコレクション）。そして、<code>Map[T]</code>は順序の無い連想配列だ。</p>
+<p class="LP"><code>Iterable[T]</code> はイテレート (iterate) できるコレクションで、<code>iterator</code> (と <code>foreach</code>) メソッドを提供する。<code>Seq[T]</code> は<em>順序付けされた</em>コレクション、<code>Set[T]</code> は数学的集合（要素が一意な順序付けのないコレクション）、そして <code>Map[T]</code> は順序付けのない連想配列だ。</p>
 
 <p><a id="コレクション-使う" /></p>
 
 <h3>使う</h3>
 
-<p><em>不変(immutable)コレクションを使おう。</em>不変コレクションは、ほとんどの状況に適用できる。また、プログラムが参照透過であり、故にデフォルトでスレッドセーフであると判断しやすくなる。</p>
+<p><em>不変 (immutable) コレクションを使おう。</em>不変コレクションはほとんどの状況に適用できる。また、不変コレクションは参照透過なのでデフォルトでスレッドセーフとなり、プログラムの理解が容易になる。</p>
 
-<p><em><code>mutable</code>名前空間は明示的に使う。</em><code>scala.collections.mutable._</code>をインポートして<code>Set</code>を参照する代わりに、</p>
+<p><em>明示的に <code>mutable</code> 名前空間を使おう。</em><code>scala.collections.mutable._</code> を import して <code>Set</code> を参照するのではなく、</p>
 
 <pre><code>import scala.collections.mutable
 val set = mutable.Set()
 </code></pre>
 
-<p class="LP">とすることで、可変な`Set`を使っていることが分かりやすくなる。</p>
+<p class="LP">とすることで、可変版の `Set` が使われていることがはっきりする。</p>
 
-<p><em>コレクション型のデフォルトコンストラクタを使おう。</em>例えば、順序付きの（かつ連結リストの動作が必要ない）シーケンスが欲しい場合は、いつでも<code>Seq()</code>コンストラクタを使おう:</p>
+<p><em>コレクション型のデフォルトコンストラクタを使おう。</em>例えば、順序付きの（かつ連結リストである必要がない）シーケンスが必要な場合は、いつでも <code>Seq()</code> コンストラクタを使おう:</p>
 
 <pre><code>val seq = Seq(1, 2, 3)
 val set = Set(1, 2, 3)
 val map = Map(1 -&gt; &quot;one&quot;, 2 -&gt; &quot;two&quot;, 3 -&gt; &quot;three&quot;)
 </code></pre>
 
-<p class="LP">このスタイルでは、コレクションの動作がその実装と切り離されているので、コレクションライブラリは最も適切な実装型を使うことができる。君が必要としているのは<code>Map</code>であって、必ずしも<a href="http://ja.wikipedia.org/wiki/%E8%B5%A4%E9%BB%92%E6%9C%A8">赤黒木</a>じゃない。さらに、これらのデフォルトコンストラクタは、しばしば特殊化された表現を用いる。例えば<code>Map()</code>は、3つのキーを持つマップに対して、3つのフィールドを持つオブジェクト（<a href="http://www.scala-lang.org/api/current/scala/collection/immutable/Map$$Map3.html"><code>Map3</code></a>クラス）を使う。</p>
+<p class="LP">このスタイルでは、コレクションの動作とその実装が切り分けられるので、コレクションライブラリに対して最も適切な実装型を使わせることができる。君が必要なのは <code>Map</code> であって、必ずしも<a href="http://ja.wikipedia.org/wiki/%E8%B5%A4%E9%BB%92%E6%9C%A8">赤黒木</a>ではない。さらに、これらのデフォルトコンストラクタは、しばしば特殊化された表現を用いる。例えば、<code>Map()</code> は 3 つのキーを持つマップに対して、フィールドを 3 つ持つオブジェクト（<a href="http://www.scala-lang.org/api/current/scala/collection/immutable/Map$$Map3.html"><code>Map3</code></a> クラス）を使う。</p>
 
-<p>以上からの結論として、メソッドやコンストラクタでは、<em>最も総称的なコレクション型を適切に受け取ろう</em>。要するに、通常は上記の<code>Iterable</code>、<code>Seq</code>、<code>Set</code>あるいは<code>Map</code>のうち、どれか一つだ。もしメソッドがシーケンスを必要とする場合は、<code>List[T]</code>ではなく<code>Seq[T]</code>を使おう。</p>
+<p>以上の当然の帰結として、メソッドやコンストラクタでは、<em>最も総称的なコレクション型を適切に受け取ろう</em>。要するに、通常は上記の <code>Iterable</code>, <code>Seq</code>, <code>Set</code>、あるいは <code>Map</code> のうちのどれか一つだ。シーケンスが必要なメソッドには <code>List[T]</code> ではなく <code>Seq[T]</code> を使おう。</p>
+
+<p class="LP">（注意: `scala.package` が定義するデフォルトの `Traversable`、`Iterable` と `Seq` は `scala.collection` バージョンだ。これに対して、`Predef.scala` が定義する `Map` と `Set` は `scala.collection.immutable` バージョンだ。これが意味するのは、例えば、デフォルトの `Seq` 型は不変と可変の*両方*になれるということだ。したがって、君のメソッドの引数が不変コレクションに依存するなら、 `Traversable`、`Iterable` や `Seq` を使う場合、明確に不変バージョンを require/import する必要がある。さもなければ、メソッドに可変バージョンが渡されるかもしれない。）</p>
 
 <!--
 something about buffers for construction?
@@ -503,7 +504,7 @@ anything about streams?
 
 <h3>スタイル</h3>
 
-<p>関数型プログラミングでは、不変コレクションを望みの結果へと変形する方法として、パイプライン化された変換が推奨されている。大抵は、この手法により問題をとても簡潔に解決できるが、同時に読み手を困惑させることもある。変換をパイプライン化すると、しばしば作者の意図を理解するのが困難になり、暗黙的にしか示されていない途中結果を、全て追跡し続けるしかなくなるからだ。例えば、様々なプログラミング言語に対する投票結果である (language, num votes) のシーケンスを集計して、票数の最も多い言語から順番に表示するコードは、以下のように書ける:</p>
+<p>関数型プログラミングでは、パイプライン化した不変コレクションの変換によって、コレクションを望みの結果へと成形することが推奨されている。この手法により、多くの問題をとても簡潔に解決できるが、これは読み手を困惑させる可能性がある。パイプライン化した変換は時に作者の意図の理解を困難にするので、その場合、暗黙的に示される中間結果を全て追跡し続けるしかない。例えば、様々なプログラミング言語に対する投票である (language, num votes) のシーケンスを集計して、票数が最も多い言語から順番に表示するコードは以下のように書ける:</p>
 
 <pre><code>val votes = Seq((&quot;scala&quot;, 1), (&quot;java&quot;, 4), (&quot;scala&quot;, 10), (&quot;scala&quot;, 1), (&quot;python&quot;, 10))
 val orderedVotes = votes
@@ -515,7 +516,7 @@ val orderedVotes = votes
   .reverse
 </code></pre>
 
-<p class="LP">このコードは、簡潔でかつ正しい。しかし、ほとんどの読み手は、作者の元の意図を把握するのに苦労するだろう。<em>途中結果とパラメータに名前を付ける</em>のは、多くの場合で、作者の意図をハッキリさせるのに役立つ戦略の一つだ:</p>
+<p class="LP">このコードは簡潔でかつ正しい。しかし、ほとんどの読み手は作者の元々の意図を把握するのに苦労するだろう。<em>中間結果とパラメータに名前を付ける</em>戦略は、多くの場合で作者の意図を明確にするのに役立つ:</p>
 
 <pre><code>val votesByLang = votes groupBy { case (lang, _) =&gt; lang }
 val sumByLang = votesByLang map { case (lang, counts) =&gt;
@@ -527,7 +528,7 @@ val orderedVotes = sumByLang.toSeq
   .reverse
 </code></pre>
 
-<p class="LP">このコードでは、施される変換を中間値の名前に、操作されるデータ構造をパラメータ名にしている。これにより、以前と同じくらい簡潔であるだけでなく、作者の意図がよりいっそう明瞭に表現されている。もし、このスタイルを使うことで名前空間の汚染が心配なら、式を<code>{}</code>でグループ化すると良い:</p>
+<p class="LP">このコードでは、施される変換を中間値の名前として、操作されるデータ構造をパラメータ名として表している。これにより、以前と同じくらい簡潔であるだけでなく、よりいっそう明瞭な表現となっている。もし名前空間の汚染が心配なら、式を <code>{}</code> でグループ化すると良い:</p>
 
 <pre><code>val orderedVotes = {
   val votesByLang = ...
@@ -539,19 +540,19 @@ val orderedVotes = sumByLang.toSeq
 
 <h3>性能</h3>
 
-<p>高水準コレクションライブラリは、（高水準な構築物が一般的にそうであるように）性能の推測が難しい。コンピュータに直接指示するやり方、つまり命令型スタイルから遠ざかるほど、あるコード片が性能に与える影響を厳密に予測するのは困難になる。一方で、正確さを判断することは概して容易だし、読みやすさも向上する。Scalaの場合、Javaランタイムが事態をさらに複雑にしている。Scalaでは、ボクシング操作やアンボクシング操作がユーザから隠されており、性能やメモリ使用量の面で重大なペナルティを被ることがある。</p>
+<p>高水準コレクションライブラリは（高水準な構築物が一般的にそうであるように）性能の推測が難しい。コンピュータに直接指示する”命令型スタイル”から遠ざかるほど、あるコード片が性能に与える影響を厳密に予測するのは困難になる。一方で、コードの正確さを判断するのは概して容易だし、読みやすさも高まる。Scala の場合、Java ランタイムが事態をさらに複雑にしている。Scala はユーザに対してボクシング (boxing) およびアンボクシング (unboxing) 操作を隠蔽するので、性能やメモリ使用量の面で重大なペナルティを被ることがある。</p>
 
-<p>低レベルの詳細に焦点を当てる前に、君のコレクションの使い方が適切かどうか確認しよう。また、データ構造に予期しない漸近的な複雑さがないか確かめよう。Scalaのさまざまなコレクションの複雑さについては、<a href="http://www.scala-lang.org/docu/files/collections-api/collections_40.html">こちら</a>で述べられている。</p>
+<p>低レベルにおける細部に注目する前に、君の用途に対してコレクションの使い方が適切かどうか確認しよう。また、データ構造に予期しない漸近的な複雑さがないか確かめよう。Scala のさまざまなコレクションの複雑さについては<a href="http://docs.scala-lang.org/ja/overviews/collections/performance-characteristics.html">こちら</a>で述べられている。</p>
 
-<p>性能最適化の第一法則は、君のアプリケーションが<em>なぜ</em>遅いのかを理解することだ。最適化を始める前に、君のアプリケーションをプロファイル<a class="noteref" id="fnref1" href="#fn1" title="Jump to note 1">[1]</a>してデータを取ろう。最初に注目するのは、回数の多いループや巨大なデータ構造だ。最適化への過度な取り組みは、たいてい無駄な努力に終わる。クヌースの「時期尚早な最適化は諸悪の根源(&ldquo;Premature optimisation is the root of all evil.&rdquo;)」という格言を思い出そう。</p>
+<p>性能最適化の第一法則は、君のアプリケーションが<em>なぜ</em>遅いのかを理解することだ。最適化を始める前に、君のアプリケーションをプロファイル<a class="noteref" id="fnref2" href="#fn2" title="Jump to note 2">[2]</a>してデータを取ろう。最初に注目するのは、回数の多いループや巨大なデータ構造だ。最適化への過度な取り組みは、たいてい無駄な努力に終わる。クヌースの”時期尚早な最適化は諸悪の根源”という格言を思い出そう。</p>
 
-<p>性能やメモリ使用効率の良さが要求される場面では、多くの場合、低レベルコレクションを使うのが妥当だ。巨大なシーケンスには、リストより配列を使おう（不変の<code>Vector</code>コレクションは、配列への参照透過なインタフェースを提供する）。また、性能が重要な場合は、シーケンスを直接生成せずにバッファを使おう。</p>
+<p>性能やメモリ効率が要求される場面では、多くの場合で低レベルコレクションを使うのが妥当だ。巨大なシーケンスには、リストより配列を使おう（不変の <code>Vector</code> コレクションは、配列への参照透過なインタフェースを提供する）。また、性能が重要な場合は、シーケンスを直接生成せずにバッファを使おう。</p>
 
-<p><a id="コレクション-Javaコレクション" /></p>
+<p><a id="コレクション-Java コレクション" /></p>
 
-<h3>Javaコレクション</h3>
+<h3>Java コレクション</h3>
 
-<p>Javaコレクションとの相互運用のために、<code>scala.collection.JavaConverters</code>を使おう。<code>JavaConverters</code>は、暗黙変換を行う<code>asJava</code>メソッドと<code>asScala</code>メソッドを追加する。読み手を助けるために、これらの変換は明示的に行うようにしよう:</p>
+<p>Java コレクションと Scala コレクションと相互運用するには、<code>scala.collection.JavaConverters</code> を使おう。<code>JavaConverters</code> は、暗黙変換を行う <code>asJava</code> メソッドと <code>asScala</code> メソッドを追加する。読み手のために、これらの変換は明示的に行うようにしよう:</p>
 
 <pre><code>import scala.collection.JavaConverters._
 
@@ -563,13 +564,13 @@ val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
 
 <h2>並行性</h2>
 
-<p>現代のサービスは、サーバへの何万何十万もの同時操作を調整するため、高い並行性(concurrency)を備えている。そして、隠れた複雑性への対処は、堅固なシステムソフトウェアを記述する上で中心的なテーマだ。</p>
+<p>現代のサービスは高い並行性 (concurrency) を備え、サーバが何万何十万もの同時操作をコーディネートするのが一般的になっている。そして、堅固なシステムソフトウェアを記述する上で、暗黙的な複雑性への対処は中心的なテーマだ。</p>
 
-<p><em>スレッド(thread)</em>は、並行性を表現する一つの手段だ。スレッドからは、OSによってスケジュールされる、独立したヒープ共有の実行コンテクストを利用できる。しかし、Javaにおいてスレッド生成はコストが高い。そのため、主にスレッドプールを使って、リソースとして管理する必要がある。これは、プログラマにとってさらなる複雑さを生み出す。また、アプリケーションロジックとそれが使用する潜在的なリソースを分離するのが難しくなり、結合度を高めてしまう。</p>
+<p><em>スレッド (thread)</em> は、並行性を表現する手段の一つだ。スレッドを使うことで、オペレーティングシステムによってスケジュールされる、ヒープを共有する独立した実行コンテクストを利用できる。しかし、Java においてスレッド生成はコストが高いので、典型的にはスレッドプールを使うことで、スレッドをリソースとして管理する必要がある。これは、プログラマにとってさらなる複雑さと高い結合度を生み出す。つまり、アプリケーションロジックと、それが使用する潜在的なリソースを分離するのが難しくなる。</p>
 
-<p>この複雑さは、出力(fan-out)の大きいサービスを作成する際に、とりわけ明らかになる。それぞれの受信リクエストからは、システムのさらに別の階層に対する多数のリクエストが生じる。それらのシステムにおいて、スレッドプールは、各階層でのリクエストの割合によってバランスされるよう管理される必要がある。あるスレッドプールで管理に失敗すると、その影響は他のスレッドプールにも広がってしまう。</p>
+<p>この複雑さは、出力 (fan-out) の大きいサービスを作成する際に、とりわけ明らかになる。それぞれの受信リクエストからは、システムのさらに別の階層に対する多数のリクエストが生じる。それらのシステムにおいて、スレッドプールは各階層でのリクエストの割合によってバランスを保つように管理される必要がある。あるスレッドプールで管理に失敗すると、その影響は他のスレッドプールにも広がってしまう。</p>
 
-<p>また、堅固なシステムは、タイムアウトとキャンセルについても検討する必要がある。どちらに対処するにも、さらなる「制御スレッド」の導入が必要で、そのことが問題をさらに複雑にする。ちなみに、もしスレッドのコストが安いなら、こうした問題は少なくなる。なぜなら、スレッドプールが必要とされず、タイムアウトしたスレッドを放棄することができ、追加のリソース管理も必要ないからだ。</p>
+<p>また、堅固なシステムはタイムアウトとキャンセルについても検討する必要がある。どちらに対処するにも、さらなる”制御スレッド”を導入する必要があるので、問題がさらに複雑になる。ちなみに、もしスレッドのコストが安いなら問題は低減できる。スレッドプールが必要なくなり、タイムアウトしたスレッドを放棄することができ、追加のリソース管理も必要ないからだ。</p>
 
 <p>このように、リソース管理はモジュール性を危うくするのだ。</p>
 
@@ -577,11 +578,11 @@ val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
 
 <h3>Future</h3>
 
-<p>Futureを使って並行性を管理しよう。Futureは、並行操作とリソース管理を疎結合にする。例えば、<a href="http://github.com/twitter/finagle">Finagle</a>は、並行操作をわずかなスレッド数で効率的に多重化する。Scalaには、軽量なクロージャリテラルの構文がある。だから、Futureは構文上の負担が小さく、ほとんどのプログラマが身に付けることができる。</p>
+<p>Future で並行性を管理しよう。Future は、並行操作とリソース管理を疎結合にする。例えば、<a href="http://github.com/twitter/finagle">Finagle</a> はわずかな数のスレッド上で並行操作を効率的に多重化する。Scala には軽量なクロージャリテラル構文があるので、Future のために新たな構文を覚える必要がなく、ほとんどのプログラマにとって自然に扱える。</p>
 
-<p>Futureは、プログラマが並行計算を宣言的なスタイルで表現できるようにする。Futureは合成可能で、また計算の失敗を原則に基づいて処理できる。こうした性質から、Futureは関数型プログラミング言語にとても適しており、推奨されるスタイルだと確信している。</p>
+<p>Future は、プログラマが並行計算を宣言的なスタイルで表現できるようにする。Future は合成可能で、また計算の失敗を一定の原則に基づいて処理できる。こうした性質は Future は関数型プログラミング言語にとても適しており、推奨されるスタイルだと確信している。</p>
 
-<p><em>生成したFutureを変換しよう。</em>Futureの変換を使うと、失敗の伝播やキャンセルの通知が行われることを保証できる。また、プログラマは、Javaメモリモデルの影響を検討する必要がなくなる。RPCを順番に10回発行して結果を表示するとき、注意深いプログラマでさえ、以下のように書いてしまうかもしれない:</p>
+<p><em>生成した Future を変換しよう。</em>Future の変換は、失敗の伝播やキャンセルの通知が行われることを保証し、またプログラマが Java メモリモデルの影響を検討する必要がなくなる。注意深いプログラマでさえ、RPC を逐次的に 10 回発行して結果を表示するプログラマを以下のように書いてしまうかもしれない:</p>
 
 <pre><code>val p = new Promise[List[Result]]
 var results: List[Result] = Nil
@@ -603,14 +604,14 @@ p onSuccess { results =&gt;
 }
 </code></pre>
 
-<p>RPCの失敗が確実に伝播するように、プログラマは、コードに制御フローをいくつも挿入する必要がある。さらに悪いことに、上記のコードは間違っている！ <code>results</code>を<code>volatile</code>として宣言していないので、各繰り返しにおいて、<code>results</code>が一つ前の値を保持していることを保証できない。Javaのメモリモデルは、油断ならない獣だ。しかし幸いにして、宣言的スタイルを使えば、これらの落とし穴を全て避けることができる:</p>
+<p>プログラマは、RPC の失敗が確実に伝播するように、コードに制御フローをいくつも挿入する必要がある。さらに悪いことに、このコードは間違っている！ <code>results</code> を <code>volatile</code> として宣言していないので、繰り返しごとに <code>results</code> が一つ前の値を保持していることを保証できない。Javaのメモリモデルは、油断ならない獣だ。しかし幸いなことに、宣言的スタイルを使えばこれらの落とし穴を全て避けることができる:</p>
 
 <pre><code>def collect(results: List[Result] = Nil): Future[List[Result]] =
   doRpc() flatMap { result =&gt;
     if (results.length &lt; 9)
       collect(result :: results)
     else
-      result :: results
+      Future.value(result :: results)
   }
 
 collect() onSuccess { results =&gt;
@@ -618,19 +619,19 @@ collect() onSuccess { results =&gt;
 }
 </code></pre>
 
-<p>シーケンスの操作に<code>flatMap</code>を使うと、処理が進むにつれて、リストの先頭に結果を追加できる。これは、関数型プログラミングの一般的なイディオムを、Futureに置き換えたものだ。これは正しく動作するだけでなく、必要な「おまじない」を少なくでき、間違いの元を減らすことができる。そして、読みやすい。</p>
+<p>ここでは <code>flatMap</code> を使って操作を順序付けし、処理が進むにつれてリストの先頭に結果を追加している。これは、関数型プログラミングの一般的なイディオムを Future に置き換えたものだ。これは正しく動作するだけでなく、必要な”おまじない”が少なくなるし、エラーの温床が減り、そして読みやすい。</p>
 
-<p><em>Futureの結合子(combinator)を使おう。</em><code>Future.select</code>や<code>Future.join</code>、そして<code>Future.collect</code>は、複数のFutureを結合して操作する際の一般的なパターンを体系化している。</p>
+<p><em>Future のコンビネータ (combinator) を使おう。</em><code>Future.select</code>, <code>Future.join</code>, <code>Future.collect</code> は、複数の Future を組み合わせて操作する際の一般的なパターンを体系化している。</p>
 
 <p><a id="並行性-コレクション" /></p>
 
 <h3>コレクション</h3>
 
-<p>並行コレクションの話題は、私見と、機微と、教義と、FUDに満ちている。それらは、多くの場合、実践において取るに足らない問題だ。いつでも、目的を果たす上で、最も単純で、最も退屈で、最も標準的なコレクションから始めよう。同期化コレクションでうまくいかないのが<em>分かる</em>前に、並行コレクションに手を伸ばしてはいけない。JVMは、同期を低コストで実現する洗練された機構を持っている。その有効性に、君は驚くはずだ。</p>
+<p>並行コレクションの話題は、私見と、機微と、ドグマと、FUD に満ちている。それらは、大抵の実践的な状況においては取るに足らない問題だ: 目的を果たすためには、いつでも最も単純で、最も退屈で、最も標準的なコレクションから始めよう。同期化コレクションでは上手くいかないことが<em>分かる</em>前に、並行コレクションを手に取ってはいけない。JVM は、同期を低コストで実現する洗練された機構を持っている。その効率に君は驚くだろう。</p>
 
-<p>不変(immutable)コレクションで目的を果たせるなら、それを使おう。不変コレクションは参照透過なので、並行コンテキストでの推論が簡単になる。不変コレクションの変更は、主に（<code>var</code>セルや<code>AtomicReference</code>が指す）現在の値への参照を更新することで行う。不変コレクションの変更には、注意が必要だ。他のスレッドへ不変コレクションを公開する場合、<code>AtomicReference</code>には再試行が必要だし、<code>var</code>変数は<code>volatile</code>として宣言しなければいけない。</p>
+<p>不変 (immutable) コレクションで目的を果たせるなら、それを使おう。不変コレクションは参照透過なので、並行コンテキストでの推論が簡単になる。不変コレクションの変更は、主に（<code>var</code> セルや <code>AtomicReference</code> が指す）現在の値への参照を更新することで行う。不変コレクションの変更は注意が必要だ。他のスレッドへ不変コレクションを公開するには、<code>AtomicReference</code> は再試行が必要だし、<code>var</code> 変数は <code>volatile</code> として宣言しなければならない。</p>
 
-<p>可変(mutable)な並行コレクションは複雑な動作をするだけでなく、Javaメモリモデルの微妙な部分を利用する。だから、可変並行コレクションが更新を公開する方法など、暗黙的な挙動について理解しておこう。また、コレクションの合成には同期化コレクションを使おう。並行コレクションでは、<code>getOrElseUpdate</code>のような操作を正しく実装できないし、特に、合成コレクションの作成はエラーの温床だ。</p>
+<p>可変 (mutable) な並行コレクションは複雑な動作をするだけでなく、Java メモリモデルの微妙な部分を利用するので、特に更新を公開する方法などの暗黙的な挙動を理解しておこう。同期化コレクションの方が合成は簡単だ。並行コレクションでは <code>getOrElseUpdate</code> のような操作を正しく実装できないし、特に並行コレクションの合成はエラーの温床になる。</p>
 
 <!--
 
@@ -648,15 +649,15 @@ Async*?
 
 <h2>制御構造</h2>
 
-<p>関数型スタイルのプログラムは伝統的な制御構造が少なく済み、また、宣言型スタイルで書かれていると読みやすいことが多い。これは典型的には、ロジックをいくつかの小さなメソッドや関数に分解し、それらを互いに<code>match</code>式で貼り合わせることを意味する。また、関数型プログラムは、より式指向となる傾向がある。つまり、条件式のそれぞれの分岐は同じ型の値を計算し、<code>for (..) yield</code>で内包(comprehension)を計算する。また、再帰の利用が一般的だ。</p>
+<p>関数型スタイルのプログラムは、従来の制御構造が少なくなり、また、宣言型スタイルで書かれていると読みやすいことが多い。こうしたスタイルでは、典型的にはロジックをいくつかの小さなメソッドや関数に分解し、それらを互いに <code>match</code> 式で貼り合わせる。また、関数型プログラムは、より式指向となる傾向がある: つまり、条件式のそれぞれの分岐は同じ型の値を計算し、<code>for (..) yield</code> は内包 (comprehension) を計算する。また、再帰の利用が一般的だ。</p>
 
 <p><a id="制御構造-再帰" /></p>
 
 <h3>再帰</h3>
 
-<p><em>再帰表現を使うと、問題をしばしば簡潔に記述できる。</em>そしてコンパイラは、末尾呼び出しの最適化が適用できるコードを正規のループに置き換える（末尾最適化が適用されるかは<code>@tailrec</code>アノテーションで確認できる）。</p>
+<p><em>再帰表現を使うと、問題をしばしば簡潔に記述できる。</em>そしてコンパイラは、末尾呼び出しの最適化が適用できるコードを正規のループに置き換える（末尾最適化が適用されるかは <code>@tailrec</code> アノテーションで確認できる）。</p>
 
-<p>ヒープの<span class="algo">fix-down</span>を、極めて標準的な命令型で実装したバージョンを検討しよう:</p>
+<p>ヒープの <span class="algo">fix-down</span> アルゴリズムの、極めて標準的な命令型バージョンを検討しよう:</p>
 
 <pre><code>def fixDown(heap: Array[T], m: Int, n: Int): Unit = {
   var k: Int = m
@@ -674,9 +675,9 @@ Async*?
 }
 </code></pre>
 
-<p>このコードでは、whileループに入るたび、一つ前の反復で変更された状態を参照する。各変数の値は、どの分岐を取るかに依存する。また、正しい位置が見つかると、関数はループの中盤で<code>return</code>する（鋭い読者は、ダイクストラの<a href="http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html">&ldquo;Go To Statement Considered Harmful&rdquo;</a>に同様の議論があることに気づくと思う）。</p>
+<p>このコードでは、while ループに入るたびに一つ前の反復で変更された状態を参照する。各変数の値は、どの分岐を取るかに依存する。そして、正しい位置が見つかるとループの中盤で <code>return</code> する（鋭い読者は、ダイクストラの <a href="http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html">&ldquo;Go To Statement Considered Harmful&rdquo;</a> <a class="noteref" id="fnref3" href="#fn3" title="Jump to note 3">[3]</a> に同様の議論があることに気づくと思う）。</p>
 
-<p>（末尾）再帰による実装を検討してみよう<a class="noteref" id="fnref2" href="#fn2" title="Jump to note 2">[2]</a>:</p>
+<p>（末尾）再帰による実装を検討しよう<a class="noteref" id="fnref4" href="#fn4" title="Jump to note 4">[4]</a>:</p>
 
 <pre><code>@tailrec
 final def fixDown(heap: Array[T], i: Int, j: Int) {
@@ -690,9 +691,7 @@ final def fixDown(heap: Array[T], i: Int, j: Int) {
 }
 </code></pre>
 
-<p class="LP">ここでは、すべての反復ははっきりと<em>白紙の状態で</em>開始される。また、参照セルが存在しないため、不変式(invariant)を数多く見出せる。このコードはより推論しやすいだけでなく、より読みやすい。それだけでなく、性能面のペナルティもない。コンパイラは、メソッドが末尾再帰なら、これを標準的な命令型のループへと変換するからだ。</p>
-
-<p>（訳注: <a href="http://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%89%E3%82%AC%E3%83%BC%E3%83%BB%E3%83%80%E3%82%A4%E3%82%AF%E3%82%B9%E3%83%88%E3%83%A9">エドガー・ダイクストラ</a>は、構造化プログラミングの提唱者。彼が執筆したエッセイ&ldquo;Go To Statement Considered Harmful&rdquo;は、「GOTO有害論」の端緒として有名。）</p>
+<p class="LP">ここでは、すべての反復は明確に定義された<em>白紙の状態</em>から開始する。また、参照セルが存在しないので不変式 (invariant) を数多く見出せる。このメソッドはより推論しやすく、より読みやすい。さらに、性能面のペナルティもない。メソッドは末尾再帰なので、コンパイラがこれを標準的な命令型のループへと変換するからだ。</p>
 
 <!--
 elaborate..
@@ -702,9 +701,9 @@ elaborate..
 
 <h3>Return</h3>
 
-<p>前節では再帰を使うメリットを紹介したけど、だからといって命令型の構造は無価値だというわけじゃない。多くの場合、計算を早期に終了する方が、終点の可能性がある全ての位置に条件分岐を持つよりも適切だ。実際に、上記の<code>fixDown</code>は、ヒープの終端に達すると<code>return</code>によって早期に終了する。</p>
+<p>前節では再帰を使うメリットを紹介したが、とはいえ命令型の構造が無価値だというわけではない。多くの場合、計算を早期に終了する方が、終点の可能性がある全ての位置に条件分岐を持つよりも適切だ。実際に、上記の <code>fixDown</code> がヒープの終端に達すると <code>return</code> によって早期に終了する。</p>
 
-<p><code>return</code>を使うと、分岐を減らして不変式(invariant)を定めることができる。これにより、入れ子が減ってコードを追いやすくなるだけでなく、後続のコードの正当性を論証しやすくなる（配列の範囲外をアクセスしないことを確認する場合とか）。これは、&ldquo;ガード&rdquo;節で特に有用だ:</p>
+<p><code>return</code> を使うと、分岐を減らして不変式 (invariant) を定めることができる。これにより、入れ子が減ってコードを追いやすくなるだけでなく、後続のコードの正当性を推論しやすくなる（配列の範囲外をアクセスしないことを確認する場合とか）。これは、&ldquo;ガード&rdquo;節で特に有用だ:</p>
 
 <pre><code>def compare(a: AnyRef, b: AnyRef): Int = {
   if (a eq b)
@@ -718,7 +717,7 @@ elaborate..
 }
 </code></pre>
 
-<p><code>return</code>を使って、コードを明快にして読みやすさを高めよう。ただし、命令型言語でのような使い方をしてはいけない。つまり、下記のように計算結果を返すために<code>return</code>を使うのは避けよう。</p>
+<p><code>return</code> を使って、コードを明快にして読みやすさを高めよう。ただし、命令型言語でのような使い方をしてはいけない。つまり、計算結果を返すために <code>return</code> を使うのは避けよう。</p>
 
 <pre><code>def suffix(i: Int) = {
   if      (i == 1) return &quot;st&quot;
@@ -728,7 +727,7 @@ elaborate..
 }
 </code></pre>
 
-<p class="LP">代わりに下記のように書こう:</p>
+<p class="LP">と書く代わりに下記のように書こう:</p>
 
 <pre><code>def suffix(i: Int) =
   if      (i == 1) &quot;st&quot;
@@ -737,7 +736,7 @@ elaborate..
   else             &quot;th&quot;
 </code></pre>
 
-<p class="LP">しかし、より優れているのは<code>match</code>式を使うことだ:</p>
+<p class="LP">しかし、<code>match</code> 式を使うのがより優れた方法だ:</p>
 
 <pre><code>def suffix(i: Int) = i match {
   case 1 =&gt; &quot;st&quot;
@@ -747,7 +746,7 @@ elaborate..
 }
 </code></pre>
 
-<p>なお、クロージャの内部で<code>return</code>を使うと、目に見えないコストが発生する場合があるので注意しよう。</p>
+<p>なお、クロージャの内部で <code>return</code> を使うと目に見えないコストが発生する場合があるので注意しよう。</p>
 
 <pre><code>seq foreach { elem =&gt;
   if (elem.isLast)
@@ -757,45 +756,45 @@ elaborate..
 }
 </code></pre>
 
-<p class="LP">このコードは、バイトコードでは例外の`throw`と`catch`として実装されるので、実行頻度の高いコードで使うと性能に影響を与える。</p>
+<p class="LP">この `return` は、バイトコードでは例外を `throw` と `catch` するコードとして実装されるので、実行頻度の高いコード内で使うと性能に影響を与える。</p>
 
 <p><a id="制御構造-`for`ループと内包" /></p>
 
 <h3><code>for</code>ループと内包</h3>
 
-<p><code>for</code>を使うと、ループと集約を簡潔かつ自然に表現できる。<code>for</code>は、多数のシーケンスを平坦化(flatten)する場合に特に有用だ。<code>for</code>の構文は、内部的にはクロージャを割り当ててディスパッチしていることを覆い隠している。このため、予期しないコストが発生したり、予想外の挙動を示したりする。例えば、</p>
+<p><code>for</code> を使うと、ループと集約を簡潔かつ自然に表現できる。<code>for</code> は、多数のシーケンスを平坦化 (flatten) する場合に特に有用だ。<code>for</code> の構文は、内部的にはクロージャを割り当ててディスパッチしていることを覆い隠している。これにより予期しないコストが発生したり、予想外の挙動を示したりする。例えば、</p>
 
 <pre><code>for (item &lt;- container) {
   if (item != 2) return
 }
 </code></pre>
 
-<p class="LP">このコードは、`container`が計算を遅延させた場合にランタイムエラーが発生し、その結果として<code>return</code>が非局所的(nonlocal)に評価されてしまうことがある！</p>
+<p class="LP">このコードは `container` が遅延評価されるとランタイムエラーが発生し、これにより <code>return</code> が非局所的 (nonlocal) に評価されてしまう！</p>
 
-<p>これらの理由から、コードを明瞭にするためである場合を除いて、<code>for</code>を使う代わりに、<code>foreach</code>や<code>flatMap</code>や<code>map</code>や<code>filter</code>を直接呼び出す方が良いことが多い。</p>
+<p>これらの理由から、コードを明瞭にするためである場合を除いて、<code>for</code> の代わりに <code>foreach</code>, <code>flatMap</code>, <code>map</code>, <code>filter</code> を直接呼び出すのが良いことが多い。</p>
 
-<p>（訳注1: Scalaのfor式は<code>foreach</code>、<code>flatMap</code>、<code>map</code>、<code>withFilter</code>を呼び出す糖衣構文で、ループ内の式は、コンパイル時にそれらのメソッドに渡される匿名関数に変換される。例えば、上記の例のfor式は、実際には</p>
+<p class="LP">（訳者による補足: Scala の for 式は `foreach`, `flatMap`, `map`, `withFilter` を呼び出す糖衣構文で、ループ内の式は、コンパイル時にそれらのメソッドに渡される匿名関数に変換される。例えば、上記の for 式は:</p>
 
 <pre><code>container foreach { item =&gt;
   if (item != 2) return
 }
 </code></pre>
 
-<p>というコードとして実行される。原文では、最初からこのように記述することを推奨している。）</p>
+<p class="LP">というコードとして実行される。本ガイドでは、最初からこのように記述することを推奨している。</p>
 
-<p>（訳注2: ネストした匿名関数での<code>return</code>式は、ランタイムエラーである<code>NonLocalReturnException</code>の<code>throw</code>と<code>catch</code>に変換される。この場合、<code>container</code>が遅延評価されると<code>return</code>式の挙動が意図しないものになる場合がある。詳細に興味がある場合は、<a href="https://github.com/scalajp/effectivescala/commit/8b448ef819e6d87d21fa78310b84fc72593b0226#commitcomment-996948">こちらの議論</a>も参照してほしい。）</p>
+<p>ところで、ネストした匿名関数での <code>return</code> 式は、ランタイムエラーである <code>NonLocalReturnException</code> の <code>throw</code> と <code>catch</code> に変換される。この場合、for 式の中の <code>container</code> が遅延評価されると <code>return</code> 式の挙動が意図しないものになる場合がある。詳細に興味がある読者は<a href="https://github.com/scalajp/effectivescala/commit/8b448ef819e6d87d21fa78310b84fc72593b0226#commitcomment-996948">こちらの議論</a>も参照してほしい。）</p>
 
-<p><a id="制御構造-`require`と`assert`" /></p>
+<p><a id="制御構造-`require` と `assert`" /></p>
 
-<h3><code>require</code>と<code>assert</code></h3>
+<h3><code>require</code> と <code>assert</code></h3>
 
-<p><code>require</code>と<code>assert</code>は、どちらも実行可能なドキュメントとして機能する。これらは、要求される不変条件(invariant)を型システムが表現できない状況で有用だ。<code>assert</code>は、コードが仮定する（内部あるいは外部の）<em>不変条件</em>を表現するために使われる。例えば、</p>
+<p><code>require</code> と <code>assert</code> は、どちらも実行可能なドキュメントとして機能する。これらは、型システムが要求される不変条件 (invariant) を表現できない状況で有用だ。<code>assert</code> は、コードが仮定する（内部あるいは外部の）<em>不変条件</em>を表現するために使われる。例えば、</p>
 
 <pre><code>val stream = getClass.getResourceAsStream(&quot;someclassdata&quot;)
 assert(stream != null)
 </code></pre>
 
-<p>一方で、<code>require</code>はAPIの契約を表現するために使われる:</p>
+<p>一方で、<code>require</code> は API の契約を表現するために使われる:</p>
 
 <pre><code>def fib(n: Int) = {
   require(n &gt; 0)
@@ -807,23 +806,24 @@ assert(stream != null)
 
 <h2>関数型プログラミング</h2>
 
-<p>関数型プログラミングと一緒に用いる時に <em>値指向型</em> プログラミングは多くの恩恵を受ける。このスタイルはステートフルな変更よりも値の変換を強調する。得られるコードは参照透過(referentially transparent)であり、より強力な不変式(invariant)を提供し、さらに容易に推論することが可能になる。ケースクラス、パターンマッチ、構造化代入(destructuring-bind)、型推論、クロージャやメソッドの軽量な生成構文がこのツールになる。</p>
+<p><em>値指向</em>プログラミングは、特に関数型プログラミングと一緒に用いることで数々の利益をもたらす。このスタイルはステートフルな変更よりも値の変換を重視し、参照透過 (referentially transparent) なコードを生み出し、より強力な不変式 (invariant) を提供するので、推論が容易になる。ケースクラス、パターンマッチ、構造化代入 (destructuring binding) 、型推論、クロージャやメソッドの軽量な生成構文がこの仕事の道具になる。</p>
 
 <p><a id="関数型プログラミング-代数的データ型としてのケースクラス" /></p>
 
 <h3>代数的データ型としてのケースクラス</h3>
 
-<p>ケースクラス(case class)は代数的データ型(ADT)をエンコードする。パターンマッチと共に利用することで、ケースクラスは巨大なデータ構造をモデリングするのに役に立ち、強力な不変式を簡潔なコードとして提供する。パターンマッチの解析器は、さらに強力な静的保証を提供する包括的解析(exhaustivity analysis)を実装している。
-ケースクラスと共に代数的データ型をエンコードする時、以下のパターンを使おう：</p>
+<p>ケースクラス (case class) は、代数的データ型 (algebraic data type) をエンコードする: ケースクラスは数多くのデータ構造をモデリングするのに役に立ち、強力な不変式を簡潔なコードとして提供する。ケースクラスは、パターンマッチと共に利用すると特に有用だ。パターンマッチの解析器は、さらに強力な静的保証を提供する包括的解析 (exhaustivity analysis) を実装している。</p>
+
+<p>ケースクラスで代数的データ型をエンコードする際は、以下のパターンを使おう:</p>
 
 <pre><code>sealed trait Tree[T]
 case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 case class Leaf[T](value: T) extends Tree[T]
 </code></pre>
 
-<p><code>Tree[T]</code>の型は<code>Node</code>と<code>Leaf</code>の2つのコンストラクタを持つ。<code>sealed</code>として型を宣言する事で、ソースファイルの外からコンストラクタを追加することを制限できるため、コンパイラに包括的解析を行わせることができる。</p>
+<p class="LP"><code>Tree[T]</code> 型には <code>Node</code> と <code>Leaf</code> の 2 つのコンストラクタがある。型を <code>sealed</code> として宣言するとソースファイルの外でコンストラクタを追加できなくなるので、コンパイラに包括的解析を行わせることができる。</p>
 
-<p>パターンマッチと一緒に利用することで、そのようなモデリングを簡潔かつ&ldquo;明らかに正しい&rdquo;コードにすることができる。</p>
+<p>パターンマッチと共に使うと、上記のモデリングは簡潔でありかつ”明らかに正しい”コードになる:</p>
 
 <pre><code>def findMin[T &lt;: Ordered[T]](tree: Tree[T]) = tree match {
   case Node(left, right) =&gt; Seq(findMin(left), findMin(right)).min
@@ -831,47 +831,44 @@ case class Leaf[T](value: T) extends Tree[T]
 }
 </code></pre>
 
-<p>ツリーのような再帰構造は代数的データ型の古典的なアプリケーションを構成する一方で、それらの有用な領域はかなり大きい。
-代数的データ型でモデリングされた結合の分解は状態遷移(state machines)で頻繁に発生する。</p>
+<p>木構造のような再帰的構造は、代数的データ型の古典的な応用を占めるが、代数的データ型が有用な領域はそれよりずっと大きい。特に、状態機械によく現れる直和 (disjoint union) は、代数的データ型で容易にモデル化できる。</p>
 
-<p><a id="関数型プログラミング-オプション" /></p>
+<p><a id="関数型プログラミング-Option" /></p>
 
-<h3>オプション</h3>
+<h3>Option</h3>
 
-<p><code>Option</code>型は、空であること(<code>None</code>)、または満たされていること(<code>Some(value)</code>)を表すコンテナである。<code>null</code>に対する安全な代替手段を提供し、可能な限り如何なる時も利用されるべきである。<code>Option</code>型は、たかだかひとつの要素を持つコレクションであり、コレクションの操作で装飾される。利用しよう！</p>
+<p><code>Option</code> 型は、空の状態 (<code>None</code>) と満たされた状態 (<code>Some(value)</code>) のいずれかであるコンテナだ。Option は <code>null</code> の安全な代替手段を提供するので、いつでも可能な限り利用するべきだ。<code>Option</code> は（たかだか要素が一つの）コレクションなので、コレクション操作を利用できる。使うしかない!</p>
 
-<p><code>Option</code>型は、無(<code>None</code>)か、有(<code>Some(Value)</code>)のどちらかを格納するコンテナである。nullの代わりに安全に使用でき、いつでも可能な限り使用されるべきである。
-<code>Option</code>型は(たかだかひとつの一つの要素しかない)コレクションであり、集合の操作で利用できる。使うしかない!</p>
-
-<p>以下のように書こう。</p>
-
-<pre><code>var username: Option[String] = None
-...
-username = Some(&quot;foobar&quot;)
-</code></pre>
-
-<p class="LP">以下のようには書かない。</p>
+<p>以下のように書くのは安全ではない:</p>
 
 <pre><code>var username: String = null
 ...
 username = &quot;foobar&quot;
 </code></pre>
 
-<p class="LP">前者の方が安全な理由：<code>Option</code>型は<code>username</code>が空であることをチェックされなければならないことを静的に強要しているため。</p>
+<p class="LP">以下のように書こう:</p>
 
-<p><code>Option</code>の値の条件節の実行は<code>foreach</code>を使うべきである。以下の代わりに、</p>
+<pre><code>var username: Option[String] = None
+...
+username = Some(&quot;foobar&quot;)
+</code></pre>
+
+<p class="LP"><code>Option</code> 型は、<code>username</code> が空であるかのチェックを静的に強制してくれるのでより安全だ。</p>
+
+<p><code>Option</code> 値の条件実行は <code>foreach</code> を使うべきだ。以下のように書く代わりに:</p>
 
 <pre><code>if (opt.isDefined)
   operate(opt.get)
 </code></pre>
 
-<p class="LP">以下のように書く</p>
+<p class="LP">以下のように書こう:</p>
 
 <pre><code>opt foreach { value =&gt;
-  operate(value)}
+  operate(value)
+}
 </code></pre>
 
-<p>奇妙なスタイルに思えるかもしれないが、よりよい安全性を提供(例外を引き起こしうる<code>get</code>を呼んでいない)し、簡潔である。両方の選択肢が利用されうるなら、パターンマッチを使おう。</p>
+<p>このスタイルは奇妙に思えるかもしれないが、より優れた安全性と簡潔さを提供する（例外を引き起こしうる <code>get</code> は呼んでいない）。空の場合と値を持つ場合の両方の分岐がありうるなら、パターンマッチを使おう:</p>
 
 <pre><code>opt match {
   case Some(value) =&gt; operate(value)
@@ -879,43 +876,42 @@ username = &quot;foobar&quot;
 }
 </code></pre>
 
-<p class="LP">しかし、もし値がない場合はデフォルト値で良いのであれば、<code>getOrElse</code>を使おう。</p>
+<p class="LP">しかし、もし値がない場合にデフォルト値で良いなら <code>getOrElse</code> がある。</p>
 
 <pre><code>operate(opt getOrElse defaultValue)
 </code></pre>
 
-<p><code>Option</code>を多用しすぎてはいけない。もし、何か目的にあったデフォルト値、<a href="http://en.wikipedia.org/wiki/Null_Object_pattern"><em>Null Object</em></a>、があるなら、代わりにそれを使おう。</p>
+<p><code>Option</code> の濫用はよくない: もし、<a href="http://en.wikipedia.org/wiki/Null_Object_pattern"><em>Null Object</em></a> のような目的にあったデフォルト値があるなら、代わりにそれを使おう。</p>
 
-<p><code>Option</code>は、また、nullになり得る値を覆う扱いやすいコンストラクターと共に使おう。</p>
+<p>また <code>Option</code> は、null になり得る値をラップできる、扱いやすいコンストラクタと共に使おう:</p>
 
 <pre><code>Option(getClass.getResourceAsStream(&quot;foo&quot;))
 </code></pre>
 
-<p class="LP">は、<code>Option[InputStream]</code> であり、<code>getResourceAsStream</code> が <code>null</code> を返す場合に、<code>None</code>  という値を返す。</p>
+<p class="LP">は <code>Option[InputStream]</code> だが、<code>getResourceAsStream</code> が <code>null</code> を返す場合に <code>None</code> を返す。</p>
 
 <p><a id="関数型プログラミング-パターンマッチ" /></p>
 
 <h3>パターンマッチ</h3>
 
-<p>パターンマッチ (<code>x match { ...</code>) は、Scalaで書かれたコード内に広く使われている。パターンマッチは条件の実行および分解(destructuring)、ひとつの構成物へのキャストを合成する。うまく使うことで明快さと安全さの両方をより高めてくれる。</p>
+<p>パターンマッチ (<code>x match { ...</code>) は、うまく書かれた Scala コードのあらゆる場所で使われる。パターンマッチは、条件実行と分解、そして一つの構成物へのキャストの 3 つを融合する。うまく使うことで明快さと安全性の双方を高められる。</p>
 
-<p>型ごとの処理を実装するためにパターンマッチを使う。</p>
+<p>型ごとに処理を切り替える実装にパターンマッチを使う:</p>
 
 <pre><code>obj match {
   case str: String =&gt; ...
   case addr: SocketAddress =&gt; ...
 </code></pre>
 
-<p>パターンマッチは、分解とあわせて利用された時(たとえば、ケースクラスをマッチングするとき)に最大限に役立つ
-次の例のように書くべきではなく、</p>
+<p>また、パターンマッチは分解と組み合わせることで最も良い働きを示す。ケースクラスにマッチする際は、以下のように書かずに:</p>
 
 <pre><code>animal match {
   case dog: Dog =&gt; &quot;dog (%s)&quot;.format(dog.breed)
   case _ =&gt; animal.species
-  }
+}
 </code></pre>
 
-<p class="LP">以下のように書く</p>
+<p class="LP">以下のように書く:</p>
 
 <pre><code>animal match {
   case Dog(breed) =&gt; &quot;dog (%s)&quot;.format(breed)
@@ -923,11 +919,9 @@ username = &quot;foobar&quot;
 }
 </code></pre>
 
-<p>ただ、2つのコンストラクタ(<code>apply</code>) を利用する場合のみ、<a href="http://www.scala-lang.org/node/112">カスタム抽出子</a> を書く。
-さもなければ不自然になる可能性がある。</p>
+<p><a href="http://www.scala-lang.org/node/112">カスタム抽出子</a>を書くのはコンストラクタ (<code>apply</code>) が重複する場合のみとする。さもなければ不自然になる可能性がある。</p>
 
-<p>デフォルト値がもっと意味を持つものであるとき、条件実行にパターンマッチを使わないようにする。
-コレクションライブラリは通常<code>Option</code>を返すメソッドを提供する。次の例は避けよ。</p>
+<p>デフォルト値にもっと意味がある場合は、条件実行にパターンマッチを使うべきではない。コレクションライブラリは、普通は <code>Option</code> を返すメソッドを提供している。以下のように書くのは避けるべきだ:</p>
 
 <pre><code>val x = list match {
   case head :: _ =&gt; head
@@ -935,18 +929,18 @@ username = &quot;foobar&quot;
 }
 </code></pre>
 
-<p class="LP">なぜなら</p>
+<p class="LP">なぜなら、</p>
 
 <pre><code>val x = list.headOption getOrElse default
 </code></pre>
 
-<p class="LP">の方がより短く、目的が伝わりやすいからだ。</p>
+<p class="LP">の方がより短くて目的が伝わりやすいからだ。</p>
 
 <p><a id="関数型プログラミング-部分関数" /></p>
 
 <h3>部分関数</h3>
 
-<p>Scala は 部分関数(<code>PartialFunction</code>) を定義するための構文上の簡略的記法を提供する。</p>
+<p>Scala は、部分関数 (<code>PartialFunction</code>) を定義できる構文的な簡易記法を提供する:</p>
 
 <pre><code>val pf: PartialFunction[Int, String] = {
   case i if i%2 == 0 =&gt; &quot;even&quot;
@@ -961,14 +955,13 @@ tf(1) == &quot;odd&quot;
 tf(2) == &quot;even&quot;
 </code></pre>
 
-<p>部分関数は多くの場面で起こり得るものであり，<code>PartialFunction</code> で効率的に符号化される。
-メソッドの引数として利用する例：</p>
+<p>部分関数は多くの場面に現れるが，<code>PartialFunction</code> で効率的にエンコードできる。メソッドの引数として利用する例:</p>
 
 <pre><code>trait Publisher[T] {
   def subscribe(f: PartialFunction[T, Unit])
 }
 
-val publisher: Publisher[Int] = ..
+val publisher: Publisher[Int] = ...
 publisher.subscribe {
   case i if isPrime(i) =&gt; println(&quot;found prime&quot;, i)
   case i if i%2 == 0 =&gt; count += 2
@@ -976,18 +969,18 @@ publisher.subscribe {
 }
 </code></pre>
 
-<p class="LP">また状況によっては <code>Option</code> を返すような呼び出しがあるかもしれないが、</p>
+<p class="LP">また、<code>Option</code> を返す代わりに:</p>
 
 <pre><code>// Attempt to classify the the throwable for logging.
 type Classifier = Throwable =&gt; Option[java.util.logging.Level]
 </code></pre>
 
-<p class="LP">これも、<code>PartialFunction</code>を使って表現する方がよいだろう。</p>
+<p class="LP"><code>PartialFunction</code> で表現した方が良い場面もある:</p>
 
 <pre><code>type Classifier = PartialFunction[Throwable, java.util.Logging.Level]
 </code></pre>
 
-<p class="LP">それはより優れた構成可能性(composability)につながるからだ。</p>
+<p class="LP">なぜなら、<code>PartialFunction</code> の組み合わせ可能な性質を大いに活かせるからだ:</p>
 
 <pre><code>val classifier1: Classifier
 val classifier2: Classifier
@@ -995,13 +988,11 @@ val classifier2: Classifier
 val classifier = classifier1 orElse classifier2 orElse { _ =&gt; java.util.Logging.Level.FINEST }
 </code></pre>
 
-<p><a id="関数型プログラミング-Destructuring bindings" /></p>
+<p><a id="関数型プログラミング-構造化代入" /></p>
 
-<h3>Destructuring bindings</h3>
+<h3>構造化代入</h3>
 
-<p>Destructuring bindによる値代入は、パターンマッチに関連している。
-それらは同じメカニズムを利用しているが、(例外の可能性を許容しないために)正確にひとつの選択肢があるときだけ適用できる。
-Destructuring bindは特にタプルやケースクラスで有用である。</p>
+<p>構造化代入 (destructuring binding<a class="noteref" id="fnref5" href="#fn5" title="Jump to note 5">[5]</a>) は値の代入の一種であり、パターンマッチと関連している。構造化代入とパターンマッチは同じメカニズムを利用するが、例外の可能性を許容しないために、厳密に選択肢が一つだけのときにのみ適用できる。構造化代入は、特にタプルやケースクラスを使う際に有用だ。</p>
 
 <pre><code>val tuple = ('a', 1)
 val (char, digit) = tuple
@@ -1010,19 +1001,16 @@ val tweet = Tweet(&quot;just tweeting&quot;, Time.now)
 val Tweet(text, timestamp) = tweet
 </code></pre>
 
-<p>（訳注: Destructuring bindは、「構造化代入」や「分配束縛」等の訳がある。詳細については、<a href="https://github.com/scalajp/effectivescala/issues/4">こちらの議論</a>を参照してほしい。）</p>
-
 <p><a id="関数型プログラミング-遅延評価" /></p>
 
 <h3>遅延評価</h3>
 
-<p>Scala のフィールドは、<code>val</code> が <code>lazy</code> プレフィックスと共に使われた時は <em>必要になったときに</em> 計算されるようになる。
-なぜなら、(フィールドを <code>private[this]</code> にしない限りは)フィールドとメソッドは Scala では等価だからである。</p>
+<p>Scala において、<code>lazy</code> で修飾された <code>val</code> フィールド（遅延フィールド）は<em>必要になったときに</em>計算される。なぜなら、Scala ではフィールドとメソッドは等価だからだ（Scala のフィールドを Java のフィールドと同じものにしたい場合は <code>private[this]</code> を使う）。</p>
 
 <pre><code>lazy val field = computation()
 </code></pre>
 
-<p class="LP">は、(概して) 簡略的記法で、</p>
+<p class="LP">は（おおよそ）以下のようなコードの簡易記法だ:</p>
 
 <pre><code>var _theField = None
 def field = if (_theField.isDefined) _theField.get else {
@@ -1031,47 +1019,35 @@ def field = if (_theField.isDefined) _theField.get else {
 }
 </code></pre>
 
-<p class="LP">すなわち、結果を演算し記憶する。この目的のために遅延フィールドを使うようにし、しかし、遅延さが意味を持って(by semantics)要求されるときには遅延評価を使うことを避ける。</p>
+<p class="LP">すなわち、計算して結果を記憶する。遅延フィールドは、この目的のために使うようにする。しかし、意味論によって遅延を要求される場合に遅延評価を使うべきではない。このような場合には明示的に書いた方がよい。なぜなら、それによりコストモデルが明確になり、副作用をより精密に制御できるからだ。</p>
 
-<p>このような場合には、コストモデルを明確にし、副作用をより正確に制御するために明示的であることがよりよい。</p>
-
-<p>遅延フィールドはスレッドセーフである。</p>
+<p>遅延フィールドはスレッドセーフだ。</p>
 
 <p><a id="関数型プログラミング-名前呼び出し" /></p>
 
 <h3>名前呼び出し</h3>
 
-<p>メソッドの引数は名前によって特定されるかもしれない、その意味するところは
-パラメータは値に紐付くのではなくて、繰り返し実行されうる <em>演算</em> に対して紐付くということである。
-この機能は気をつけて適用されなければならない。値渡しの文脈を期待している呼び出し側は驚くであろう。
-この機能は構文的に自然な DSL を構築するためにある。&mdash; 新しい制御構造は特に、かなりネイティブな言語機能に見えるように作ることができる</p>
+<p>メソッドの引数は、名前によって特定してもよい。その意味は、引数を値ではなく、繰り返し評価されうる<em>計算</em>に対して束縛するということだ。値渡しの文脈を期待している呼び出し側を驚かせないように、この機能は注意深く適用すべきだ。この機能の目的は、構文的に自然な DSL を構築することにある。特に、新しい制御構造を、あたかも最初から言語に備わっている機能であるかのように見せることができる。</p>
 
-<p>名前呼び出しは、そのような制御構造のためだけに使うことだ。そこでは、渡されてくるものは、
-思いも寄らない演算結果より&ldquo;ブロック&rdquo;であるということが、呼び出し側に明らかである。
-名前呼び出しは、最後の引数リストの最後の位置にある引数にだけ使うことだ。
-名前呼び出しを使うときは、呼び出し側にその引数が名前呼び出しであることが明確に伝わるようにメソッドには名称をつけることを確実におこなう。</p>
+<p>名前呼び出し (call-by-name) は、そのような制御構造に渡されるのが、呼び出し側にとって思いもよらない計算の結果ではなく”ブロック”であることが明らかな場合にのみ使おう。同様に、名前呼び出しの引数は、最後の引数リストの最後の位置でのみ使うべきだ。引数が名前呼び出しであるメソッドの名前は、呼び出し側にそのことが分かるように命名しよう。</p>
 
-<p>値を複数回演算させたいとき、また特にその演算が副作用を持つとき、陽関数(explicit functions)を使う。</p>
+<p>値を複数回計算させたくて、特にその計算が副作用を持つなら明示的な関数を使おう:</p>
 
 <pre><code>class SSLConnector(mkEngine: () =&gt; SSLEngine)
 </code></pre>
 
-<p class="LP">目的は明らかに残しつつ、呼び出し元が驚くことがなくなる。</p>
+<p class="LP">提供者の意図はシグネチャから明らかであり、呼び出し側を驚かせることがない。</p>
 
 <p><a id="関数型プログラミング-`flatMap`" /></p>
 
 <h3><code>flatMap</code></h3>
 
-<p><code>map</code> と <code>flatten</code> の合成である <code>flatMap</code> は、鋭敏な力と素晴らしい実用性を持ち、特別な注目を浴びるに値する。
-その同類である <code>map</code> のように、<code>Future</code> や <code>Option</code> といった非伝統的なコレクションにおいて、頻繁に利用できる。
-その振る舞いは、<code>Container[A]</code>といったシグネチャによって明らかになる。</p>
+<p><code>flatMap</code> は <code>map</code> と <code>flatten</code> を組み合わせたもので、その巧妙な力と素晴らしい実用性によって特別な注目を浴びるに値する。<code>flatMap</code> は、その仲間の <code>map</code> と同様に、<code>Future</code> や <code>Option</code> のような従来とは異なるコレクションにおいてもしばしば利用可能だ。その振る舞いはシグネチャから明らかだ。ある <code>Container[A]</code> について、</p>
 
 <pre><code>flatMap[B](f: A =&gt; Container[B]): Container[B]
 </code></pre>
 
-<p class="LP"><code>flatMap</code> は、<em>新しい</em> コレクションを生成するコレクションの各要素に対して関数 <code>f</code> を呼び出し、それら(のすべて)は、</p>
-
-<p>フラットな結果になる。例えば、次のコードは、同じ文字が繰り返されない2文字からなる文字列の順列をすべて取得する。</p>
+<p class="LP"><code>flatMap</code> はコレクションの要素に対し、各要素から<em>新しい</em>コレクションを作り出す関数 <code>f</code> を呼び出した後、その生成した（全ての）コレクションを平坦化 (flatten) した結果を返す。例えば、同じ文字を繰り返さないような 2 文字の文字列の順列を全て取得するには:</p>
 
 <pre><code>val chars = 'a' to 'z'
 val perms = chars flatMap { a =&gt;
@@ -1082,7 +1058,7 @@ val perms = chars flatMap { a =&gt;
 }
 </code></pre>
 
-<p class="LP">これは、より簡潔な for による包含に等価である。(それは、&mdash; 荒くまとめるなら &mdash; 上記のためのシンタックスシュガーである)</p>
+<p class="LP">これは、上記のコードをより簡潔に記述できる糖衣構文である for 内包記法と（おおよそ）等価だ:</p>
 
 <pre><code>val perms = for {
   a &lt;- chars
@@ -1091,10 +1067,10 @@ val perms = chars flatMap { a =&gt;
 } yield &quot;%c%c&quot;.format(a, b)
 </code></pre>
 
-<p><code>flatMap</code> は、(Optionの連鎖(chain of options)を畳み込んでひとつにするときなど) <code>Option</code> を扱うときに頻繁に役に立つ。</p>
+<p><code>flatMap</code> は <code>Option</code> を扱う際にしばしば有用だ。<code>flatMap</code> を使うと、Option の連鎖を畳み込んで一つにできる。</p>
 
-<pre><code>val host: Option[String] = ..
-val port: Option[Int] = ..
+<pre><code>val host: Option[String] = ...
+val port: Option[Int] = ...
 
 val addr: Option[InetSocketAddress] =
   host flatMap { h =&gt;
@@ -1104,7 +1080,7 @@ val addr: Option[InetSocketAddress] =
   }
 </code></pre>
 
-<p class="LP">これも、<code>for</code> を使えばもっと簡潔に記述できる。</p>
+<p class="LP">これも <code>for</code> を使えばもっと簡潔に記述できる。</p>
 
 <pre><code>val addr: Option[InetSocketAddress] = for {
   h &lt;- host
@@ -1112,39 +1088,37 @@ val addr: Option[InetSocketAddress] =
 } yield new InetSocketAddress(h, p)
 </code></pre>
 
-<p><code>Future</code> における <code>flatMap</code> の利用については、<a href="#Twitter's%20standard%20libraries-Futures">futures section</a> で議論されている。</p>
+<p><code>Future</code> における <code>flatMap</code> の使い方は<a href="#Twitterの標準ライブラリ-Future">”Future”の章</a>で議論する。</p>
 
 <p><a id="オブジェクト指向プログラミング" /></p>
 
 <h2>オブジェクト指向プログラミング</h2>
 
-<p>Scala の広大な広がりの大部分はオブジェクト機構にある。Scala は、 <em>すべての値</em> がオブジェクトであるという意味で、 <em>純粋な</em> 言語である。プリミティブな型と混合型の間に違いはない。 Scala はミックスインの機能もあり、静的型チェックの利益をすべて享受しつつ、もっと直行して別々なモジュールをコンパイル時に柔軟に一緒に組立てられる。</p>
+<p>Scala の偉大さの大部分は、オブジェクトシステムによるものだ。Scala は<em>すべての値</em>がオブジェクトであるという意味で<em>純粋な</em>言語であり、プリミティブ型と複合型の間に違いはない。Scala にはミックスイン (mixin) の機能もある。ミックスインを使うと、もっと直交的かつ段階的にモジュールを組み合わせられるだけでなく、そこにコンパイル時の静的な型検査を柔軟に組み合わせて、その恩恵をすべて享受できる。</p>
 
-<p>ミックスイン機構の背景ある動機は、伝統的な依存性注入を不要にすることである。その&ldquo;コンポーネントスタイル&rdquo;プログラミングの極致は、 <a href="http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/">Cake
-パターン</a> である。</p>
-
-<p>（訳注: 上記のCakeパターンに関するエントリは、@eed3si9n氏が<a href="http://eed3si9n.com/ja/real-world-scala-dependency-injection-di">日本語訳</a>を提供している。）</p>
+<p>ミックスインシステムの背景にある動機は、従来の依存性注入 (dependency injection) を不要にすることだ。その”コンポーネントスタイル”のプログラミングの極致こそが <a href="http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/">Cake
+パターン</a>（<a href="http://eed3si9n.com/ja/real-world-scala-dependency-injection-di">日本語訳</a>）だ。</p>
 
 <p><a id="オブジェクト指向プログラミング-依存性注入" /></p>
 
 <h3>依存性注入</h3>
 
-<p>しかし、我々の場合、Scala それ自身が、&ldquo;クラシックな&rdquo;（コンストラクタによる）依存性注入(dependency injection)の多くの構文上のオーバーヘッドを排除してくれるため、むしろ、使うようにしている。それはより明快であり、依存性は(コンストラクタの)型でまだエンコードされ、クラスの組立は構文上、そよ風並に些細な作業に過ぎない。それは退屈でシンプルだが動作する。<em>プログラムのモジュール化のために依存性注入を使うことだ</em>。特に、<em>継承より合成を選択することだ</em> 。これにより、よりモジュール化が進みテスト可能なプログラムになる。継承が必要な状況に遭遇した際には自分自身に問うのだ：もし、言語が継承をサポートしていなかったら、どのように構造化するだろう、と。この答えは強いることができるかもしれない。</p>
+<p>しかし、Scala 自身が、”古典的な”（コンストラクタへの）依存性注入を利用する際の面倒な構文を、ほとんど取り除いてくれることが分かったので、Twitter ではむしろ依存性注入を使うようにしている: それはより明快で、依存性はやはり（コンストラクタの）型によってエンコードされ、クラスを構築する構文はとりたてて難しくなく扱いやすい。それは退屈で単純だが、うまくいく。<em>依存性注入はプログラムをモジュール化するために使おう</em>。そして、特に<em>継承より合成を使おう</em>。これにより、よりモジュール化されてテストが容易なプログラムになる。継承が必要な状況に遭遇したら、こう考えてみよう: ”もし継承をサポートしない言語を使うとしたら、このプログラムをどのように構造化するだろう？”と。その答えには説得力があるかもしれない。</p>
 
-<p>依存性注入は典型的にはトレイトを利用する。</p>
+<p>通常、依存性注入にはトレイトを使う。</p>
 
 <pre><code> trait TweetStream {
    def subscribe(f: Tweet =&gt; Unit)
  }
  class HosebirdStream extends TweetStream ...
- class FileStream extends TweetStream ..
+ class FileStream extends TweetStream ...
 
  class TweetCounter(stream: TweetStream) {
    stream.subscribe { tweet =&gt; count += 1 }
  }
 </code></pre>
 
-<p><em>ファクトリー</em> (オブジェクトを生成するオブジェクト)を注入することは一般的である。以下のような場合には、特化したファクトリー型よりはシンプルな関数の利用を好むようにする。</p>
+<p>一般的には、注入するのは他のオブジェクトを生成するオブジェクトである<em>ファクトリ (factory)</em> だ。この場合、特化したファクトリ型ではなくシンプルな関数を使うべきだ。（訳者による補足: つまり、戻り値を持つあらゆる関数はファクトリとみなせるということ）</p>
 
 <pre><code> class FilteredTweetCounter(mkStream: Filter =&gt; TweetStream) {
    mkStream(PublicTweets).subscribe { tweet =&gt; publicCount += 1 }
@@ -1156,9 +1130,9 @@ val addr: Option[InetSocketAddress] =
 
 <h3>トレイト</h3>
 
-<p>依存性注入は、一般的な <em>インターフェイス</em> の利用や、トレイト(trait)での共通コードの実装を妨げるものでは全くない。むしろ全く反対であり、トレイトの利用は正確には次の理由で強く推奨されている：複数のインターフェイス(トレイト)は、具象クラスで実装されるかもしれないし、共通コードはすべてのそれらのクラス群に横断的に再利用されるかもしれない。</p>
+<p>依存性注入を使用するからといって、共通の<em>インタフェース</em>や、トレイト (trait) に実装された共通コードを同時に使ってはならないということは全くない。それどころか、一つの具象クラスが複数のインタフェース（トレイト）を実装するかもしれず、また共通コードを全てのクラスで横断的に再利用するかもしれないので、トレイトの使用は強く推奨される。</p>
 
-<p>トレイトは短くて直交するように保つことだ。分割可能な機能をひとつのトレイトの塊にしてしまってはいけない。最も小さな関連するアイデアだけを一緒にすることを考えるようにする。たとえば、IOをする何かを想像してみるといい。</p>
+<p>トレイトは短くして直交性を保とう: 分割できる機能を一つのトレイトの塊にしてはいけない。互いに組み合わさる関連するアイデアのうち最小のものを考えるようにする。例えば、IO を行う何かがあるとしよう:</p>
 
 <pre><code> trait IOer {
    def write(bytes: Array[Byte])
@@ -1166,7 +1140,7 @@ val addr: Option[InetSocketAddress] =
  }
 </code></pre>
 
-<p class="LP">これを２つの振る舞いに分離する。</p>
+<p class="LP">これを二つの振る舞いに分離する:</p>
 
 <pre><code> trait Reader {
    def read(n: Int): Array[Byte]
@@ -1176,77 +1150,127 @@ val addr: Option[InetSocketAddress] =
  }
 </code></pre>
 
-<p class="LP">そして、もともと<code>IOer</code> だったこれらを、 <code>new Reader with Writer</code>&hellip; のようにミックスする。インターフェイスの最小化は、よりよい直交性とよりよりモジュール化につながる。</p>
+<p class="LP">そして、これらを互いに <code>new Reader with Writer</code>&hellip; のようにミックスインして、先ほどの <code>IOer</code> を形成する。インターフェイスの最小化は、よりよい直交性とモジュール化をもたらす。</p>
 
 <p><a id="オブジェクト指向プログラミング-可視性" /></p>
 
 <h3>可視性</h3>
 
-<p>Scala は非常に表現豊かな可視性を制御する修飾子を持つ。修飾子は、何を <em>公開API</em> として構成するかを定義するのに重要である。公開APIは限定されるべきであり、それにより利用者は不注意に実装の詳細に依存することはなくなり、また、作者のAPIを変更する力を制限する。このことは、良いモジュール性にとって決定的に重要である。ルールとして、公開APIを拡張することは、彼らと契約するよりも全然簡単である。貧相なアノテーションは、君のコードの後方バイナリ互換性を汚すこともできるようにもなる。</p>
+<p>Scala は、可視性を制御するための非常に表現力の高い修飾子を持つ。これらの修飾子は、何を<em>公開 API</em> として構成するかを定義するのに使うので重要だ。公開する API は限定されるべきだ。それによってユーザが実装の詳細にうっかり依存することがなくなり、また、作者が API を変更する能力を制限する。これらは、良いモジュール性にとって極めて重要だ。原則的に、公開 API を拡張するのは縮小するよりもはるかに簡単だ。また、アノテーションが貧弱だと、コードのバイナリの後方互換性が危うくなる。</p>
 
 <h4><code>private[this]</code></h4>
 
-<p><code>private</code> にしたクラスメンバーは、</p>
+<p><code>private</code> に指定したクラスメンバは、</p>
 
 <pre><code> private val x: Int = ...
 </code></pre>
 
-<p class="LP">そのクラスの(サブクラスは含まない)すべての<em>インスタンス</em>から見える。殆どの場合、<code>private[this]</code>としたいだろう。</p>
+<p class="LP">そのクラス（サブクラスは除く）の全ての<em>インスタンス</em>から可視になる。ほとんどの場合、<code>private[this]</code> としたいだろう。</p>
 
-<pre><code> private[this] val: Int = ..
+<pre><code> private[this] val x: Int = ...
 </code></pre>
 
-<p class="LP">これで特定のインスタンスのみに可視性は制限された。Scala コンパイラーは、<code>private[this]</code> を(静的に定義されたクラスにアクセスが限られるから)シンプルなフィールドアクセッサに変換することもでき、それは時々、性能を最適化することに寄与する。</p>
+<p class="LP">これで <code>x</code> の可視性は特定のインスタンスに制限される。Scala コンパイラは、<code>private[this]</code> を単純なフィールドへのアクセスに変換できる（メンバへのアクセスが、静的に定義されたクラスに限定されるため）。これは時に、性能の最適化に寄与する。</p>
 
 <h4>シングルトンクラス型</h4>
 
-<p>Scala では、シングルトンクラス型を生成することは一般的である。例えば、</p>
+<p>Scala において、シングルトンクラス型を生成するのは一般的だ。例えば、</p>
 
 <pre><code> def foo() = new Foo with Bar with Baz {
    ...
  }
 </code></pre>
 
-<p class="LP">このような状況では、戻り型を宣言することで可視性は限定される。</p>
+<p class="LP">このような状況で可視性を制限するには、戻り型を宣言する:</p>
 
 <pre><code> def foo(): Foo with Bar = new Foo with Bar with Baz {
    ...
  }
 </code></pre>
 
-<p class="LP"><code>foo()</code> の呼び出し側は、戻り値のインスタンスの限定されたビュー(<code>Foo with Bar</code>) を参照する。</p>
+<p class="LP"><code>foo()</code> の呼び出し側は、返されたインスタンスの限定されたビュー (<code>Foo with Bar</code>) を見ることになる。</p>
 
 <p><a id="オブジェクト指向プログラミング-構造的部分型" /></p>
 
 <h3>構造的部分型</h3>
 
-<p>構造的部分型(structural type)は通常は使わない。構造的部分型は、便利で強力な機能であるが、残念なことに JVM 上では効率的な実装手段はない。しかし、ある運命のいたずらともいうべき実装によって、リフレクションをするためのとても良い速記法を提供する。</p>
+<p>通常、構造的部分型 (structural type<a class="noteref" id="fnref6" href="#fn6" title="Jump to note 6">[6]</a>) を使うべきではない。構造的部分型は便利で強力な機能だが、残念なことに JVM 上では効率的に実装されない。しかし、実装上の気まぐれによって、構造的部分型はリフレクションのためのとても優れた簡易記法を提供する。</p>
 
 <pre><code> val obj: AnyRef
  obj.asInstanceOf[{def close()}].close()
 </code></pre>
 
-<p>（訳注: &ldquo;structural typing&rdquo;を直訳すると「構造的な型付け」だが、Scalaの文脈では「構造的部分型(structural subtyping)」と同じ意味だと考えて良い。この用語の背景については、<a href="https://github.com/scalajp/effectivescala/pull/1#r455268">@kmizu氏による解説</a>を参照して欲しい。）</p>
+<p><a id="エラー処理" /></p>
+
+<h2>エラー処理</h2>
+
+<p>Scala は例外機能を提供するが、正確さのためにプログラマが適切に対処すべき場合に、これを一般的なエラーに対して使ってはいけない。代わりに <code>Option</code> や <code>com.twitter.util.Try</code> を使うのは、慣習的で良い選択だ。これらは、型システムを利用して、ユーザがエラー処理を適切に考慮するようにする。</p>
+
+<p>例えば、レポジトリを設計する時に、以下のような API にしたくなるかもしれない:</p>
+
+<pre><code>trait Repository[Key, Value] {
+  def get(key: Key): Value
+}
+</code></pre>
+
+<p class="LP">しかし、これを実装すると key が存在しない時に例外を投げる必要がある。より良いやり方は <code>Option</code> を使うことだ:</p>
+
+<pre><code>trait Repository[Key, Value] {
+  def get(key: Key): Option[Value]
+}
+</code></pre>
+
+<p class="LP">このインタフェースなら、レポジトリがあらゆる key を含まなくてもよく、またプログラマが key が見つからない場合に対処しなければならないことが明確になる。さらに、<code>Option</code> はこうしたケースに対処するための数多くのコンビネータを備えている。例えば、<code>getOrElse</code> は key が見つからない場合にデフォルト値を供給するのに使われる:</p>
+
+<pre><code>val repo: Repository[Int, String]
+repo.get(123) getOrElse &quot;defaultString&quot;
+</code></pre>
+
+<p><a id="エラー処理-例外処理" /></p>
+
+<h3>例外処理</h3>
+
+<p>Scala の例外機構は非チェック例外、つまりプログラマが可能性のある例外をカバーしているかをコンパイラが静的にチェックできないので、例外処理において広い網をかけたくなりがちだ。</p>
+
+<p>しかし、いくつかの <em>fatal</em>（致命的）な例外は捕捉 (catch) するべきではない。</p>
+
+<p>However, some exceptions are <em>fatal</em> and should never be caught; the
+code</p>
+
+<pre><code>try {
+  operation()
+} catch {
+  case _ =&gt; ...
+}
+</code></pre>
+
+<p class="LP">このコードは伝搬するべき致命的なエラーを捕捉してしまうので、ほとんどの場合で誤りだ。代わりに、非致命的な例外のみを捕捉する <code>com.twitter.util.NonFatal</code> 抽出子を使う。</p>
+
+<pre><code>try {
+  operation()
+} catch {
+  case NonFatal(exc) =&gt; ...
+}
+</code></pre>
 
 <p><a id="ガベージコレクション" /></p>
 
 <h2>ガベージコレクション</h2>
 
-<p>我々は、運用時にガベージコレクションのチューニングに多くの時間を費やす。
-ガベージコレクションの考慮事項はかなりJavaのそれに似ているが、典型的な Scala コードの場合は 典型的な Java コードより多くの(生存時間の短い)ガベージを生成する。これは関数スタイルの副作用なのである。HotSpot の世代別ガベージコレクションは、ほとんどの環境では生存時間の短いガベージを効果的に解放するので、概してこれは問題にならない。</p>
+<p>Twitter では、実運用において多くの時間をガベージコレクションのチューニングに費している。ガベージコレクションにおける関心事は Java のそれとほとんど同じだが、関数型スタイルの副作用として、慣習的な Scala コードは Java よりも多くの（生存期間の短い）ガベージを生成する。HotSpot の世代別ガベージコレクションは、生存期間の短いガベージを効率的に解放するので、ほとんどの状況ではこれは問題にならない。</p>
 
-<p>GCの性能問題に取り組む前に、Attila が発表した我々のGCチューニングに関する経験のいくつかに関する<a href="http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter">プレゼンテーション</a>を見て欲しい。</p>
+<p>GC の性能問題に取り組む前に、Twitter でのいくつかの GC チューニングの経験について解説した Attila の<a href="http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter">プレゼンテーション</a>を見て欲しい。</p>
 
-<p>Scala 固有で、GC問題を軽減する唯一のツールは、ガベージの生成をより少なくすることである。しかし、データなしで行動してはならない！もし、明らかに悪化させる何かをしているわけではないのであれば、我々の提供する <a href="https://github.com/mariusaeriksen/heapster">heapster</a> や
-<a href="https://github.com/twitter/jvmgcprof">gcprof</a> を含む、Java の様々なプロファイルツールを使うことだ。</p>
+<p>GC 問題を軽減するための Scala に特有な唯一の手段は、ガベージの生成をより少なくすることだ。しかし、データ無しで行動してはならない！ 明らかに性能を劣化させる何かをしているのでなければ、Java の様々なプロファイリングツールを使おう。Twitter 自身も <a href="https://github.com/mariusaeriksen/heapster">heapster</a> や
+<a href="https://github.com/twitter/jvmgcprof">gcprof</a> といったツールを提供している。</p>
 
-<p><a id="Java 互換性" /></p>
+<p><a id="Java との互換性" /></p>
 
-<h2>Java 互換性</h2>
+<h2>Java との互換性</h2>
 
-<p>我々は、Javaで利用されるようなコードを Scala で書くとき、Javaでの使い方を慣用的に残して良いものか確かめるようにしている。大体は余計な努力は必要ない。クラス群と実装を含まないトレイトはJava に正確に等価に対応される。しかし、時々、別に Java API を提供する必要がある。あなたのライブラリのJava API の感じをつかむ良い方法は単体テストをJavaで書くことである(ただコンパイルが通れば良い)。この点については Scala コンパイラーは不安定であるのだが、このテストによって、あなたのライブラリの Java 視点は安定さを維持できる。</p>
+<p>Twitter では、Java から使われるコードを Scala で書くとき、Java での慣習的な使い方ができるようにしている。多くの場合、追加の努力は必要ない。クラスと純粋な（実装を含まない）トレイトは、Java において対応するものと正確に同じものになる。しかし、時々、別個の Java API を提供する必要がある。ライブラリの Java API の感じをつかむ良い方法は、Java で単体テストを書くことだ（コンパイルが通れば良い）。このテストによってライブラリの Java ビューが安定していることが保証されるので、将来、Scala コンパイラが生成する実装が変化しても検出できる。</p>
 
-<p>実装を含むトレイトは直接 Java から利用できない。代わりに抽象クラスをトレイトと共に拡張する必要がある。</p>
+<p>実装を含むトレイトは直接 Java から利用できない。代わりに、抽象クラスをトレイトと共に拡張する。</p>
 
 <pre><code> // 直接 Java からは利用できない
  trait Animal {
@@ -1262,21 +1286,21 @@ val addr: Option[InetSocketAddress] =
 
 <h2>Twitterの標準ライブラリ</h2>
 
-<p>Twitterにおいて、最も重要な標準ライブラリは<a href="http://github.com/twitter/util">Util</a>と<a href="https://github.com/twitter/finagle">Finagle</a>だ。Utilは、ScalaやJavaの標準ライブラリの拡張という位置付けで、それらに欠けている機能やより適切な実装を提供する。Finagleは、TwitterのRPCシステムで、分散システムの構成要素の中核だ。</p>
+<p>Twitter において、最も重要な標準ライブラリは <a href="http://github.com/twitter/util">Util</a> と <a href="https://github.com/twitter/finagle">Finagle</a> だ。Util は、Scala や Java の標準ライブラリの拡張という位置付けで、それらに欠けている機能やより適切な実装を提供する。Finagle は、Twitter の RPC システムで、分散システムの構成要素の中核だ。</p>
 
 <p><a id="Twitterの標準ライブラリ-Future" /></p>
 
 <h3>Future</h3>
 
-<p>Futureについては、<a href="#並行性">並行性</a>の章でも少し<a href="#並行性-Future">議論した</a>。Futureは、非同期処理の連係において重要な機構で、TwitterのコードベースやFinagleのコアで広く使われている。Futureは、並行イベントの合成(composition)を可能にすると共に、高度な並行操作についての判断を単純化する。また、Futureを使うと、並行操作をJVM上で極めて効率的に実装できる。</p>
+<p>Future については、<a href="#並行性">並行性</a>の章でも簡単に<a href="#並行性-Future">議論した</a>。Future は非同期処理の協調において中心的な機構で、Twitter のコードベースや Finagle のコアで広く使われている。Future は並行イベントの合成を可能にするとともに、並行性の高い操作についての推論を単純化する。また Future を使うと、JVM 上で並行操作を非常に効率的に実装できる。</p>
 
-<p>ネットワーク入出力やディスク入出力等の操作は、基本的にスレッドの実行を一時停止する可能性がある。TwitterのFutureは<em>非同期的</em>なので、ブロックする操作(blocking operation)は、操作結果に対するFutureを提供するシステム自身によって処理されなければいけない。Finagleは、ネットワーク入出力のためのそうしたシステムを提供する。</p>
+<p>Twitter の Future は<em>非同期</em>だ。だから、例えばネットワーク入出力やディスク入出力のように、スレッドの実行を一時停止させうるブロッキング操作はシステムが処理する必要がある。このとき、システムはブロッキング操作の結果に対する Future を提供する。Finagle は、ネットワーク入出力のためのそうしたシステムを提供する。</p>
 
-<p>Futureは、単純明白だ。Futureは、まだ完了していない計算の結果に対する<em>約束(promise)</em>を保持する、単純なコンテナ（プレースホルダ）だ。当然、計算は失敗することがあるので、このこともコード化する必要がある。Futureは三つの状態、すなわち<em>保留(pending)</em>、<em>失敗(failed)</em>、<em>完了(completed)</em>のうち、きっかり一つの状態を取ることができる。</p>
+<p>Future は単純明瞭だ: Future は、まだ完了していない計算の結果を<em>約束 (promise)</em> する。Future は単純なコンテナ（プレースホルダ）だ。もちろん、計算は失敗することがあるので、この失敗もエンコードする必要がある。Future は、<em>保留中 (pending)</em>、<em>失敗 (failed)</em>、<em>完了 (completed)</em> の三つの状態のうち、ただ一つを取ることができる。</p>
 
 <div class="explainer">
-<h3>余談: <em>合成(composition)</em></h3>
-<p>もう一度確認すると、合成とは、単純なコンポーネントを結合してより複雑なコンポーネントにすることだ。合成の標準的な例は、関数合成だ。関数<em>f</em>と<em>g</em>が与えられたとき、合成関数<em>(g&#8728;f)(x) = g(f(x))</em>は、まず<em>x</em>を<em>f</em>に適用し、その結果を<em>g</em>に適用した結果だ。この合成関数をScalaで書くと:</p>
+<h3>余談: <em>合成について</em></h3>
+<p>もう一度確認すると、合成 (composition) とは、単純なコンポーネントを結合してより複雑なコンポーネントにすることだ。関数合成は、合成の標準的な例だ: 関数 <em>f</em> と <em>g</em> が与えられたとき、合成関数 <em>(g&#8728;f)(x) = g(f(x))</em> は、まず <em>x</em> を <em>f</em> に適用して、その結果を <em>g</em> に適用した結果だ。この合成関数を Scala で書くと:</p>
 
 <pre><code>val f = (i: Int) => i.toString
 val g = (s: String) => s+s+s
@@ -1285,37 +1309,37 @@ val h = g compose f  // : Int => String
 scala> h(123)
 res0: java.lang.String = 123123123</code></pre>
 
-<p class="LP">この関数<em>h</em>は合成関数で、<em>f</em>と<em>g</em>の双方を所定の方法で結合した<em>新しい</em>関数だ。</p>
+<p class="LP">この関数 <em>h</em> は合成関数で、<em>f</em> と <em>g</em> の双方を所定の方法で結合した新しい関数だ。</p>
 </div>
 
-<p>Futureは、ゼロ個あるいは一個の要素を持つコンテナであり、コレクションの一種だ。Futureは、<code>map</code>や<code>filter</code>や<code>foreach</code>といった、標準コレクションのメソッドを持つ。Futureの値は遅延されるので、必然的にこれらのコレクションメソッドを適用した結果もまた遅延される。</p>
+<p>Future はコレクションの一種だ。つまり、ゼロ個または一個の要素を持つコンテナであり、<code>map</code> や <code>filter</code> や <code>foreach</code> のような標準コレクションメソッドを持つ。Future の値は遅延されるので、これらのメソッドを適用した結果もまた必然的に遅延される。</p>
 
 <pre><code>val result: Future[Int]
 val resultStr: Future[String] = result map { i =&gt; i.toString }
 </code></pre>
 
-<p class="LP">関数<code>{ i => i.toString }</code>は、Int値が利用可能になるまで呼び出されない。また、変換されたコレクションである<code>resultStr</code>も、その時まで保留状態(pending state)になる。</p>
+<p class="LP">関数 <code>{ i => i.toString }</code> は、整数値 <code>i</code> が利用可能になるまで呼び出されない。また、変換されたコレクション <code>resultStr</code> もその時まで保留状態になる。</p>
 
-<p>リストは平坦化(flatten)できる;</p>
+<p>リストは平坦化 (flatten) できる;</p>
 
-<pre><code>val listOfList: List[List[Int]] = ..
+<pre><code>val listOfList: List[List[Int]] = ...
 val list: List[Int] = listOfList.flatten
 </code></pre>
 
-<p class="LP">また、平坦化はFutureにおいても意味をなす:</p>
+<p class="LP">同様に、Future においても平坦化は意味をなす:</p>
 
-<pre><code>val futureOfFuture: Future[Future[Int]] = ..
+<pre><code>val futureOfFuture: Future[Future[Int]] = ...
 val future: Future[Int] = futureOfFuture.flatten
 </code></pre>
 
-<p class="LP">Futureの<code>flatten</code>の実装は、直ちにFutureを返す。Futureは遅延するので、<code>flatten</code>が返すFutureは、外側のFuture(<code><b>Future[</b>Future[Int]<b>]</b></code>)の完了と、その後に内側のFuture(<code>Future[<b>Future[Int]</b>]</code>)の完了を待つ結果だ。また、外側のFutureが失敗したら、平坦化されたFutureも失敗する必要がある。</p>
+<p class="LP">Future は遅延するので、<code>flatten</code> の実装は（直ちに）Future を返す必要がある。この Future は、外側の Future(<code><b>Future[</b>Future[Int]<b>]</b></code>) が完了して、そのあとに内側の Future(<code>Future[<b>Future[Int]</b>]</code>) が完了するのを待っている結果だ。もし外側の Future が失敗したら、平坦化された Future も失敗する必要がある。</p>
 
-<p>Futureは、Listと同様に<code>flatMap</code>を定義している。<code>Future[A]</code>は、そのシグネチャを以下のように定義する。</p>
+<p>Future は、List と同様に <code>flatMap</code> を定義している。<code>Future[A]</code> が定義するシグネチャは、</p>
 
 <pre><code>flatMap[B](f: A =&gt; Future[B]): Future[B]
 </code></pre>
 
-<p class="LP">`flatMap`は、<code>map</code>と<code>flatten</code>の組み合わせのようなもので、以下のように実装できる:</p>
+<p class="LP">これは <code>map</code> と <code>flatten</code> の組み合わせたようなもので、そのように実装すると以下のようになる:</p>
 
 <pre><code>def flatMap[B](f: A =&gt; Future[B]): Future[B] = {
   val mapped: Future[Future[B]] = this map f
@@ -1324,7 +1348,7 @@ val future: Future[Int] = futureOfFuture.flatten
 }
 </code></pre>
 
-<p>これは、強力な組み合わせだ！ <code>flatMap</code>によって、二番目のFutureを最初のFutureの結果に基づいて計算する、順番に並べられた二つのFutureの結果である新しいFutureを定義できる。ユーザ(ID)を認証するために、二つのRPCを実行する必要がある場合を想像してほしい。この場合、合成された操作を以下の方法で定義できる:</p>
+<p>これは強力な組み合わせだ！ <code>flatMap</code> を使うと、二つの Future を順番に実行した結果である Future を定義できる。これは、一つ目の Future の結果に基づいて計算される二つ目の Future だ。ユーザ (ID) の認証のために、二つの RPC を行う必要があると想像しよう。合成された操作は以下の方法で定義できる:</p>
 
 <pre><code>def getUser(id: Int): Future[User]
 def authenticate(user: User): Future[Boolean]
@@ -1333,11 +1357,11 @@ def isIdAuthed(id: Int): Future[Boolean] =
   getUser(id) flatMap { user =&gt; authenticate(user) }
 </code></pre>
 
-<p class="LP">この種の結合のもう一つの恩恵は、エラー処理が組み込まれていることだ。<code>getUser(..)</code>か<code>authenticate(..)</code>が追加でエラー処理をしない限り、<code>isAuthed(..)</code>が返すFutureは失敗するだろう。</p>
+<p class="LP">こうした種類の結合のもう一つの恩恵は、エラー処理が組み込みになっていることだ: <code>getUser(..)</code> か <code>authenticate(..)</code> がさらにエラー処理をしない限り、<code>isIdAuthed(..)</code> が返す Future は失敗する。</p>
 
 <h4>スタイル</h4>
 
-<p>Futureのコールバックメソッドである<code>respond</code>や<code>onSuccess</code>、<code>onFailure</code>、<code>ensure</code>は、その親に<em>連鎖した(chained)</em>新たなFutureを返す。このFutureは、その親が完了して初めて完了することが保証されている。このパターンを実現するには、例えば以下のようにする。</p>
+<p>Future のコールバックメソッド (<code>respond</code>, <code>onSuccess</code>, <code>onFailure</code>, <code>ensure</code>) は、その親に<em>連鎖する</em>新たな Future を返す。この Future は、親が完了した後でのみ完了することが保証されている。このパターンを実現するには、</p>
 
 <pre><code>acquireResource()
 future onSuccess { value =&gt;
@@ -1347,13 +1371,13 @@ future onSuccess { value =&gt;
 }
 </code></pre>
 
-<p class="LP">このとき<code>freeResource()</code>は、<code>computeSomething</code>の後にのみ実行されることが保証される。これにより、ネイティブな<code>try .. finally</code>パターンのエミュレートが可能になる。</p>
+<p class="LP">このとき <code>freeResource()</code> は <code>computeSomething</code> の後でのみ実行されることが保証される。これにより、ネイティブな <code>try .. finally</code> パターンのエミュレートを可能にする。</p>
 
-<p><code>foreach</code>の代わりに<code>onSuccess</code>を使おう。<code>onSuccess</code>の方が<code>onFailure</code>と対称を成して目的をより良く表せるし、連鎖も可能になる。</p>
+<p><code>foreach</code> の代わりに <code>onSuccess</code> を使おう。<code>onSuccess</code> の方が、<code>onFailure</code> と対称的で目的をより良く表す名前だし、連鎖も可能だ。</p>
 
-<p>なるべく、<code>Promise</code>インスタンスを直接作らないようにしよう。ほぼ全てのタスクは、定義済みの結合子を使って実現できる。結合子は、エラーやキャンセルが伝播することを保証すると共に、一般的に<em>データフロー方式</em>でのプログラミングを促進する。データフロー方式を使うと、大抵、<a href="#並行性-Future">同期化や<code>volatile</code>宣言が不要になる</a>。</p>
+<p><code>Promise</code> インスタンスを直接作るのはいつでも避けるようにしよう: ほとんどのあらゆるタスクは、定義済みのコンビネータを使うことで達成できる。これらのコンビネータは、エラーやキャンセルの伝播を保証する。また、コンビネータは一般的に<em>データフロー・スタイル</em>のプログラミングを促進し、これにより普段は<a href="#並行性-Future">同期化や <code>volatile</code> 宣言が不要になる</a>。</p>
 
-<p>末尾再帰方式で書かれたコードは、スタック空間のリークを引き起こさないので、データフロー方式を使ってループを効率的に実装できる:</p>
+<p>末尾再帰方式で書かれたコードはスタック空間のリークを引き起こさないので、データフロー・スタイルでループを効率的に実装できる:</p>
 
 <pre><code>case class Node(parent: Option[Node], ...)
 def getNode(id: Int): Future[Node] = ...
@@ -1365,17 +1389,17 @@ def getHierarchy(id: Int, nodes: List[Node] = Nil): Future[Node] =
   }
 </code></pre>
 
-<p><code>Future</code>は、数多くの有用なメソッドを定義している。<code>Future.value()</code>や<code>Future.exception()</code>を使うと、事前に結果が満たされたFutureを作れる。<code>Future.collect()</code>や<code>Future.join()</code>、<code>Future.select()</code>は、複数のFutureを一つにまとめる結合子を提供する（ie. scatter-gather操作のgather部分）。</p>
+<p><code>Future</code> は有用なメソッドをたくさん定義している。<code>Future.value()</code> や <code>Future.exception()</code> を使うと、事前に結果が満たされた Future を作れる。<code>Future.collect()</code>, <code>Future.join()</code>, <code>Future.select()</code> は、複数の Future を一つにまとめるコンビネータを提供する（つまり scatter-gather 操作の gather 部分）。</p>
 
 <h4>キャンセル</h4>
 
-<p>Futureは、弱いキャンセルを実装している。<code>Future#cancel</code>の呼び出しは、計算を直ちに終了させるのではなく、レベルトリガ方式の<em>シグナル</em>を伝播する。最終的にFutureを満たすのがいずれの処理であっても、シグナルに問い合わせる(query)ことができる。キャンセルは、値から反対方向へ伝播する。つまり、消費者(consumer)がセットしたキャンセルのシグナルは、対応する生産者(producer)へと伝播する。生産者は<code>Promise</code>にある<code>onCancellation</code>を使って、シグナルに応じて作動するリスナーを指定する。</p>
+<p>Future は弱いキャンセルを実装している。<code>Future#cancel</code> の呼び出しは、直ちに計算を終了させる代わりに、どれが最終的に Future を満たしたプロセスがなのか問い合わせることができる<em>シグナル</em>をレベルトリガで伝播する。キャンセルは、値とは反対方向へ伝播する: コンシューマ (consumer) がセットしたキャンセル・シグナルはプロデューサ (producer) へと伝播する。プロデューサは <code>Promise</code> の <code>onCancellation</code> を使って、シグナルに応じて作動するリスナーを指定する。</p>
 
-<p>つまり、キャンセルの動作は生産者に依存し、デフォルトの実装は存在しない。<em>キャンセルはヒントに過ぎない。</em></p>
+<p>つまり、キャンセルの動作はプロデューサに依存するし、デフォルトの実装は存在しない。<em>キャンセルはヒントに過ぎない。</em></p>
 
 <h4>Local</h4>
 
-<p>Utilライブラリの<a href="https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40"><code>Local</code></a>は、ローカルから特定のFutureのディスパッチツリーへの参照セルを提供する。<code>Local</code>の値をセットすると、同じスレッド内のFutureによって遅延されるあらゆる計算が、この値を利用できるようになる。これらはスレッドローカルに似ているけど、そのスコープはJavaのスレッドでなく、&ldquo;Futureスレッド&rdquo;のツリーだ。</p>
+<p>Util ライブラリの <a href="https://github.com/twitter/util/blob/master/util-core/src/main/scala/com/twitter/util/Local.scala#L40"><code>Local</code></a> は、特定の Future のディスパッチツリーに対するローカルな参照セルを提供する。<code>Local</code> に値をセットすると、同じスレッド内の Future によって遅延されるあらゆる計算がこの値を利用できるようになる。これらはスレッドローカルに似ているが、そのスコープが Java スレッドでなく”Future スレッド”のツリーである点が異なる。</p>
 
 <pre><code>trait User {
   def name: String
@@ -1391,30 +1415,30 @@ rpc() ensure {
 }
 </code></pre>
 
-<p class="LP">ここで、<code>ensure</code>ブロックの中の<code>user()</code>は、コールバックが追加された時点での<code>user</code>(Local)の値を参照する。</p>
+<p class="LP">ここで <code>ensure</code> ブロック内の <code>user()</code> は、コールバックが追加された時点でのローカルな <code>user</code> の値を参照する。</p>
 
-<p>スレッドローカルと同様に<code>Local</code>は非常に便利なこともあるが、ほとんどの場合は避けるべきだ。データを明示的に渡して回るのは、たとえそうした方が負担が少なくても、問題を十分に解決できないことを確認しよう。</p>
+<p>スレッドローカルと同様に <code>Local</code> は非常に便利なこともあるが、ほとんどの場合は避けるべきだ: たとえそうした方が負担が少ないときでも、データを明示的に渡して回る方法では問題を十分に解決できないことを確認しよう。</p>
 
-<p>Localは、RPCのトレースを介したスレッド管理や、モニターの伝播、Futureコールバックのための&ldquo;スタックトレース&rdquo;の作成など、<em>とても</em>一般的な関心事(concern)を実現する際に、その他の解決策ではユーザに過度な負担がある場合、コアとなるライブラリにおいて効果的に使われる。Localは、その他のほとんどの場面では不適切だ。</p>
+<p>Local は、コアライブラリにおける<em>非常に</em>一般的な関心事のために効果的に使われる: 例えば、RPC のトレースを使ったスレッド管理、モニタの伝播、Future コールバックのための”スタックトレース”の作成など、その他の解決策ではユーザに過度な負担がある場合だ。その他のほとんどの状況で Local は不適切だ。</p>
 
-<p><a id="Twitterの標準ライブラリ-OfferとBroker" /></p>
+<p><a id="Twitterの標準ライブラリ-Offer と Broker" /></p>
 
-<h3>OfferとBroker</h3>
+<h3>Offer と Broker</h3>
 
-<p>並行システムは非常に複雑だ。それは、共有データやリソースへのアクセスを協調させる必要があるからだ。<a href="http://www.scala-lang.org/api/current/scala/actors/Actor.html">Actor</a>は、単純化の一つの戦略を提起している。Actorはシーケンシャルなプロセスで、それぞれが自分自身の状態やリソースを保持している。そして、データは、他のActorとのメッセージングによって共有される。共有データは、Actor間で通信する必要がある。</p>
+<p>並行システムは非常に複雑だ。それは、共有データやリソースへのアクセスを協調させる必要があるからだ。<a href="http://www.scala-lang.org/api/current/scala/actors/Actor.html">アクター (Actor)</a> は、並行システムを単純にする一つの戦略を提起している。アクターは逐次的なプロセスで、それぞれのアクターが自分自身の状態やリソースを保持し、メッセージングによって他のアクターとデータを共有する。共有データはアクター間で通信する必要がある。</p>
 
-<p>OfferとBrokerは、これに基づいて、三つの重要な考え方を取り入れている。一つ目、通信チャネル(Broker)は第一級(first class)だ。すなわち、Actorに直接メッセージを送るのではなく、Broker経由で送信する。二つ目、OfferやBrokerは同期化メカニズムであり、通信することは同期化することだ。これは、Brokerが協調メカニズムとして使えることを意味する。プロセス<code>a</code>がプロセス<code>b</code>にメッセージを送信したとき、<code>a</code>と<code>b</code>の両方とも、システムの状態について合意する。三つ目、通信は<em>選択的に</em>実行できる。一つのプロセスは、いくつかの異なる通信を提案でき、それらのうち、ただ一つが有効になる。</p>
+<p>Offer と Broker は、これに基づいて三つの重要な考え方を取り入れている。一つ目は、通信チャネル (Broker) が第一級 (first class) であること。すなわち、アクターに直接メッセージを送るのではなく Broker 経由で送信する。二つ目は、Offer や Broker が同期化メカニズムであること: 通信することは同期化することだ。この意味は、Broker は協調メカニズムとして使えるということだ: プロセス <code>a</code> がプロセス <code>b</code> にメッセージを送信したとき、<code>a</code> と <code>b</code> は共にシステムの状態について合意する。三つ目は、通信が<em>選択的に</em>実行できること: 一つのプロセスはいくつか異なる通信を提案でき、それらのうちただ一つが有効になる。</p>
 
-<p>一般的な（他の合成と同様の）やり方で選択的な通信をサポートするには、通信行為(act of communicating)から通信の記述(description of a communication)を分離する必要がある。これをやるのが<code>Offer</code>だ。Offerは通信を記述する永続的な値であり、通信を（Offerに従って）実行するには、<code>sync()</code>メソッドによって同期化する。</p>
+<p>一般的な（他の合成と同様の）やり方で選択的な通信をサポートするには、通信の行為 (act of communicating) から通信の記述 (description of a communication) を分離する必要がある。これをやるのが <code>Offer</code> だ。Offer は通信を記述する永続的な値で、（Offer に作用する）通信を実行するには Offer の <code>sync()</code> メソッドで同期化する。</p>
 
 <pre><code>trait Offer[T] {
   def sync(): Future[T]
 }
 </code></pre>
 
-<p class="LP">`sync()`メソッドは、通信が行われた時にやり取りされた値を生成する<code>Future[T]</code>を返す。</p>
+<p class="LP">`sync()` は、通信が値を得たときに、交換された値を生成する <code>Future[T]</code> を返す。</p>
 
-<p><code>Broker</code>は、Offerを介して値のやり取りを協調する。Brokerは通信のチャネルだ:</p>
+<p><code>Broker</code> は通信のチャネルであり、Offer を使って値の交換を協調する:</p>
 
 <pre><code>trait Broker[T] {
   def send(msg: T): Offer[Unit]
@@ -1422,14 +1446,14 @@ rpc() ensure {
 }
 </code></pre>
 
-<p class="LP">そして、二つのOfferを生成するとき、</p>
+<p class="LP">そして、二つの Offer を生成するとき、</p>
 
 <pre><code>val b: Broker[Int]
 val sendOf = b.send(1)
 val recvOf = b.recv
 </code></pre>
 
-<p class="LP"><code>sendOf</code>と<code>recvOf</code>はどちらも同期化されており、</p>
+<p class="LP"><code>sendOf</code> と <code>recvOf</code> はどちらも同期化されており、</p>
 
 <pre><code>// In process 1:
 sendOf.sync()
@@ -1438,21 +1462,21 @@ sendOf.sync()
 recvOf.sync()
 </code></pre>
 
-<p class="LP">どちらのOfferも有効になり、<code>1</code>の値がやり取りされる。</p>
+<p class="LP">両方の Offer が値を得て <code>1</code> の値が交換される。</p>
 
-<p>選択的な通信は、いくつかのOfferを<code>Offer.choose</code>で結合することにより実行される。</p>
+<p>選択的な通信は、<code>Offer.choose</code> でいくつかの Offer を結合することで行われる。</p>
 
 <pre><code>def choose[T](ofs: Offer[T]*): Offer[T]
 </code></pre>
 
-<p class="LP">は、同期化すると<code>ofs</code>のうち、最初に利用可能になった唯一つのOfferを有効とする、新しいOfferを生成する。いくつかが即座に利用可能になった場合は、有効になる`Offer`はランダムに選ばれる。</p>
+<p class="LP">は新しい Offer を生成する。これは、同期化すると、<code>ofs</code> のうち最初に利用可能になったものを唯一つ取得する。いくつかが即座に利用可能になった場合は、取得する `Offer` はランダムに選ばれる。</p>
 
-<p><code>Offer</code>オブジェクトは、一個限りのOfferをいくつも持っており、BrokerからのOfferを組み立てるために使用される。</p>
+<p><code>Offer</code> オブジェクトは、Broker から得た Offer と組み合わせて使うワンオフの Offer をたくさん持っている。</p>
 
 <pre><code>Offer.timeout(duration): Offer[Unit]
 </code></pre>
 
-<p class="LP">は、与えられた期間の後に起動するOfferだ。<code>Offer.never</code>は、決して有効にならない。また、<code>Offer.const(value)</code>は、与えられた値が直ちに有効になる。選択的な通信を用いて合成するのにも有用だ。例えば、送信操作でタイムアウトを適用するときは:</p>
+<p class="LP">は与えられた期間の後に起動する Offer だ。<code>Offer.never</code> は決して値を取得しない。一方、<code>Offer.const(value)</code> は、与えられた値を直ちに取得する。これらは、選択的な通信によって合成するのにも有用だ。例えば、送信操作にタイムアウトを適用するには:</p>
 
 <pre><code>Offer.choose(
   Offer.timeout(10.seconds),
@@ -1460,25 +1484,25 @@ recvOf.sync()
 ).sync()
 </code></pre>
 
-<p>OfferとBrokerを使う方法と、<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronousQueue</a>を比べてみたくなるかもしれないが、両者には微妙だが重要な違いがある。Offerは組み立てることができるが、SynchronousQueueのようなキューでは、とてもそんなことはできない。例えば、Brokerで表される一連のキューを考えると:</p>
+<p>Offer と Broker を使う方法と <a href="http://docs.oracle.com/javase/jp/6/api/java/util/concurrent/SynchronousQueue.html">SynchronousQueue</a> を比べてみたくなるが、両者には微妙だが重要な違いがある。Offer は、そうしたキューではとてもできないような方法で組み立てることができる。例えば、Broker で表した一連のキューを考える:</p>
 
 <pre><code>val q0 = new Broker[Int]
 val q1 = new Broker[Int]
 val q2 = new Broker[Int]
 </code></pre>
 
-<p class="LP">ここで、読み込みのための結合されたキューを作ってみると:</p>
+<p class="LP">ここで、読み込みのためのマージされたキューを作ってみる:</p>
 
 <pre><code>val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
 </code></pre>
 
-<p class="LP"><code>anyq</code>はOfferで、最初に利用可能になったキューから読み込む。ここで、<code>anyq</code>はやはり同期的であり、内部にあるキューの動作を利用できる。こうした合成は、キューを使う方法ではとても不可能だ。</p>
+<p class="LP"><code>anyq</code> は Offer で、最初に利用可能になったキューから読み込む。なお、この <code>anyq</code> は<em>やはり同期的</em>であり、内部にあるキューの動作を利用できる。こうした合成は、キューを使う方法ではとても不可能だ。</p>
 
 <h4>例: 簡単なコネクションプール</h4>
 
-<p>コネクションプールはネットワークアプリケーションでは一般的なもので、たいていは実装がとても難しい。例えば、個々のクライアントは異なるレイテンシを要求するため、多くの場合、プールからの取得にタイムアウトを持つことが望ましい。プールは、原理的には単純だ。コネクションのキューを保持し、待機クライアント(waiter)が入ってきたら要求を満たしてやる。従来の同期化プリミティブでは、典型的には二つのキューを保持する。一つはwaiterで、コネクション(connection)がない時に使われる。もう一つはconnectionで、これは待機クライアント(waiter)がない時に使われる。</p>
+<p>コネクションプールは、ネットワークアプリケーションでは一般的で、たいていは実装しにくい。例えば、個々のクライアントは異なるレイテンシを要求するため、プールからの取得にタイムアウトがあるのが多くの場合で望ましい。プールは原理的には単純だ: コネクションのキューを保持し、待機クライアント (waiter) が入ってきたら満たしてやる。従来の同期化プリミティブでは、典型的には二つのキューを使う。一つは waiters で、コネクション (connection) がない時に使われる。もう一つは connections で、これは待機クライアント (waiter) がない時に使われる。</p>
 
-<p>OfferとBrokerを使うと、これをとても自然に表現できる:</p>
+<p>Offer と Broker を使うと、これをとても自然に表現できる:</p>
 
 <pre><code>class Pool(conns: Seq[Conn]) {
   private[this] val waiters = new Broker[Conn]
@@ -1501,7 +1525,7 @@ val q2 = new Broker[Int]
 }
 </code></pre>
 
-<p><code>loop</code>は、返却されたコネクションを持つことを常にオファー(offer)し、キューが空でない時のみ送信をオファーする。永続的なキューを使うことで、推論をより単純にできる。プールに対するインタフェースもOfferを介しているから、もし呼び出し側がタイムアウトを適用したいなら、コンビネータを使うことで可能だ:</p>
+<p><code>loop</code> は、コネクションが返却された状態にすることを常にオファー (offer) すると共に、キューが空でない場合のみ送信をオファーする。永続的なキューを使うことで推論をより単純にできる。プールのインタフェースにも Offer を使っているので、呼び出し側はコンビネータを使うことでタイムアウトを適用できる:</p>
 
 <pre><code>val conn: Future[Option[Conn]] = Offer.choose(
   pool.get { conn =&gt; Some(conn) },
@@ -1509,13 +1533,13 @@ val q2 = new Broker[Int]
 ).sync()
 </code></pre>
 
-<p>タイムアウトの実装に余計な簿記は必要とされない。これは、Offerの動作によるものだ: もし<code>Offer.timeout</code>が選択されたら、もはやプールからの受信をオファーしない。つまり、プールと呼び出し側がそれぞれ、Brokerである<code>waiters</code>上で送信と受信を同時に合意することはない。</p>
+<p>タイムアウトを実装するのにこれ以上の簿記は必要ない。これは Offer の動作によるものだ: もし <code>Offer.timeout</code> が選択されたら、もはやプールからの受信をオファーしない。つまり、プールと呼び出し側が <code>waiters</code> Broker 上での送信と受信をそれぞれ同時に合意することはない。</p>
 
 <h4>例: エラトステネスの篩</h4>
 
-<p>並行プログラムを、同期的に通信する一連のシーケンシャルなプロセスとして構築するのは、多くの場合で有用だし、時としてプログラムを非常に単純化できる。OfferとBrokerは、これを単純化しかつ統一化する手段を提供する。実際、それらのアプリケーションは、人が&ldquo;古典的な&rdquo;並行性の問題だとみなすかもしれないことを乗り越える。（OfferやBrokerを用いた）並行プログラミングは、サブルーチンやクラス、モジュールと同じように、有用な<em>構造化</em>ツールだ。これは、制約充足問題(Constraint Satisfaction Problem; CSP)からのもう一つの重要なアイデアだ。</p>
+<p>並行プログラムを、同期的に通信する一連の逐次的なプロセスとして構築するのは多くの場合で有用だし、場合によってはプログラムを非常に単純化できる。Offer と Broker は、これを単純化し統一化する手段を提供する。実際、それらのアプリケーションは、人によっては”古典的な”並行性の問題として考えるかもしれないものを乗り越える。サブルーチンやクラス、モジュールと同じように、（Offer や Broker を用いた）並行プログラミングは有用な<em>構造化</em>ツールだ。これは、制約充足問題 (Constraint Satisfaction Problem; CSP) からのもう一つの重要なアイデアだ。</p>
 
-<p>この一つの例は<a href="http://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%A9%E3%83%88%E3%82%B9%E3%83%86%E3%83%8D%E3%82%B9%E3%81%AE%E7%AF%A9">エラトステネスの篩</a>で、整数ストリームに対するフィルタの連続的な適用として構造化できる。まず、整数の生成源が必要だ:</p>
+<p>これの一つの例は<a href="http://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%A9%E3%83%88%E3%82%B9%E3%83%86%E3%83%8D%E3%82%B9%E3%81%AE%E7%AF%A9">エラトステネスの篩</a>で、整数ストリームに対するフィルタの連続的な適用として構造化できる。まず、整数の生成源が必要だ:</p>
 
 <pre><code>def integers(from: Int): Offer[Int] = {
   val b = new Broker[Int]
@@ -1525,7 +1549,7 @@ val q2 = new Broker[Int]
 }
 </code></pre>
 
-<p class="LP"><code>integers(n)</code>は、<code>n</code>から始まる全ての連続した整数の単純なOfferだ。次に、フィルタが必要だ:</p>
+<p class="LP"><code>integers(n)</code> は、単に <code>n</code> から始まる全ての連続した整数の Offer だ。次に、フィルタが必要だ:</p>
 
 <pre><code>def filter(in: Offer[Int], prime: Int): Offer[Int] = {
   val b = new Broker[Int]
@@ -1543,7 +1567,7 @@ val q2 = new Broker[Int]
 }
 </code></pre>
 
-<p class="LP"><code>filter(in, p)</code>は、<code>in</code>から素数<code>p</code>の倍数を取り除くOfferを返す。最後に、篩(sieve)を定義する:</p>
+<p class="LP"><code>filter(in, p)</code> は、<code>in</code> から素数 <code>p</code> の倍数を取り除く Offer を返す。最後に、篩 (sieve) を定義する:</p>
 
 <pre><code>def sieve = {
   val b = new Broker[Int]
@@ -1556,7 +1580,7 @@ val q2 = new Broker[Int]
 }
 </code></pre>
 
-<p class="LP"><code>loop()</code>の動作は単純だ: <code>of</code>から次の素数を読み取った後、この素数を除外した<code>of</code>にフィルタを適用する。<code>loop</code>が再帰するにつれて連続した素数がフィルタされ、篩が手に入る。今や、我々は最初から10000個の素数を出力できる:</p>
+<p class="LP"><code>loop()</code> の動作は単純だ: <code>of</code> から次の素数を読み取り、この素数を除いた <code>of</code> にフィルタを適用する。<code>loop</code> が再帰するにつれて連続した素数がフィルタされ、篩が手に入る。これで、最初の 10000 個の素数を出力できる:</p>
 
 <pre><code>val primes = sieve
 0 until 10000 foreach { _ =&gt;
@@ -1564,25 +1588,25 @@ val q2 = new Broker[Int]
 }
 </code></pre>
 
-<p>このアプローチは、単純かつ直行的なコンポーネントへと構造化できることに加えて、篩をストリームとして扱える。君は、興味がある素数の集合を演繹的に計算したり、さらにモジュラリティを拡張したりする必要がない。</p>
+<p>このアプローチは、篩を単純かつ直交するコンポーネントへと構造化できるだけでなく、ストリームとして扱える: 君は、興味がある素数の集合を事前に計算する必要がなく、いっそうモジュラリティを拡張できる。</p>
 
 <p><a id="謝辞" /></p>
 
 <h2>謝辞</h2>
 
-<p>本レッスンは、Twitter社のScalaコミュニティによるものだ。私は、誠実な記録者でありたい。</p>
+<p>本レッスンは、Twitter 社の Scala コミュニティによるものだ。私は誠実な記録者でありたい。</p>
 
-<p>Blake MathenyとNick Kallen、Steve Gury、そしてRaghavendra Prabhuには、とても有益な助言と多くの優れた提案を与えてもらった。</p>
+<p>Blake Matheny と Nick Kallen、Steve Gury、そして Raghavendra Prabhu には、とても有益な助言と多くの優れた提案を与えてもらった。</p>
 
 <p><a id="謝辞-日本語版への謝辞" /></p>
 
 <h3>日本語版への謝辞</h3>
 
-<p>本ドキュメントの日本語訳は、<a href="http://github.com/okapies">@okapies</a>と<a href="https://github.com/scova0731">@scova0731</a>が担当しました。</p>
+<p>本ドキュメントの日本語訳は、<a href="http://github.com/okapies">@okapies</a> と <a href="https://github.com/scova0731">@scova0731</a> が担当しました。</p>
 
-<p>翻訳にあたっては、日本のScalaコミュニティから数多くの貢献を頂きました: <a href="http://github.com/xuwei-k">@xuwei-k</a>さん、<a href="http://github.com/kmizu">@kmizu</a>さん、<a href="http://github.com/eed3si9n">@eed3si9n</a>さん、<a href="http://github.com/akr4">@akr4</a>さん、<a href="http://github.com/yosuke-furukawa">@yosuke-furukawa</a>さん、m hanadaさん、および<a href="http://jp.scala-users.org/">日本Scalaユーザーズグループ</a>の皆さん。（以上、順不同）</p>
+<p>翻訳にあたっては、日本の Scala コミュニティから数多くの貢献を頂きました: <a href="http://github.com/xuwei-k">@xuwei-k</a> さん、<a href="http://github.com/kmizu">@kmizu</a> さん、<a href="http://github.com/eed3si9n">@eed3si9n</a> さん、<a href="http://github.com/akr4">@akr4</a> さん、<a href="http://github.com/yosuke-furukawa">@yosuke-furukawa</a> さん、m hanada さん、および<a href="http://jp.scala-users.org/">日本 Scala ユーザーズグループ</a>の皆さん。（以上、順不同）</p>
 
-<p>また、<a href="http://github.com/kmizu">@kmizu</a>さんと<a href="http://github.com/eed3si9n">@eed3si9n</a>さんには、高度に専門的な議論について貴重な助言を頂きました。</p>
+<p>また、<a href="http://github.com/kmizu">@kmizu</a> さんと<a href="http://github.com/eed3si9n">@eed3si9n</a> さんには、高度に専門的な議論について貴重な助言を頂きました。</p>
 
 <p>ありがとうございます。</p>
 
@@ -1590,10 +1614,18 @@ val q2 = new Broker[Int]
 <ol id="notes">
 
 <li id="fn1">
-<a href="http://yourkit.com">Yourkit</a>は良いプロファイラだ。 <a href="#fnref1" title="Jump back to reference">[back]</a></li>
+訳注: <a href="http://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%B3%E3%83%88%E3%83%8B%E3%83%BC%E3%83%BB%E3%83%9B%E3%83%BC%E3%82%A2">アントニー・ホーア</a>は、自身のチューリング賞受賞講演で<em>「極めて複雑に設計して”明らかな”欠陥を無くすより、非常に簡素に設計して”明らかに”欠陥が無いようにする方が遥かに難しい」</em>という趣旨の発言をしている。一方、著者は「コードから実装の意図を一目瞭然に読み取れるようにせよ」という立場であり、つまりホーアの主張とは真逆になる。 <a href="#fnref1" title="Jump back to reference">[back]</a></li>
 <li id="fn2">
+<a href="http://yourkit.com">Yourkit</a>は良いプロファイラだ。 <a href="#fnref2" title="Jump back to reference">[back]</a></li>
+<li id="fn3">
+訳注: <a href="http://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%89%E3%82%AC%E3%83%BC%E3%83%BB%E3%83%80%E3%82%A4%E3%82%AF%E3%82%B9%E3%83%88%E3%83%A9">エドガー・ダイクストラ</a>は、構造化プログラミングの提唱者。彼が執筆したエッセイ &ldquo;Go To Statement Considered Harmful&rdquo; は”GOTO有害論”の端緒として有名。 <a href="#fnref3" title="Jump back to reference">[back]</a></li>
+<li id="fn4">
 <a href="https://github.com/twitter/finagle/blob/master/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/Heap.scala#L41">Finagle&rsquo;s heap
-balancer</a>より <a href="#fnref2" title="Jump back to reference">[back]</a></li>
+balancer</a>より <a href="#fnref4" title="Jump back to reference">[back]</a></li>
+<li id="fn5">
+訳注: destructuring binding には”構造化代入”や”分配束縛”などの訳がある。詳細については<a href="https://github.com/scalajp/effectivescala/issues/4">こちらの議論</a>を参照してほしい。 <a href="#fnref5" title="Jump back to reference">[back]</a></li>
+<li id="fn6">
+訳注: &ldquo;structural typing&rdquo; を直訳すると”構造的な型付け”だが、Scalaの文脈では”構造的部分型(structural subtyping)”と同じ意味だと考えて良い。この用語の背景については<a href="https://github.com/scalajp/effectivescala/pull/1#r455268">こちらの解説</a>を参照して欲しい。 <a href="#fnref6" title="Jump back to reference">[back]</a></li>
 </ol>
 
 <center class="footer">

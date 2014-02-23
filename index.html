@@ -609,7 +609,16 @@ val map = Map(1 -&gt; &quot;one&quot;, 2 -&gt; &quot;two&quot;, 3 -&gt; &quot;th
 <p>The corollary to the above is: in your own methods and constructors, <em>receive the most generic collection
 type appropriate</em>. This typically boils down to one of the above:
 <code>Iterable</code>, <code>Seq</code>, <code>Set</code>, or <code>Map</code>. If your method needs a sequence,
-use <code>Seq[T]</code>, not <code>List[T]</code>.</p>
+use <code>Seq[T]</code>, not <code>List[T]</code>. (A word of caution: the <em>default</em>
+<code>Traversable</code>, <code>Iterable</code> and <code>Seq</code> types in scope – defined in
+<code>scala.package</code> – are the <code>scala.collection</code> versions, as opposed to
+<code>Map</code> and <code>Set</code> – defined in <code>Predef.scala</code> – which are the <code>scala.collection.immutable</code>
+versions. This means that, for example, the default <code>Seq</code> type can
+be both the immutable <em>and</em> mutable implementations. Thus, if your
+method relies on a collection parameter being immutable, and you are
+using <code>Traversable</code>, <code>Iterable</code> or <code>Seq</code>, you <em>must</em> specifically
+require/import the immutable variant, otherwise someone <em>may</em> pass
+you the mutable version.)</p>
 
 <!--
 something about buffers for construction?
@@ -755,7 +764,7 @@ most programmers.</p>
 
 <p>Futures allow the programmer to express concurrent computation in a
 declarative style, are composable, and have principled handling of
-failure. These qualities has convinced us that they are especially
+failure. These qualities have convinced us that they are especially
 well suited for use in functional programming languages, where this is
 the encouraged style.</p>
 
@@ -859,8 +868,8 @@ Async*?
 
 <h2>Control structures</h2>
 
-<p>Programs in the functional style tends to require fewer traditional
-control structure, and read better when written in the declarative
+<p>Programs in the functional style tend to require fewer traditional
+control structures, and read better when written in the declarative
 style. This typically implies breaking your logic up into several
 small methods or functions, and gluing them together with <code>match</code>
 expressions. Functional programs also tend to be more
@@ -1646,7 +1655,7 @@ is our RPC system; the kernel distributed systems components.</p>
 briefly in the <a href="#Concurrency">concurrency section</a>. They
 are the central mechanism for coordination asynchronous
 processes and are pervasive in our codebase and core to Finagle.
-Futures allow for the composition of concurrent events, and simplifies
+Futures allow for the composition of concurrent events, and simplify
 reasoning about highly concurrent operations. They also lend themselves
 to a highly efficient implementation on the JVM.</p>
 
