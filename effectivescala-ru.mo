@@ -857,8 +857,7 @@ Scala предоставляет краткий синтаксис для опр
 	  if a != b
 	} yield "%c%c".format(a, b)
 
-`flatMap` часто полезна при работе с `Option` - она позволяет
-свернуть цепочки вызовов до одного,
+`flatMap` часто бывает полезен, когда приходится иметь дело с Option - здесь он свернет цепочки Option в одну:
 
 	val host: Option[String] = ..
 	val port: Option[Int] = ..
@@ -870,14 +869,14 @@ Scala предоставляет краткий синтаксис для опр
 	    }
 	  }
 
-.LP данный пример также кратко можно написать с использованием <code>for</code>
+.LP Это можно сделать еще короче, используя `for`
 
 	val addr: Option[InetSocketAddress] = for {
 	  h <- host
 	  p <- port
 	} yield new InetSocketAddress(h, p)
 
-Использование `flatMap` в `Future` обсуждается в  
+Применение `flatMap` для `Future` обсуждается в разделе
 <a href="#Twitter's%20standard%20libraries-Futures">разделе futures</a>.
 
 ## Объектно-ориентированное программирование
