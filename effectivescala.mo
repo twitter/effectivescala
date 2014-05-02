@@ -1028,7 +1028,7 @@ methods
 	val classifier1: Classifier
 	val classifier2: Classifier
 
-	val classifier = classifier1 orElse classifier2 orElse { _ => java.util.Logging.Level.FINEST }
+	val classifier: Classifier = classifier1 orElse classifier2 orElse { case _ => java.util.Logging.Level.FINEST }
 
 
 ### Destructuring bindings
