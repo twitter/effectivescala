@@ -254,8 +254,8 @@ compatibility.
 
 ### Variance
 
-Variance arises when generics are combined with subtyping. Variance annotations define
-how subtyping of the *contained* type relate to subtyping of the
+Variance arises when generics are combined with subtyping. Variance defines
+how subtyping of the *contained* type relates to subtyping of the
 *container* type. Because Scala has declaration site variance
 annotations, authors of common libraries -- especially collections --
 must be prolific annotators. Such annotations are important for the
@@ -887,8 +887,8 @@ readily modelled with ADTs; these occur frequently in state machines.
 
 The `Option` type is a container that is either empty (`None`) or full
 (`Some(value)`). It provides a safe alternative to the use of `null`,
-and should be used instead of `null` whenever possible. It is a 
-collection (of at most one item) and is embellished with 
+and should be used instead of `null` whenever possible. Options are 
+collections (of at most one item) and are embellished with 
 collection operations -- use them!
 
 Write
