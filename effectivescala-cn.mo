@@ -902,7 +902,7 @@ Scala有很丰富的可见性修饰。使用这些可见性修饰很重要，它
 
 .LP 它对这个类的所有实例来说都是可见的（但对其子类不可见）。大多情况，你想要的是 private[this] 。
 
-     private[this] val: Int = ..
+     private[this] val x: Int = ..
 
 .LP 这个修饰限制了它只对当前特定的实例可见。Scala编译器会把private[this]翻译为一个字段访问(因为访问仅限于静态定义的类)有时可增加性能优化。
 
