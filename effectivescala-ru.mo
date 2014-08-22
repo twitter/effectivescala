@@ -1086,8 +1086,7 @@ Futures (подобны Спискам) также имеют `flatMap`; `Future
 
 Future методы обратного вызова (callback) (`respond`, `onSuccess`, `onFailure`, `ensure`) вернут новый future, который *сцеплен* со своим родителем. Этот future гарантировано будет завершен только после завершения своего родителя, что позволяет писать так:
 
-	acquireResource()
-	future onSuccess { value =>
+	acquireResource() onSuccess { value =>
 	  computeSomething(value)
 	} ensure {
 	  freeResource()

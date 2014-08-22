@@ -1071,8 +1071,7 @@ Future は、List と同様に `flatMap` を定義している。`Future[A]` が
 
 Future のコールバックメソッド (`respond`, `onSuccess`, `onFailure`, `ensure`) は、その親に*連鎖する*新たな Future を返す。この Future は、親が完了した後でのみ完了することが保証されている。このパターンを実現するには、
 
-	acquireResource()
-	future onSuccess { value =>
+	acquireResource() onSuccess { value =>
 	  computeSomething(value)
 	} ensure {
 	  freeResource()
