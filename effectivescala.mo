@@ -1463,8 +1463,7 @@ Future callback methods (`respond`, `onSuccess`, `onFailure`, `ensure`)
 return a new future that is *chained* to its parent. This future is guaranteed
 to be completed only after its parent, enabling patterns like
 
-	acquireResource()
-	future onSuccess { value =>
+	acquireResource() onSuccess { value =>
 	  computeSomething(value)
 	} ensure {
 	  freeResource()
