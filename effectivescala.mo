@@ -1232,7 +1232,7 @@ A class member marked `private`,
 	
 .LP is visible to all <em>instances</em> of that class (but not their subclasses). In most cases, you want <code>private[this]</code>.
 
-	private[this] val: Int = ...
+	private[this] val x: Int = ...
 
 .LP which limits visibility to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.
 
