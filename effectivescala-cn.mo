@@ -1025,8 +1025,7 @@ Future (类似List) 也定义了flatMap；Future[A] 定义方法flatMap的签名
 
 Future回调方法(respond, onSuccess, onFailure, ensure) 返回一个新的链到它parent的Future,。这个Future被保证只有在它parent完成后才完成，使用模式如下：
 
-     acquireResource()
-     future onSuccess { value =>
+     acquireResource() onSuccess { value =>
        computeSomething(value)
      } ensure {
        freeResource()
