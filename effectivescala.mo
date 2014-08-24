@@ -644,14 +644,17 @@ less error prone, and also reads better.
 `Future.collect` codify common patterns when operating over
 multiple futures that should be combined.
 
-*In a method which returns a future, do not throw*.  It's confusing to
-have two separate error handling mechanisms, and it's easy to
-incorrectly propagate an error when using the java exception
+*In a method which returns a future, do not throw exceptions*.  It's
+confusing to have two separate error handling mechanisms, and it's
+easy to incorrectly propagate an error when using the java exception
 mechanism--in particular, since control flow is decoupled from the
 thread, and when dealing with Futures, it's easy to refactor
 previously "correct" code that threw exceptions in the same thread to
 incorrect code that defers throwing the exception to a nonsensical
-place in a different thread.
+place in a different thread.  Note that although this rule is simple
+to follow for nonfatal exceptions, it's better to throw exceptions for
+fatals, such as internal errors (like assert or require) or VM errors
+(e.g. resource exhaustion).
 
 ### Collections
 
