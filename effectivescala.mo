@@ -254,8 +254,8 @@ compatibility.
 
 ### Variance
 
-Variance arises when generics are combined with subtyping. They define
-how subtyping of the *contained* type relate to subtyping of the
+Variance arises when generics are combined with subtyping. Variance defines
+how subtyping of the *contained* type relates to subtyping of the
 *container* type. Because Scala has declaration site variance
 annotations, authors of common libraries -- especially collections --
 must be prolific annotators. Such annotations are important for the
@@ -375,7 +375,7 @@ the reader should beware of these implications.
 Scala has a very generic, rich, powerful, and composable collections
 library; collections are high level and expose a large set of
 operations. Many collection manipulations and transformations can be
-expressed succinctly and readably, but careless application of its
+expressed succinctly and readably, but careless application of these
 features can often lead to the opposite result. Every Scala programmer
 should read the [collections design
 document](http://www.scala-lang.org/docu/files/collections-api/collections.html);
@@ -535,7 +535,7 @@ performance matters.
 ### Java Collections
 
 Use `scala.collection.JavaConverters` to interoperate with Java collections.
-These are a set of implicits that add conversion `asJava` and `asScala` conversion
+These are a set of implicits that add `asJava` and `asScala` conversion
 methods. The use of these ensures that such conversions are explicit, aiding
 the reader:
 
@@ -891,7 +891,7 @@ Use the following pattern when encoding ADTs with case classes:
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
 	
-.LP the type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
+.LP The type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
 both succinct and "obviously correct":
@@ -908,9 +908,9 @@ readily modelled with ADTs; these occur frequently in state machines.
 ### Options
 
 The `Option` type is a container that is either empty (`None`) or full
-(`Some(value)`). They provide a safe alternative to the use of `null`,
-and should be used in their stead whenever possible. They are a 
-collection (of at most one item) and they are embellished with 
+(`Some(value)`). It provides a safe alternative to the use of `null`,
+and should be used instead of null whenever possible. Options are 
+collections (of at most one item) and they are embellished with 
 collection operations -- use them!
 
 Write
@@ -1099,7 +1099,7 @@ Only use call-by-name for such control constructs, where it is obvious
 to the caller that what is being passed in is a "block" rather than
 the result of an unsuspecting computation. Only use call-by-name arguments
 in the last position of the last argument list. When using call-by-name,
-ensure that method is named so that it is obvious to the caller that 
+ensure that the method is named so that it is obvious to the caller that 
 its argument is call-by-name.
 
 When you do want a value to be computed multiple times, and especially
@@ -1107,7 +1107,7 @@ when this computation is side effecting, use explicit functions:
 
 	class SSLConnector(mkEngine: () => SSLEngine)
 	
-.LP The intent remains obvious and caller is left without surprises.
+.LP The intent remains obvious and the caller is left without surprises.
 
 ### `flatMap`
 
@@ -1254,7 +1254,7 @@ A class member marked `private`,
 	
 .LP is visible to all <em>instances</em> of that class (but not their subclasses). In most cases, you want <code>private[this]</code>.
 
-	private[this] val: Int = ...
+	private[this] val x: Int = ...
 
 .LP which limits visibility to the particular instance. The Scala compiler is also able to translate <code>private[this]</code> into a simple field access (since access is limited to the statically defined class) which can sometimes aid performance optimizations.
 
@@ -1417,8 +1417,8 @@ also be encoded: a Future can be in exactly one of 3 states: *pending*,
 into more complicated ones. The canonical example of this is function
 composition: Given functions <em>f</em> and
 <em>g</em>, the composite function <em>(g&#8728;f)(x) = g(f(x))</em> &mdash; the result
-of applying <em>x</em> to <em>f</em> first, and then the result of that
-to <em>g</em> &mdash; can be written in Scala:</p>
+of applying <em>f</em> to <em>x</em> first, and then applying <em>g</em> to the result
+of that &mdash; can be written in Scala:</p>
 
 <pre><code>val f = (i: Int) => i.toString
 val g = (s: String) => s+s+s
@@ -1485,8 +1485,7 @@ Future callback methods (`respond`, `onSuccess`, `onFailure`, `ensure`)
 return a new future that is *chained* to its parent. This future is guaranteed
 to be completed only after its parent, enabling patterns like
 
-	acquireResource()
-	future onSuccess { value =>
+	acquireResource() onSuccess { value =>
 	  computeSomething(value)
 	} ensure {
 	  freeResource()
@@ -1636,7 +1635,7 @@ The `Offer` object has a number of one-off Offers that are used to compose with 
 
 	Offer.timeout(duration): Offer[Unit]
 
-.LP Is an offer that activates after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
+.LP is an offer that activates after the given duration. <code>Offer.never</code> will never obtain, and <code>Offer.const(value)</code> obtains immediately with the given value. These are useful for composition via selective communication. For example to apply a timeout on a send operation:
 
 	Offer.choose(
 	  Offer.timeout(10.seconds),
@@ -1680,10 +1679,10 @@ Using Offer/Brokers, we can express this quite naturally:
 	  private[this] def loop(connq: Queue[Conn]) {
 	    Offer.choose(
 	      if (connq.isEmpty) Offer.never else {
-	        val (head, rest) = connq.dequeue
-	        waiters.send(head) { _ => loop(rest) }
+	        val (head, rest) = connq.dequeue()
+	        waiters.send(head) map { _ => loop(rest) }
 	      },
-	      returnConn.recv { c => loop(connq enqueue c) }
+	      returnConn.recv map { c => loop(connq.enqueue(c)) }
 	    ).sync()
 	  }
 	
@@ -1696,8 +1695,8 @@ reasoning further. The interface to the pool is also through an Offer, so if a c
 wishes to apply a timeout, they can do so through the use of combinators:
 
 	val conn: Future[Option[Conn]] = Offer.choose(
-	  pool.get { conn => Some(conn) },
-	  Offer.timeout(1.second) { _ => None }
+	  pool.get map { conn => Some(conn) },
+	  Offer.timeout(1.second) map { _ => None }
 	).sync()
 
 No extra bookkeeping was required to implement timeouts; this is due to

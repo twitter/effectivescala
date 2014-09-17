@@ -902,7 +902,7 @@ Scala有很丰富的可见性修饰。使用这些可见性修饰很重要，它
 
 .LP 它对这个类的所有实例来说都是可见的（但对其子类不可见）。大多情况，你想要的是 private[this] 。
 
-     private[this] val: Int = ..
+     private[this] val x: Int = ..
 
 .LP 这个修饰限制了它只对当前特定的实例可见。Scala编译器会把private[this]翻译为一个字段访问(因为访问仅限于静态定义的类)有时可增加性能优化。
 
@@ -1025,8 +1025,7 @@ Future (类似List) 也定义了flatMap；Future[A] 定义方法flatMap的签名
 
 Future回调方法(respond, onSuccess, onFailure, ensure) 返回一个新的链到它parent的Future,。这个Future被保证只有在它parent完成后才完成，使用模式如下：
 
-     acquireResource()
-     future onSuccess { value =>
+     acquireResource() onSuccess { value =>
        computeSomething(value)
      } ensure {
        freeResource()

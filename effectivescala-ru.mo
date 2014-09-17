@@ -955,7 +955,7 @@ Scala предоставляет синтаксический сахар для 
 	
 .LP видим для всех <em>экземпляров</em> этого класса (но не и подклассов). В большинстве случаев вам нужен <code>private[this]</code>.
 
-	private[this] val: Int = ..
+	private[this] val x: Int = ..
 
 .LP который ограничивает видимость для конкретного экземпляра.Компилятор Scala также может переводить <code>private[this]</code> в простое поле для доступа (поскольку доступ ограничен для статически определенного класса), которое иногда может помочь при оптимизации производительности.
 
@@ -1086,8 +1086,7 @@ Futures (подобны Спискам) также имеют `flatMap`; `Future
 
 Future методы обратного вызова (callback) (`respond`, `onSuccess`, `onFailure`, `ensure`) вернут новый future, который *сцеплен* со своим родителем. Этот future гарантировано будет завершен только после завершения своего родителя, что позволяет писать так:
 
-	acquireResource()
-	future onSuccess { value =>
+	acquireResource() onSuccess { value =>
 	  computeSomething(value)
 	} ensure {
 	  freeResource()
