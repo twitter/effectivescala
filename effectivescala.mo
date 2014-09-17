@@ -657,10 +657,10 @@ throwing that exception:
 	  Future.value(x/y)
 	}
 
-Fatal exceptions should not be represented by Futures. These are exceptions
+Fatal exceptions should not be represented by Futures. These exceptions
 include ones that are thrown when resources are exhausted, like
-OutOfMemoryError, and also JVM-level errors like NoSuchMethodError, which
-represent conditions under which the JVM must exit.
+OutOfMemoryError, and also JVM-level errors like NoSuchMethodError. These
+conditions are ones under which the JVM must exit.
 
 The predicates <code>scala.util.control.NonFatal</code> -- or Twitter's version
 <code>com.twitter.util.NonFatal</code> -- should be used to identify exceptions
