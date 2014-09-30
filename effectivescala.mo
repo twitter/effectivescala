@@ -644,7 +644,7 @@ less error prone, and also reads better.
 `Future.collect` codify common patterns when operating over
 multiple futures that should be combined.
 
-*In a method which returns a Future, do not throw non-fatal exceptions.*
+*Do not throw your own exceptions in methods that return Futures.*
 Futures represent both successful and failed computations. Therefore, it's
 important that errors involved in that computation are properly encapsulated in
 the returned Future. Concretely, return <code>Future.exception</code> instead of
