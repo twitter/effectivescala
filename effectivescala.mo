@@ -644,6 +644,28 @@ less error prone, and also reads better.
 `Future.collect` codify common patterns when operating over
 multiple futures that should be combined.
 
+*Do not throw your own exceptions in methods that return Futures.*
+Futures represent both successful and failed computations. Therefore, it's
+important that errors involved in that computation are properly encapsulated in
+the returned Future. Concretely, return <code>Future.exception</code> instead of
+throwing that exception:
+
+	def divide(x: Int, y: Int): Future[Result] = {
+	  if (y == 0)
+	    return Future.exception(new IllegalArgumentException("Divisor is 0"))
+
+	  Future.value(x/y)
+	}
+
+Fatal exceptions should not be represented by Futures. These exceptions
+include ones that are thrown when resources are exhausted, like
+OutOfMemoryError, and also JVM-level errors like NoSuchMethodError. These
+conditions are ones under which the JVM must exit.
+
+The predicates <code>scala.util.control.NonFatal</code> -- or Twitter's version
+<code>com.twitter.util.NonFatal</code> -- should be used to identify exceptions
+which should be returned as a Future.exception.
+
 ### Collections
 
 The subject of concurrent collections is fraught with opinions,
