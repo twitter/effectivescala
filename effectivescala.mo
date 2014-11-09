@@ -1572,7 +1572,7 @@ other situation.
 
 Concurrent systems are greatly complicated by the need to coordinate
 access to shared data and resources.
-[Actors](http://www.scala-lang.org/api/current/scala/actors/Actor.html)
+[Actors](http://doc.akka.io/api/akka/current/index.html#akka.actor.Actor)
 present one strategy of simplification: each actor is a sequential process
 that maintains its own state and resources, and data is shared by
 messaging with other actors. Sharing data requires communicating between
