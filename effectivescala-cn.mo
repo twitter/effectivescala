@@ -15,7 +15,7 @@
 
 ## 序言
 
-[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用scala写的，[我们也有一些大的库](http://github.com/twitter/)支持我们使用。虽然非常有效, Scala也是一门大的语言,经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：我们发现哪些可以高效的使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是法律，但不当的使用应该被调整。
+[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用scala写的，[我们也有一些大的库](http://github.com/twitter/)支持我们使用。虽然非常有效, Scala也是一门大的语言,经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：我们发现哪些可以高效的使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是定律，但不当的使用应该被调整。
 
 Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读的少就能更快的读，因此简洁增强了代码的清晰。然而简洁也是一把钝器(blunt tool)也可能起到相反的效果：在考虑正确性之后，也要为读者着想。
 
@@ -28,7 +28,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 * [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
 
 这是一篇“活的”文档，我们会更新它,以反映我们当前的最佳实践，但核心的思想不太可能会变： 永远重视可读性；写泛化的代码但不要在牺牲清晰度；
-利用简单的语言特性的威力，但避免晦涩难懂（尤其是类型系统）。最重要的，总要意识到你所做的取舍。一门成熟的(sophisticated)语言需要复杂的实现，复杂性又产生了复杂性：推理，语义，特性之间的交互，以及与你合作者之间的理解。因此复杂性是为成熟所交的税——你必须确保效用超过它的成本。
+利用简单的语言特性的威力，但避免晦涩难懂（尤其是类型系统）。最重要的，总要意识到你所做的取舍。一门成熟的(sophisticated)语言需要复杂的实现，复杂性又产生了复杂性：之于推理，之于语义，之于特性之间的交互，以及与你合作者之间的理解。因此复杂性是为成熟所交的税——你必须确保效用超过它的成本。
 
 玩的愉快。
 
@@ -60,17 +60,17 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <dd>用<code>typ</code>替代 <code>`type</code>`</dd>
 <dt>用active命名有副作用的操作：</dt>
 <dd><code>user.activate()</code>而非 <code>user.setActive()</code> </dd>
-<dt>对有返回值的方法用可描述的名字：</dt>
-<dd><code>src.idDefined</code> 而非<code>src.defined</code></dd>
+<dt>对有返回值的方法使用具有描述性的名字：</dt>
+<dd><code>src.isDefined</code> 而非<code>src.defined</code></dd>
 <dt>getters不采用前缀<code>get</code>：</dt>
 <dd>用get是多余的: <code>site.count</code>而非<code>site.getCount</code></dd>
-<dt>不必重复名称在已经在package或object名称封装过的：</dt>
+<dt>不必重复那些已经在package或object封装过的名称：</dt>
 <dd><pre><code>object User {
   def getUser(id: Int): Option[User]
 }</code></pre>
 <pre><code>object User {
   def get(id: Int): Option[User]
-}</code></pre>相对 <code>get</code> 方法 <code>getUser</code> 中的User是多余的，并不能提供额外的信息。
+}</code></pre>相对 <code>get</code> 方法， <code>getUser</code> 中的User是多余的，并不能提供额外的信息。
 </dd>
 </dl>
 
@@ -78,17 +78,18 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 ### Imports
 
 <dl class="rules">
-<dt>对import行按字母顺序排序：</dt>
-<dd>这对视觉上的检查很方便，对自动操作也很简单。</dd>
+<dt>对引入行按字母顺序排序：</dt>
+<dd>这样机方便了视觉上的检查，也简化了自动操作。</dd>
 <dt>当从一个包中引入多个时，用花括号：</dt>
 <dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
 <dt>当引入的超过6个，用通配符：</dt>
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />不要轻率的使用: 一些包导入了太多的名字</dd>
-<dt>当引入集合的时候，用import scala.collections.immutable(不可变集合)或scala.collections.mutable(可变集合)限定名称可变和不可变集合有两个类名.限定名称让读者很明确知道使用的是哪个变量(e.g. "<code>immutable.Map</code>")</dd>
+<dt>当引入集合的时候，用import scala.collections.immutable(不可变集合)或scala.collections.mutable(可变集合)
+<dd>可变和不可变集合有相同的名字。限定名称让读者很明确知道使用的是哪个变量(e.g. "<code>immutable.Map</code>")</dd>
 <dt>不要使用来自其它包的相对引用：</dt>
 <dd>避免<pre><code>import com.twitter
-import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twitter.concurrent</code></pre>(译注，实际上面的import不能编译通过，第二个import应该为：import twitter.concurrent
+import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twitter.concurrent</code></pre>(译注，实际上上面的import不能编译通过，第二个import应该为：import twitter.concurrent
 即import一个包实际是定义了这个包的别名。)</dd>
 <dt>将import放在文件的头部：</dt>
 <dd> 读者可以在一个地方参考所有的引用。</dd>
@@ -106,11 +107,11 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
        x * x
      }
     
-.LP 尽管它用在区分方法体的语句构成很诱人.第一种选择更少凌乱，更容易读。避免语句上的繁文缛节，除非需要阐明。</em>
+.LP 尽管第二种方式用在区分方法体的语句构成很诱人.第一种选择更加简洁，易读。避免语句上的繁文缛节，除非需要阐明。</em>
 
 ### 模式匹配
 
-每当可应用的时候，直接在函数定义的地方使用模式匹配。例如，下面的写法 match应该被折叠起来(collapse)
+尽可能直接在函数定义的地方使用模式匹配。例如，下面的写法 match应该被折叠起来(collapse)
 
      list map { item =>
        item match {
@@ -137,25 +138,25 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
       * ...
       */
      
-.LP 而非标准的ScalaDoc风格：
+.LP 而不是非标准的ScalaDoc风格：
 
      /** ServiceBuilder builds services
       * ...
       */
 
-不要诉诸于ASCII码艺术或其他可视化修饰。用文档记录APIs但不要添加不必要的注释。如果你发现你自己添加注释解释你的代码行为，先问问自己是否可以调整结构以让它明显的可以看出做了什么。相对于“it works, obviously” 更偏向于“obviously it works”
+不要诉诸于ASCII码艺术或其他可视化修饰。用文档记录APIs但不要添加不必要的注释。如果你发现你自己添加注释解释你的代码行为，先问问自己是否可以代码调整结构，从而可以明显地可以看出它做了什么。相对于“it works, obviously” 更偏向于“obviously it works”
 
 ## 类型和泛型
 
-类型系统的首要目的是检测程序错误，类型系统有效的提供了一个静态检测的有限形式，允许我们代码中明确某种类型的变量并且编译器可以验证。类型系统当然也提供了其他好处，但错误检测是他存在的理由(Raison d’Être)
+类型系统的首要目的是检测程序错误。类型系统有效的提供了一个静态检测的有限形式，允许我们代码中明确某种类型的变量并且编译器可以验证。类型系统当然也提供了其他好处，但错误检测是他存在的理由(Raison d’Être)
 
 我们使用类型系统反映这一目标，但读者需要留心：正确的使用类型可以增加清晰度，而过份聪明只会迷乱。
 
-Scala的强大类型系统是学术探索和实践共同来源(eg.[Type level programming in Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)) 。但这是一个迷人的学术话题,这些技术很少在应用和正式产品代码中使用。它们应该避免。
+Scala的强大类型系统是学术探索和实践共同来源(eg.[Type level programming in Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)) 。但这是一个迷人的学术话题,这些技术很少在应用和正式产品代码中使用。它们应该被避免。
 
 ### 返回类型注释
 
-Scala允许返回类型是可以省略的，而注释提供了很好的文档：这对public方法特别重要。而一个方法不需要对外暴露并且它的返回值类型是显而易见的，则可以直接省略。
+尽管Scala允许返回类型是可以省略的，而加上它们提供了很好的文档：这对public方法特别重要。而当一个方法不需要对外暴露，并且它的返回值类型是显而易见的时候，则可以直接省略。
 
 这对用混入(mixin)实例化对象时很重要，scala编译器为这些创造了单类。例如：
 
@@ -164,7 +165,7 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
        def getId = 123
      }
 
-.LP 上面的make不需要不需要定义返回类型为Service；编译器会创建一个加工过的类型: Object with Service{def getId:Int}. (译注:with是scala里的mixin的语法)而不必用一个显式的注释：
+.LP 上面的make不需要定义返回类型为Service；编译器会创建一个加工过的类型: Object with Service{def getId:Int}. (译注:with是scala里的mixin的语法)而不必用一个显式的注释：
 
      def make(): Service = new Service{}
 
@@ -212,7 +213,7 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
 
 ### 类型别名
 
-使用类型别名当它们提供了便捷的命名或阐明意图时，但对于自解释类型不要使用类型别名。比如
+使用类型别名当它们提供了便捷的命名或阐明意图时，但对于自解释（不言自明）的类型不要使用类型别名。比如
 
      () => Int
 
@@ -229,7 +230,7 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
        ...
      }
 
-.LP 有助于交流的目的并使得更加简短。
+.LP 是有用的，因为它表达了目的并更加简短。
 
 当使用类型别名的时候不要使用子类型化(subtyping)
 
@@ -257,7 +258,7 @@ Scala允许返回类型是可以省略的，而注释提供了很好的文档：
 
 ### 隐式转换
 
-隐式转换是类型系统里一个强大的功能，但应当谨慎的使用。它们有复杂的解决规则为难你——通过简单的词法检查——领会实际发生了什么。在下面的场景使用隐式转换是OK的：
+隐式转换是类型系统里一个强大的功能，但应当谨慎地使用。它们有复杂的解决规则， 使得通过简单的词法检查领会实际发生了什么很困难。在下面的场景使用隐式转换是OK的：
 
 * 扩展或增加一个scala风格的集合
 * 适配或扩展一个对象(pimp my library模式）（译注参见：http://www.artima.com/weblogs/viewpost.jsp?thread=179766)
@@ -273,7 +274,7 @@ variance, invariant 也翻译为 可变和不可变，（variance也翻译为“
 
 ## 集合
 
-Scala有一个非常通用，丰富，强大，可组合的集合库；集合是高阶的(high level)并暴露了一大套操作方法。很多集合的处理和转换可以被表达的简洁又可读，但粗心的用它的功能也导致相反的结果。每个scala程序员应该阅读 集合设计文档；通过它可以很好的洞察集合库，并了解设计动机。
+Scala有一个非常通用，丰富，强大，可组合的集合库；集合是高阶的(high level)并暴露了一大套操作方法。很多集合的处理和转换可以被表达的简洁又可读，但不审慎地用它们的功能也导致相反的结果。每个scala程序员应该阅读 集合设计文档；通过它可以很好地洞察集合库，并了解设计动机。
 
 总使用最简单的集合来满足你的需求
 
@@ -326,7 +327,7 @@ EOF
 .LP 这种风格从语意上分离了集合与它的实现，让集合库使用更适当的类型：你需要Map，而不是必须一个红黑树(Red-Black Tree，注：红黑树TreeMap是Map的实现者)
 此外，默认的构造函数通常使用专有的表达式，例如：Map() 将使用有3个成员的对象(专用的Map3类)来映射3个keys。
 
-上面的推论是：在你自己的方法和构造函数里，适当的接受最宽泛的集合类型。通常可以归结为一个:   Iterable, Seq, Set, 或 Map.如果你的方法需要一个 sequence，使用 Seq[T]，而不是List[T]
+上面的推论是：在你自己的方法和构造函数里，适当的接受最宽泛的集合类型。通常可以归结为Iterable, Seq, Set, 或 Map中的一个.如果你的方法需要一个 sequence，使用 Seq[T]，而不是List[T]
 
 <!--
 something about buffers for construction?
@@ -335,7 +336,7 @@ anything about streams?
 
 ### 风格
 
-函数式编程鼓励使用流水线转换将一个不可变的集合塑造为想要的结果。这常常会有非常简明的方案，但也容易迷糊读者——很难领悟作者的意图，或跟踪所有隐含的中间结果。例如，我们想要汇集不同的程序语言的投票从一组语言中(语言，票数)，按照得票的顺序显示：
+函数式编程鼓励使用流水线转换将一个不可变的集合塑造为想要的结果。这常常会有非常简明的方案，但也容易迷糊读者——很难领悟作者的意图，或跟踪所有隐含的中间结果。例如，我们想要从一组语言中汇集不同的程序语言的投票，按照得票的顺序显示(语言，票数)：
     
      val votes = Seq(("scala", 1), ("java", 4), ("scala", 10), ("scala", 1), ("python", 10))
      val orderedVotes = votes
@@ -371,7 +372,7 @@ anything about streams?
 
 在关注于低层次的细节之前,确保你使用的集合适合你。 确保你的数据结构没有不期望的渐进复杂度。各种scala集合的复杂性描述在[这儿](http://www.scala-lang.org/docu/files/collections-api/collections_40.html)。
 
-性能优化的第一条原则是理解你的应用为什么这么慢。不要使用空数据操作。在执行前分析^[[Yourkit](http://yourkit.com) 是一个很好的profiler]你的应用。关注的第一点是热循环(hot loops) 和大数据结构.过度关注优化通常是浪费精力。记住Knuth(高德纳)的格言：“过早优化是万恶之源”。
+性能优化的第一条原则是理解你的应用为什么这么慢。不要使用空数据操作。在执行前分析^[[Yourkit](http://yourkit.com) 是一个很好的profiler]你的应用。关注的第一点是热循环(hot loops) 和大数据结构。过度关注优化通常是浪费精力。记住Knuth(高德纳)的格言：“过早优化是万恶之源”。
 
 如果是需要更高性能或者空间效率的场景，通常更适合使用低级的集合。对大序列使用数组替代列表(List) (不可变Vector提供了一个指称透明的转换到数组的接口) ，并考虑使用buffers替代直接序列的构造来提高性能。
 
@@ -386,11 +387,11 @@ anything about streams?
 
 ## 并发
 
-现代服务是高度并发的—— 服务器通常是在10-100秒内并列上千个同时操作——处理隐含的复杂性是创作健壮系统软件的中心主题。
+现代服务是高度并发的—— 服务器通常是在10-100秒内并列上千个同时的操作——处理隐含的复杂性是创作健壮系统软件的中心主题。
 
 *线程提供了一种表达并发的方式：它们给你独立的，堆共享的(heap-sharing)由操作系统调度的执行上下文。然而，在java里线程的创建是昂贵的，是一种必须托管的资源，通常借助于线程池。这对程序员创造了额外的复杂，也造成高度的耦合：很难从所使用的基础资源中分离应用逻辑。
 
-这种复杂度尤其明显当创建高度分散(fan-out)的服务时： 每个输入请求导致一大批对另一层系统的请求。在这些系统中，线程池必须被托管以便根据每一层请求的比例来平衡：管理不善的线程池会渗入到另一个里(bleeds into another)。
+当创建高度分散(fan-out)的服务时这种复杂度尤其明显： 每个输入请求导致一大批对另一层系统的请求。在这些系统中，线程池必须被托管以便根据每一层请求的比例来平衡：管理不善的线程池会渗入到另一个里(bleeds into another)。
 
 一个健壮系统必须考虑超时和取消，两者都需要引入另一个“控制”线程，使问题更加复杂。注意若线程很廉价这些问题也将会被削弱：不再需要一个线程池，超时的线程将被丢弃，不再需要额外的资源管理。
 
@@ -398,11 +399,11 @@ anything about streams?
 
 ### Future
 
-使用Future管理并发。它们将并发操作从资源管理里解耦出来：例如，Finagle(译注：twitter的一个框架)以有效的方式在少量线程上实现复用(multiplexes)。Scala有一个轻量级的闭包字面语法(literal syntax)，所以Futures引入了一些语法开销，它们成为很多程序员的老习惯(second nature)
+使用Future管理并发。它们将并发操作从资源管理里解耦出来：例如，Finagle(译注：twitter的一个RFC框架)以有效的方式在少量线程上实现复用(multiplexes)。Scala有一个轻量级的闭包字面语法(literal syntax)，所以Futures引入了一些语法开销，它们成为很多程序员的老习惯(second nature)
 
-Futures允许程序员用一种声明风格，可扩充的，有处理失败原则的，来表达并发计算。这些特性使我们相信它们尤其适合在函数式变成中用，这也是鼓励使用的风格。
+Futures允许程序员用一种声明风格，可扩充的，有处理失败原则的，来表达并发计算。这些特性使我们相信它们尤其适合在函数式编程中用，这也是鼓励使用的风格。
 
-*更愿意改造future为自己创建的。Future的转换(transformations)确保失败会传播，可以通过信号取消，对于程序员来说不必考虑java内存模型的含义。甚至一个仔细的程序员会写出下面的代码，顺序的发出10次RPC请求打印结果：
+*更愿意转换（transforming）future而非自己创造*。Future的转换(transformations)确保失败会传播，可以通过信号取消，对于程序员来说不必考虑java内存模型的含义。甚至一个仔细的程序员会写出下面的代码，顺序的发出10次RPC请求打印结果：
 
      val p = new Promise[List[Result]]
      var results: List[Result] = Nil
@@ -423,7 +424,7 @@ Futures允许程序员用一种声明风格，可扩充的，有处理失败原�
        printf("Got results %s\n", results.mkString(", "))
      }
 
-程序员不得不确保RPC失败是可传播的，代码散布在控制流程中；糟糕的是，代码是错误的！ 没有声明results是volatile，我们不能确保results每次迭代会保持前一次值。Java内存模型是一个狡猾的野兽，幸好我们可以避开这些陷阱，通过用声明式风格(declarative style)：
+程序员不得不确保RPC失败是可传播的，代码散布在控制流程中；糟糕的是，代码是错误的！ 没有声明results是volatile，我们不能确保results每次迭代会保持前一次值。Java内存模型是一个狡猾的野兽，幸好我们可以通过用声明式风格(declarative style)避开这些陷阱：
 
      def collect(results: List[Result] = Nil): Future[List[Result]] =
        doRpc() flatMap { result =>
@@ -443,11 +444,11 @@ Futures允许程序员用一种声明风格，可扩充的，有处理失败原�
 
 ### 集合
 
-并发集合的主题充满着意见、微妙(subtleties)、教条、恐惧/不确定/怀疑(FUD)。在大多实际场景都不存在问题：总是先用最简单,最无聊，最标准的集合解决问题。 在你知道不能使用synchronized前不要去用一个并发集合：JVM有着复杂老练的手段来制造同步欺骗(synchronization cheap)，所以它的效率能让你惊讶。
+并发集合的主题充满着意见、微妙(subtleties)、教条、恐惧/不确定/怀疑(FUD)。在大多实际场景都不存在问题：总是先用最简单,最无聊，最标准的集合解决问题。 在你知道不能使用synchronized前不要去用一个并发集合：JVM有着复杂老练的手段来使得同步开销更小，所以它的效率能让你惊讶。
 
-如果一个不可变(immutable)集合可行，就尽可能用不可变集合——它们是指称透明的(referentially transparent)，所以它们用在并发上下文的理由是简单。不可变集合的改变通常用更新引用到当前值(一个var单元或一个AtomicReference)。必须小心正确的应用：原子型的(atomics)必须重试(retried)，变量(var类型的)必须声明为volatile以保证它们发布(published)到它们的线程。
+如果一个不可变(immutable)集合可行，就尽可能用不可变集合——它们是指称透明的(referentially transparent)，所以在并发上下文推断它们是简单的。不可变集合的改变通常用更新引用到当前值(一个var单元或一个AtomicReference)。必须小心正确的应用：原子型的(atomics)必须重试(retried)，变量(var类型的)必须声明为volatile以保证它们发布(published)到它们的线程。
 
-可变的并发集合有着复杂的语义，利用java内存模型的微妙的一面，所以在你使用前确定你理解它的含义——尤其对于发布更新(新公开方法)。同步的集合同样写起来更好：像getOrElseUpdate操作不能够被并发集合正确的实现，创建复合(composite)集合尤其容易出错。
+可变的并发集合有着复杂的语义，并利用java内存模型的微妙的一面，所以在你使用前确定你理解它的含义——尤其对于发布更新(新的公开方法)。同步的集合同样写起来更好：像getOrElseUpdate操作不能够被并发集合正确的实现，创建复合(composite)集合尤其容易出错。
 
 <!--
 
