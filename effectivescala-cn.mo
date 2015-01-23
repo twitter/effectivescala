@@ -142,7 +142,7 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
       * ServiceBuilder builds services
       * ...
       */
-     
+
 .LP 而不是非标准的ScalaDoc风格：
 
      /** ServiceBuilder builds services
@@ -159,7 +159,7 @@ import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twi
 
 Scala的强大类型系统是学术探索和实践共同来源(例如[Type level programming in Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)) 。但这是一个迷人的学术话题，这些技术很少在应用和正式产品代码中使用。它们应该被避免。
 
-### 返回类型注释
+### 返回类型注解(annotation)
 
 尽管Scala允许返回类型是可以省略的，加上它们提供了很好的文档：这对public方法特别重要。而当一个方法不需要对外暴露，并且它的返回值类型是显而易见的时候，则可以直接省略。
 
