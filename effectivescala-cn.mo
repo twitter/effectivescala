@@ -966,7 +966,7 @@ Futures已经在并发一节中简单讨论过。它是调异步处理的中心�
 
 Twitter的future是*异步*的，所以基本上任何操作(阻塞操作)——基本上任何可以suspend它的线程的执行；网络IO和磁盘IO是就是例子——必须由系统处理，它为结果提供future。Finagle为网络IO提供了这样一种系统。
 
-Futues清晰简单：它们持有一个尚未完成运算结果的 promise 。它们是一个简单的容器——一个占位符。一次计算当然可能会失败，这种状况必须被编码：一个Future可以是三种状态之一： pending, failed, completed。
+Futures清晰简单：它们持有一个尚未完成运算结果的 promise 。它们是一个简单的容器——一个占位符。一次计算当然可能会失败，这种状况必须被编码：一个Future可以是三种状态之一： pending, failed, completed。
 
 <div class="explainer">
 <h3>闲话: <em>组合(composition)</em></h3>
