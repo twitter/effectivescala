@@ -83,7 +83,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 
 <dl class="rules">
 <dt>对引入行按字母顺序排序：</dt>
-<dd>这样机方便了视觉上的检查，也简化了自动操作。</dd>
+<dd>这样既方便了视觉上的检查，也简化了自动操作。</dd>
 <dt>当从一个包中引入多个时，用花括号：</dt>
 <dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
 <dt>当引入超过6个时使用通配符：</dt>
