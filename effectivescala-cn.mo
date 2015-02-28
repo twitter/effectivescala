@@ -91,7 +91,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <br />不要轻率的使用: 一些包导入了太多的名字</dd>
 <dt>当引入集合的时候，通过用import scala.collections.immutable(不可变集合)或scala.collections.mutable(可变集合)来限定名称
 <dd>可变和不可变集合有相同的名字。限定名称让读者很明确知道使用的是哪个变量(e.g. "<code>immutable.Map</code>")</dd>
-<dd>(译注，通常也会默认immutable，而在使用mutable时显示引入)</dd>
+<dd>(译注，通常也会默认immutable，而在使用mutable时显式引入)</dd>
 <dt>不要使用来自其它包的相对引用：</dt>
 <dd>避免<pre><code>import com.twitter
 import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twitter.concurrent</code></pre>(译注，实际上上面的import不能编译通过，第二个import应该为：import twitter.concurrent
