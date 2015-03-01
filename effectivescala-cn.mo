@@ -518,7 +518,7 @@ elaborate..
 
 并不是说命令式结构没有价值。在很多例子中它们很适合于提前终止计算而非对每个可能终止的点存在一个条件分支：的确在上面的fixDown函数，如果我们已经在堆的结尾，一个return用于提前终止。
 
-Returns可以用于切断分支和建立不变量(establish invariants)。这减少了嵌套，并且容易推断后续的代码的正确性，从而帮助了读者。这尤其适用于卫语句(guard clauses)：
+Returns可以用于切断分支和建立不变量(establish invariants)。这减少了嵌套，并且容易推断后续的代码的正确性，从而帮助了读者。这尤其适用于守卫语句(guard clauses)：
 
      def compare(a: AnyRef, b: AnyRef): Int = {
        if (a eq b)
