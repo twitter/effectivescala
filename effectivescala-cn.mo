@@ -623,7 +623,7 @@ disjoint,unions特别容易的用ADTs建模；这些频繁发生在状态机上(
 
 ### Options
 
-Option类型是一个容器，空(None)或满(Some(value))二选一。它提供了使用null的另一种安全选择，应该尽可能的替代null。它是一个集合(最多只有一个元素)并用集合操所修饰，尽量用Option。
+Option类型是一个容器，空(None)或满(Some(value))二选一。它提供了使用null的另一种安全选择，应该尽可能的替代null。它是一个集合(最多只有一个元素)并用集合操作所修饰，尽量用Option。
 
 用
 
