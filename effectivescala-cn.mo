@@ -1086,7 +1086,7 @@ Locals有效的被核心库使用在非常常见的问题上——线程通过RP
 
 并发系统由于需要协调访问数据和资源而变得复杂。[Actor](http://www.scala-lang.org/api/current/scala/actors/Actor.html)提出一种简化的策略：每一个actor是一个顺序的进程(process),保持自己的状态和资源,数据通过消息的方式与其它actor共享。 共享数据需要actor之间通信。
 
-Offer/Broker 建立于Actor之上，以这三种重要的方式表现：1，通信通道(Brokers)是first class——即发送消息需要通过Brokers，而非直接到actor。2, Offer/Broker 是一种同步机制：通信会话是同步的。 这意味我们可以用 Broker做为协调机制：当进程a发送一条信息给进程b；a和b都要对系统状态达成一致。3, 最后，通信可以选择性地执行：一个进程可以提出几个不同的通信，其中的一个将被获取。
+Offer/Broker 建立于Actor之上，以这三种重要的方式表现：1，通信通道(Brokers)是first class——即发送消息需要通过Brokers，而非直接到actor。2, Offer/Broker 是一种同步机制：通信会话是同步的。 这意味我们可以用 Broker作为协调机制：当进程a发送一条信息给进程b；a和b都要对系统状态达成一致。3, 最后，通信可以选择性地执行：一个进程可以提出几个不同的通信，其中的一个将被获取。
 
 为了以一种通用的方式支持选择性通信（以及其他组合），我们需要将通信的描述和执行解耦。这正是Offer做的——它是一个持久数据用于描述一次通信；为了执行这个通信（offer执行），我们通过它的sync()方法同步
 
