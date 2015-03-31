@@ -83,7 +83,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 
 <dl class="rules">
 <dt>对引入行按字母顺序排序：</dt>
-<dd>这样机方便了视觉上的检查，也简化了自动操作。</dd>
+<dd>这样既方便了视觉上的检查，也简化了自动操作。</dd>
 <dt>当从一个包中引入多个时，用花括号：</dt>
 <dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
 <dt>当引入超过6个时使用通配符：</dt>
@@ -91,7 +91,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <br />不要轻率的使用: 一些包导入了太多的名字</dd>
 <dt>当引入集合的时候，通过用import scala.collections.immutable(不可变集合)或scala.collections.mutable(可变集合)来限定名称
 <dd>可变和不可变集合有相同的名字。限定名称让读者很明确知道使用的是哪个变量(e.g. "<code>immutable.Map</code>")</dd>
-<dd>(译注，通常也会默认immutable，而在使用mutable时显示引入)</dd>
+<dd>(译注，通常也会默认immutable，而在使用mutable时显式引入)</dd>
 <dt>不要使用来自其它包的相对引用：</dt>
 <dd>避免<pre><code>import com.twitter
 import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twitter.concurrent</code></pre>(译注，实际上上面的import不能编译通过，第二个import应该为：import twitter.concurrent
@@ -518,7 +518,7 @@ elaborate..
 
 并不是说命令式结构没有价值。在很多例子中它们很适合于提前终止计算而非对每个可能终止的点存在一个条件分支：的确在上面的fixDown函数，如果我们已经在堆的结尾，一个return用于提前终止。
 
-Returns可以用于切断分支和建立不变量(establish invariants)。这减少了嵌套，并且容易推断后续的代码的正确性，从而帮助了读者。这尤其适用于卫语句(guard clauses)：
+Returns可以用于切断分支和建立不变量(establish invariants)。这减少了嵌套，并且容易推断后续的代码的正确性，从而帮助了读者。这尤其适用于守卫语句(guard clauses)：
 
      def compare(a: AnyRef, b: AnyRef): Int = {
        if (a eq b)
@@ -623,7 +623,7 @@ disjoint,unions特别容易的用ADTs建模；这些频繁发生在状态机上(
 
 ### Options
 
-Option类型是一个容器，空(None)或满(Some(value))二选一。它提供了使用null的另一种安全选择，应该尽可能的替代null。它是一个集合(最多只有一个元素)并用集合操所修饰，尽量用Option。
+Option类型是一个容器，空(None)或满(Some(value))二选一。它提供了使用null的另一种安全选择，应该尽可能的替代null。它是一个集合(最多只有一个元素)并用集合操作所修饰，尽量用Option。
 
 用
 
@@ -843,7 +843,7 @@ flatMap——结合了map 和 flatten —— 的使用要特别小心，它有�
 
 Scala的博大很大程度上在于它的对象系统。Scala中所有的值都是对象，就这一意义而言Scala是门纯粹的语言；基本类型和组合类型没有区别。Scala也提供了mixin的特性允许更多正交地、细粒度地构造一些在编译时受益于静态类型检测的可被灵活组装的模块。
 
-mixin系统的背后动机之一是消除传统的依赖注入。这种“组件风格(component style)”编程的高潮是是[the cake pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
+mixin系统的背后动机之一是消除传统的依赖注入。这种“组件风格(component style)”编程的高潮是[the cake pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
 
 ### 依赖注入
 
@@ -1086,7 +1086,7 @@ Locals有效的被核心库使用在非常常见的问题上——线程通过RP
 
 并发系统由于需要协调访问数据和资源而变得复杂。[Actor](http://www.scala-lang.org/api/current/scala/actors/Actor.html)提出一种简化的策略：每一个actor是一个顺序的进程(process),保持自己的状态和资源,数据通过消息的方式与其它actor共享。 共享数据需要actor之间通信。
 
-Offer/Broker 建立于Actor之上，以这三种重要的方式表现：1，通信通道(Brokers)是first class——即发送消息需要通过Brokers，而非直接到actor。2, Offer/Broker 是一种同步机制：通信会话是同步的。 这意味我们可以用 Broker做为协调机制：当进程a发送一条信息给进程b；a和b都要对系统状态达成一致。3, 最后，通信可以选择性地执行：一个进程可以提出几个不同的通信，其中的一个将被获取。
+Offer/Broker 建立于Actor之上，以这三种重要的方式表现：1，通信通道(Brokers)是first class——即发送消息需要通过Brokers，而非直接到actor。2, Offer/Broker 是一种同步机制：通信会话是同步的。 这意味我们可以用 Broker作为协调机制：当进程a发送一条信息给进程b；a和b都要对系统状态达成一致。3, 最后，通信可以选择性地执行：一个进程可以提出几个不同的通信，其中的一个将被获取。
 
 为了以一种通用的方式支持选择性通信（以及其他组合），我们需要将通信的描述和执行解耦。这正是Offer做的——它是一个持久数据用于描述一次通信；为了执行这个通信（offer执行），我们通过它的sync()方法同步
 
