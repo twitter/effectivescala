@@ -68,7 +68,7 @@ And have fun.
 The specifics of code *formatting* -- so long as they are practical --
 are of little consequence. By definition style cannot be inherently
 good or bad and almost everybody differs in personal
-preference. However the *consistent* application of the same 
+preference. However the *consistent* application of the same
 formatting rules will almost always enhance
 readability. A reader already familiar with a particular style does
 not have to grasp yet another set of local conventions, or decipher
@@ -104,7 +104,7 @@ in loops. </dd>
 <dt>Use common abbreviations but eschew esoteric ones</dt>
 <dd>
 Everyone
-knows <code>ok</code>, <code>err</code> or <code>defn</code> 
+knows <code>ok</code>, <code>err</code> or <code>defn</code>
 whereas <code>sfri</code> is not so common.
 </dd>
 <dt>Don't rebind names for different uses</dt>
@@ -140,9 +140,9 @@ no more information than <code>User.get</code>.
 <dt>Use wildcards when more than six names are imported</dt>
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />Don't apply this blindly: some packages export too many names</dd>
-<dt>When using collections, qualify names by importing 
+<dt>When using collections, qualify names by importing
 <code>scala.collection.immutable</code> and/or <code>scala.collection.mutable</code></dt>
-<dd>Mutable and immutable collections have dual names. 
+<dd>Mutable and immutable collections have dual names.
 Qualifiying the names makes is obvious to the reader which variant is being used (e.g. "<code>immutable.Map</code>")</dd>
 <dt>Do not use relative imports from other packages</dt>
 <dd>Avoid <pre><code>import com.twitter
@@ -159,13 +159,13 @@ is the last expression in the list. Avoid using braces for simple
 expressions; write
 
 	def square(x: Int) = x*x
-	
+
 .LP but not
 
 	def square(x: Int) = {
 	  x * x
 	}
-	
+
 .LP even though it may be tempting to distinguish the method body syntactically. The first alternative has less clutter and is easier to read. <em>Avoid syntactical ceremony</em> unless it clarifies.
 
 ### Pattern matching
@@ -179,7 +179,7 @@ instead of
 	    case None => default
 	  }
 	}
-	
+
 .LP collapse the match
 
 	list map {
@@ -195,10 +195,10 @@ Use [ScalaDoc](https://wiki.scala-lang.org/display/SW/Scaladoc) to
 provide API documentation. Use the following style:
 
 	/**
-	 * ServiceBuilder builds services 
+	 * ServiceBuilder builds services
 	 * ...
 	 */
-	 
+
 .LP but <em>not</em> the standard ScalaDoc style:
 
 	/** ServiceBuilder builds services
@@ -301,6 +301,43 @@ is typically invalid with mutable collections. Consider
   *	show contravariance trick?
 -->
 
+Classes that can run a computation on a type A and its subtype equally should be made contravariant on that type A.
+Imagine you have a class Translator parameterized by A and B where A is the source format and B the target format.
+
+  trait Language
+	class French extends Language
+	class English extends Language
+
+	trait Format[+A <: Language]
+	class Text[A <: Language] extends Format[A]
+	class Speech[A <: Language] extends Format[A]
+	class Tweet[A <: Language] extends Text[A]
+
+	class Translator[A <: Format[Language], B <: Format[Language]] {
+		def translate(a: A): B = doSomething
+	}
+
+With this definition, you can have a Translator of type speech to text, text to speech or even text to text. For example, a text to text translator for French to English would be defined as  french2English = new Translator[Text[French], Text[English]].
+
+Consider the following FrenchTweet class that translates a tweet from French to English:
+
+	class FrenchTweet(translator: Translator[Tweet[French], Tweet[English]]) {
+		def translate = translator.translate(somethingInFrench)
+	}
+
+Since a Tweet is a subtype of Text we should be able to use the french2English translator to translate a tweet from French to English even though the Translator is defined for type Text in the class FrenchTweet. However, if you try to create an instance of the class FrenchTweet using the french2English translator, you would get a compilation error. To avoid this, we have to make the Translator class contravariant:
+
+class Translator[-A <: Format[Language], -B <: Format[Language]] {
+  def translate(a: A): B = doSomething
+}
+
+With the translator being contraviariant, you can now pass your frenchToEnglish translator when creating an instance of FrenchTweet.
+
+More generally, types are made:
+Covariant if you only get or produce an element.
+Contravariant if you only consume an element.
+Invariant if you both get and set an element.
+
 ### Type aliases
 
 Use type aliases when they provide convenient naming or clarify
@@ -326,7 +363,7 @@ purpose, but do not alias types that are self-explanatory.
 Don't use subclassing when an alias will do.
 
 	trait SocketFactory extends (SocketAddress => Socket)
-	
+
 .LP a <code>SocketFactory</code> <em>is</em> a function that produces a <code>Socket</code>. Using a type alias
 
 	type SocketFactory = SocketAddress => Socket
@@ -389,12 +426,12 @@ Always use the simplest collection that meets your needs.
 The collections library is large: in addition to an elaborate
 hierarchy -- the root of which being `Traversable[T]` -- there are
 `immutable` and `mutable` variants for most collections. Whatever
-the complexity, the following diagram contains the important 
+the complexity, the following diagram contains the important
 distinctions for both `immutable` and `mutable` hierarchies
 
 <img src="coll.png" style="margin-left: 3em;" />
 .cmd
-pic2graph -format png >coll.png <<EOF 
+pic2graph -format png >coll.png <<EOF
 boxwid=1.0
 
 .ft I
@@ -444,15 +481,15 @@ use the `Seq()` constructor, and so on:
 The corollary to the above is: in your own methods and constructors, *receive the most generic collection
 type appropriate*. This typically boils down to one of the above:
 `Iterable`, `Seq`, `Set`, or `Map`. If your method needs a sequence,
-use `Seq[T]`, not `List[T]`. (A word of caution: the *default* 
-`Traversable`, `Iterable` and `Seq` types in scope – defined in 
-`scala.package` – are the `scala.collection` versions, as opposed to 
-`Map` and `Set` – defined in `Predef.scala` – which are the `scala.collection.immutable` 
-versions. This means that, for example, the default `Seq` type can 
-be both the immutable *and* mutable implementations. Thus, if your 
-method relies on a collection parameter being immutable, and you are 
-using `Traversable`, `Iterable` or `Seq`, you *must* specifically 
-require/import the immutable variant, otherwise someone *may* pass 
+use `Seq[T]`, not `List[T]`. (A word of caution: the *default*
+`Traversable`, `Iterable` and `Seq` types in scope – defined in
+`scala.package` – are the `scala.collection` versions, as opposed to
+`Map` and `Set` – defined in `Predef.scala` – which are the `scala.collection.immutable`
+versions. This means that, for example, the default `Seq` type can
+be both the immutable *and* mutable implementations. Thus, if your
+method relies on a collection parameter being immutable, and you are
+using `Traversable`, `Iterable` or `Seq`, you *must* specifically
+require/import the immutable variant, otherwise someone *may* pass
 you the mutable version.)
 
 <!--
@@ -467,14 +504,14 @@ immutable collection to shape it to its desired result. This often
 leads to very succinct solutions, but can also be confusing to the
 reader -- it is often difficult to discern the author's intent, or keep
 track of all the intermediate results that are only implied. For example,
-let's say we wanted to aggregate votes for different programming 
+let's say we wanted to aggregate votes for different programming
 languages from a sequence of (language, num votes), showing them
 in order of most votes to least, we could write:
-	
+
 	val votes = Seq(("scala", 1), ("java", 4), ("scala", 10), ("scala", 1), ("python", 10))
 	val orderedVotes = votes
 	  .groupBy(_._1)
-	  .map { case (which, counts) => 
+	  .map { case (which, counts) =>
 	    (which, counts.foldLeft(0)(_ + _._2))
 	  }.toSeq
 	  .sortBy(_._2)
@@ -540,7 +577,7 @@ methods. The use of these ensures that such conversions are explicit, aiding
 the reader:
 
 	import scala.collection.JavaConverters._
-	
+
 	val list: java.util.List[Int] = Seq(1,2,3,4).asJava
 	val buffer: scala.collection.mutable.Buffer[Int] = list.asScala
 
@@ -564,7 +601,7 @@ have a high degree of fan-out: each incoming request results in a
 multitude of requests to yet another tier of systems. In these
 systems, thread pools must be managed so that they are balanced
 according to the ratios of requests in each tier: mismanagement of one
-thread pool bleeds into another. 
+thread pool bleeds into another.
 
 Robust systems must also consider timeouts and cancellation, both of
 which require the introduction of yet more "control" threads,
@@ -753,7 +790,7 @@ balancer](https://github.com/twitter/finagle/blob/master/finagle-core/src/main/s
 	@tailrec
 	final def fixDown(heap: Array[T], i: Int, j: Int) {
 	  if (j < i*2) return
-	
+
 	  val m = if (j == i*2 || heap(2*i) < heap(2*i+1)) 2*i else 2*i + 1
 	  if (heap(m) < heap(i)) {
 	    swap(heap, i, m)
@@ -785,11 +822,11 @@ especially useful in "guard" clauses:
 	def compare(a: AnyRef, b: AnyRef): Int = {
 	  if (a eq b)
 	    return 0
-	
+
 	  val d = System.identityHashCode(a) compare System.identityHashCode(b)
 	  if (d != 0)
 	    return d
-	    
+
 	  // slow path..
 	}
 
@@ -826,10 +863,10 @@ Note that returns can have hidden costs: when used inside of a closure,
 	seq foreach { elem =>
 	  if (elem.isLast)
 	    return
-	  
+
 	  // process...
 	}
-	
+
 .LP this is implemented in bytecode as an exception catching/throwing pair which, used in hot code, has performance implications.
 
 ### `for` loops and comprehensions
@@ -890,7 +927,7 @@ Use the following pattern when encoding ADTs with case classes:
 	sealed trait Tree[T]
 	case class Node[T](left: Tree[T], right: Tree[T]) extends Tree[T]
 	case class Leaf[T](value: T) extends Tree[T]
-	
+
 .LP The type <code>Tree[T]</code> has two constructors: <code>Node</code> and <code>Leaf</code>. Declaring the type <code>sealed</code> allows the compiler to do exhaustivity analysis since constructors cannot be added outside the source file.
 
 Together with pattern matching, such modelling results in code that is
@@ -909,8 +946,8 @@ readily modelled with ADTs; these occur frequently in state machines.
 
 The `Option` type is a container that is either empty (`None`) or full
 (`Some(value)`). It provides a safe alternative to the use of `null`,
-and should be used instead of null whenever possible. Options are 
-collections (of at most one item) and they are embellished with 
+and should be used instead of null whenever possible. Options are
+collections (of at most one item) and they are embellished with
 collection operations -- use them!
 
 Write
@@ -918,13 +955,13 @@ Write
 	var username: Option[String] = None
 	...
 	username = Some("foobar")
-	
+
 .LP instead of
 
 	var username: String = null
 	...
 	username = "foobar"
-	
+
 .LP since the former is safer: the <code>Option</code> type statically enforces that <code>username</code> must be checked for emptyness.
 
 Conditional execution on an `Option` value should be done with
@@ -951,14 +988,14 @@ pattern matching:
 .LP but if all that's missing is a default value, use <code>getOrElse</code>
 
 	operate(opt getOrElse defaultValue)
-	
+
 Do not overuse  `Option`: if there is a sensible
 default -- a [*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern) -- use that instead.
 
 `Option` also comes with a handy constructor for wrapping nullable values:
 
 	Option(getClass.getResourceAsStream("foo"))
-	
+
 .LP is an <code>Option[InputStream]</code> that assumes a value of <code>None</code> should <code>getResourceAsStream</code> return <code>null</code>.
 
 ### Pattern matching
@@ -1013,11 +1050,11 @@ Scala provides syntactical shorthand for defining a `PartialFunction`:
 	val pf: PartialFunction[Int, String] = {
 	  case i if i%2 == 0 => "even"
 	}
-	
+
 .LP and they may be composed with <code>orElse</code>
 
 	val tf: (Int => String) = pf orElse { case _ => "odd"}
-	
+
 	tf(1) == "odd"
 	tf(2) == "even"
 
@@ -1044,7 +1081,7 @@ methods
 .LP might be better expressed with a <code>PartialFunction</code>
 
 	type Classifier = PartialFunction[Throwable, java.util.Logging.Level]
-	
+
 .LP as it affords greater composability:
 
 	val classifier1: Classifier
@@ -1062,7 +1099,7 @@ tuples and case classes.
 
 	val tuple = ('a', 1)
 	val (char, digit) = tuple
-	
+
 	val tweet = Tweet("just tweeting", Time.now)
 	val Tweet(text, timestamp) = tweet
 
@@ -1099,14 +1136,14 @@ Only use call-by-name for such control constructs, where it is obvious
 to the caller that what is being passed in is a "block" rather than
 the result of an unsuspecting computation. Only use call-by-name arguments
 in the last position of the last argument list. When using call-by-name,
-ensure that the method is named so that it is obvious to the caller that 
+ensure that the method is named so that it is obvious to the caller that
 its argument is call-by-name.
 
 When you do want a value to be computed multiple times, and especially
 when this computation is side effecting, use explicit functions:
 
 	class SSLConnector(mkEngine: () => SSLEngine)
-	
+
 .LP The intent remains obvious and the caller is left without surprises.
 
 ### `flatMap`
@@ -1121,10 +1158,10 @@ is revealed by its signature; for some `Container[A]`
 .LP <code>flatMap</code> invokes the function <code>f</code> for the element(s) of the collection producing a <em>new</em> collection, (all of) which are flattened into its result. For example, to get all permutations of two character strings that aren't the same character repeated twice:
 
 	val chars = 'a' to 'z'
-	val perms = chars flatMap { a => 
-	  chars flatMap { b => 
-	    if (a != b) Seq("%c%c".format(a, b)) 
-	    else Seq() 
+	val perms = chars flatMap { a =>
+	  chars flatMap { b =>
+	    if (a != b) Seq("%c%c".format(a, b))
+	    else Seq()
 	  }
 	}
 
@@ -1141,7 +1178,7 @@ collapse chains of options down to one,
 
 	val host: Option[String] = ...
 	val port: Option[Int] = ...
-	
+
 	val addr: Option[InetSocketAddress] =
 	  host flatMap { h =>
 	    port map { p =>
@@ -1156,7 +1193,7 @@ collapse chains of options down to one,
 	  p <- port
 	} yield new InetSocketAddress(h, p)
 
-The use of `flatMap` in `Future`s is discussed in the 
+The use of `flatMap` in `Future`s is discussed in the
 <a href="#Twitter's%20standard%20libraries-Futures">futures section</a>.
 
 ## Object oriented programming
@@ -1168,7 +1205,7 @@ Scala also features mixins allowing for more orthogonal and piecemeal
 construction of modules that can be flexibly put together at compile
 time with all the benefits of static type checking.
 
-A motivation behind the mixin system was to obviate the need for 
+A motivation behind the mixin system was to obviate the need for
 traditional dependency injection. The culmination of this "component
 style" of programming is [the cake
 pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
@@ -1194,7 +1231,7 @@ Dependency injection typically makes use of traits,
 	}
 	class HosebirdStream extends TweetStream ...
 	class FileStream extends TweetStream ...
-	
+
 	class TweetCounter(stream: TweetStream) {
 	  stream.subscribe { tweet => count += 1 }
 	}
@@ -1224,7 +1261,7 @@ imagine you have an something that can do IO:
 	  def write(bytes: Array[Byte])
 	  def read(n: Int): Array[Byte]
 	}
-	
+
 .LP separate the two behaviors:
 
 	trait Reader {
@@ -1233,7 +1270,7 @@ imagine you have an something that can do IO:
 	trait Writer {
 	  def write(bytes: Array[Byte])
 	}
-	
+
 .LP and mix them together to form what was an <code>IOer</code>: <code>new Reader with Writer</code>&hellip; Interface minimalism leads to greater orthogonality and cleaner modularization.
 
 ### Visibility
@@ -1248,10 +1285,10 @@ binary compatibility of your code.
 
 #### `private[this]`
 
-A class member marked `private`, 
+A class member marked `private`,
 
 	private val x: Int = ...
-	
+
 .LP is visible to all <em>instances</em> of that class (but not their subclasses). In most cases, you want <code>private[this]</code>.
 
 	private[this] val x: Int = ...
@@ -1278,7 +1315,7 @@ It's common in Scala to create singleton class types, for example
 
 Do not use structural types in normal use. They are a convenient and
 powerful feature, but unfortunately do not have an efficient
-implementation on the JVM. However -- due to an implementation quirk -- 
+implementation on the JVM. However -- due to an implementation quirk --
 they provide a very nice shorthand for doing reflection.
 
 	val obj: AnyRef
@@ -1293,7 +1330,7 @@ for correctness. Instead, encode such errors explicitly: using
 they harness the type system to ensure that the user is properly
 considering error handling.
 
-For example, when designing a repository, the following API may 
+For example, when designing a repository, the following API may
 be tempting:
 
 	trait Repository[Key, Value] {
@@ -1376,7 +1413,7 @@ instead.
 	  def eat(other: Animal)
 	  def eatMany(animals: Seq[Animal) = animals foreach(eat(_))
 	}
-	
+
 	// But this is:
 	abstract class JavaAnimal extends Animal
 
@@ -1385,14 +1422,14 @@ instead.
 The most important standard libraries at Twitter are
 [Util](http://github.com/twitter/util) and
 [Finagle](https://github.com/twitter/finagle). Util should be
-considered an extension to the Scala and Java standard libraries, 
+considered an extension to the Scala and Java standard libraries,
 providing missing functionality or more appropriate implementations. Finagle
 is our RPC system; the kernel distributed systems components.
 
 ### Futures
 
 Futures have been <a href="#Concurrency-Futures">discussed</a>
-briefly in the <a href="#Concurrency">concurrency section</a>. They 
+briefly in the <a href="#Concurrency">concurrency section</a>. They
 are the central mechanism for coordination asynchronous
 processes and are pervasive in our codebase and core to Finagle.
 Futures allow for the composition of concurrent events, and simplify
@@ -1407,7 +1444,7 @@ Finagle provides such a system for network IO.
 
 Futures are plain and simple: they hold the *promise* for the result
 of a computation that is not yet complete. They are a simple container
--- a placeholder. A computation could fail of course, and this must 
+-- a placeholder. A computation could fail of course, and this must
 also be encoded: a Future can be in exactly one of 3 states: *pending*,
 *failed* or *completed*.
 
@@ -1423,7 +1460,7 @@ of that &mdash; can be written in Scala:</p>
 <pre><code>val f = (i: Int) => i.toString
 val g = (s: String) => s+s+s
 val h = g compose f  // : Int => String
-	
+
 scala> h(123)
 res0: java.lang.String = 123123123</code></pre>
 
@@ -1431,7 +1468,7 @@ res0: java.lang.String = 123123123</code></pre>
 </div>
 
 Futures are a type of collection -- they are a container of
-either 0 or 1 elements -- and you'll find they have standard 
+either 0 or 1 elements -- and you'll find they have standard
 collection methods (eg. `map`, `filter`, and `foreach`). Since a Future's
 value is deferred, the result of applying any of these methods
 is necessarily also deferred; in
@@ -1456,7 +1493,7 @@ Lists can be flattened;
 Futures (like Lists) also define `flatMap`; `Future[A]` defines its signature as
 
 	flatMap[B](f: A => Future[B]): Future[B]
-	
+
 .LP which is like the combination of both <code>map</code> and <code>flatten</code>, and we could implement it that way:
 
 	def flatMap[B](f: A => Future[B]): Future[B] = {
@@ -1473,8 +1510,8 @@ following way:
 
 	def getUser(id: Int): Future[User]
 	def authenticate(user: User): Future[Boolean]
-	
-	def isIdAuthed(id: Int): Future[Boolean] = 
+
+	def isIdAuthed(id: Int): Future[Boolean] =
 	  getUser(id) flatMap { user => authenticate(user) }
 
 .LP an additional benefit to this type of composition is that error handling is built-in: the future returned from <code>isAuthed(..)</code> will fail if either of <code>getUser(..)</code> or <code>authenticate(..)</code> does with no extra error handling code.
@@ -1562,7 +1599,7 @@ almost always be avoided: make sure the problem cannot be sufficiently
 solved by passing data around explicitly, even if it is somewhat
 burdensome.
 
-Locals are used effectively by core libraries for *very* common 
+Locals are used effectively by core libraries for *very* common
 concerns -- threading through RPC traces, propagating monitors,
 creating "stack traces" for future callbacks -- where any other solution
 would unduly burden the user. Locals are inappropriate in almost any
@@ -1649,13 +1686,13 @@ but they are different in subtle but important ways. Offers can be composed in w
 	val q0 = new Broker[Int]
 	val q1 = new Broker[Int]
 	val q2 = new Broker[Int]
-	
+
 .LP Now let's create a merged queue for reading:
 
 	val anyq: Offer[Int] = Offer.choose(q0.recv, q1.recv, q2.recv)
-	
+
 .LP <code>anyq</code> is an offer that will read from first available queue. Note that <code>anyq</code> is <em>still synchronous</em> &mdash; we still have the semantics of the underlying queues. Such composition is simply not possible using queues.
-	
+
 #### Example: A Simple Connection Pool
 
 Connection pools are common in network applications, and they're often
@@ -1675,7 +1712,7 @@ Using Offer/Brokers, we can express this quite naturally:
 
 	  val get: Offer[Conn] = waiters.recv
 	  def put(c: Conn) { returnConn ! c }
-	
+
 	  private[this] def loop(connq: Queue[Conn]) {
 	    Offer.choose(
 	      if (connq.isEmpty) Offer.never else {
@@ -1685,7 +1722,7 @@ Using Offer/Brokers, we can express this quite naturally:
 	      returnConn.recv map { c => loop(connq.enqueue(c)) }
 	    ).sync()
 	  }
-	
+
 	  loop(Queue.empty ++ conns)
 	}
 
@@ -1713,7 +1750,7 @@ synchronously. Offers and Brokers provide a set of tools to make this simple
 and uniform. Indeed, their application transcends what one might think
 of as "classic" concurrency problems -- concurrent programming (with
 the aid of Offer/Broker) is a useful *structuring* tool, just as
-subroutines, classes, and modules are -- another important 
+subroutines, classes, and modules are -- another important
 idea from CSP.
 
 One example of this is the [Sieve of
@@ -1741,7 +1778,7 @@ stream of integers. First, we'll need a source of integers:
 	    }
 	  }
 	  loop()
-	
+
 	  b.recv
 	}
 
