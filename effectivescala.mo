@@ -301,9 +301,42 @@ is typically invalid with mutable collections. Consider
   *	show contravariance trick?
 -->
 
-More generally, types should be made covariant when you only get or produce an element.
-Type should be made contravariant if you only consume element.
-Finally, type should be made invariant if you both get and set the element.
+Classes that can run a computation on a type A and its subtype equally should be made contravariant on that type A.
+Imagine you have a class Translator parameterized by A and B where A is the source format and B the target format.
+
+  trait Language
+	class French extends Language
+	class English extends Language
+
+	trait Format[+A <: Language]
+	class Text[A <: Language] extends Format[A]
+	class Speech[A <: Language] extends Format[A]
+	class Tweet[A <: Language] extends Text[A]
+
+	class Translator[A <: Format[Language], B <: Format[Language]] {
+		def translate(a: A): B = doSomething
+	}
+
+For example, you could have a Translator of type speech to text, or a translator of type text to speech. Now imagine if you have defined a Translator french2English parameterized like that Translator[Text[French], Text[English]].
+Imagine you have a class Tweet like the one below that takes a tweet translator from french to english.
+
+	class FrenchTweet(translator: Translator[Tweet[French], Tweet[English]]) {
+		def translate = translator.translate(somethingInFrench)
+	}
+
+A Tweet is a subtype of Text, so it is fair to assume that if you have a translator frenchToEnglish, translating any text from French to English, it should also be working for a Tweet.
+
+But if you try to create an instance of the class FrenchTweet passing your frenchToEnglish translator, you get a compilation error it's because we're trying to say that Tweet < Text but Translator[Text] < Translator[Tweet], this is why we need our translator to be contravariant.
+
+	class Translator[-A <: Format[Language], -B <: Format[Language]] {
+		def translate(a: A): B = doSomething
+	}
+
+With the translator being contraviariant, you can now pass your frenchToEnglish translator when creating an instance of FrenchTweet.
+
+More generally, types have be made covariant when you only get or produce an element.
+Type have be made contravariant if you only consume element.
+Finally, type have be made invariant if you both get and set the element.
 
 ### Type aliases
 
