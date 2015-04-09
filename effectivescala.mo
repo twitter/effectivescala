@@ -317,26 +317,26 @@ Imagine you have a class Translator parameterized by A and B where A is the sour
 		def translate(a: A): B = doSomething
 	}
 
-For example, you could have a Translator of type speech to text, or a translator of type text to speech. Now imagine if you have defined a Translator french2English parameterized like that Translator[Text[French], Text[English]].
-Imagine you have a class Tweet like the one below that takes a tweet translator from french to english.
+With this definition, you can have a Translator of type speech to text, text to speech or even text to text. For example, a text to text translator for French to English would be defined as  french2English = new Translator[Text[French], Text[English]].
+
+Consider the following FrenchTweet class that translates a tweet from French to English:
 
 	class FrenchTweet(translator: Translator[Tweet[French], Tweet[English]]) {
 		def translate = translator.translate(somethingInFrench)
 	}
 
-A Tweet is a subtype of Text, so it is fair to assume that if you have a translator frenchToEnglish, translating any text from French to English, it should also be working for a Tweet.
+Since a Tweet is a subtype of Text we should be able to use the french2English translator to translate a tweet from French to English even though the Translator is defined for type Text in the class FrenchTweet. However, if you try to create an instance of the class FrenchTweet using the french2English translator, you would get a compilation error. To avoid this, we have to make the Translator class contravariant:
 
-But if you try to create an instance of the class FrenchTweet passing your frenchToEnglish translator, you get a compilation error it's because we're trying to say that Tweet < Text but Translator[Text] < Translator[Tweet], this is why we need our translator to be contravariant.
-
-	class Translator[-A <: Format[Language], -B <: Format[Language]] {
-		def translate(a: A): B = doSomething
-	}
+class Translator[-A <: Format[Language], -B <: Format[Language]] {
+  def translate(a: A): B = doSomething
+}
 
 With the translator being contraviariant, you can now pass your frenchToEnglish translator when creating an instance of FrenchTweet.
 
-More generally, types have be made covariant when you only get or produce an element.
-Type have be made contravariant if you only consume element.
-Finally, type have be made invariant if you both get and set the element.
+More generally, types are made:
+Covariant if you only get or produce an element.
+Contravariant if you only consume an element.
+Invariant if you both get and set an element.
 
 ### Type aliases
 
