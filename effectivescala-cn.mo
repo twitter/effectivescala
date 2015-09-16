@@ -436,7 +436,7 @@ Futures允许程序员用一种可扩充的，有处理失败原则的声明风�
          if (results.length < 9)
            collect(result :: results)
          else
-           result :: results
+           Future.value(result :: results)
        }
 
      collect() onSuccess { results =>
