@@ -466,7 +466,7 @@ Futures позволяют программисту выразить парал�
 	    if (results.length < 9)
 	      collect(result :: results)
 	    else
-	      result :: results
+	      Future.value(result :: results)
 	  }
 
 	collect() onSuccess { results =>
