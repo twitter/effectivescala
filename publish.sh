@@ -22,7 +22,7 @@ out=/tmp/effectivescala.$$
 
 trap "rm -fr $out" 0 1 2
 
-GITHUB_ORG=${GITHUB_ORG:-twitter}
+GITHUB_ORG=${GITHUB_ORG:-Cloudator}
 git clone -b gh-pages git@github.com:${GITHUB_ORG}/effectivescala.git $out
 cp $* $out
 cd $out
