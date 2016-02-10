@@ -1,17 +1,12 @@
 <a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
-<h1 class="header">Effective Scala</h1>
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
+<h1 class="header">Effective Scala for Cloudator</h1>
+
+<p>This is Cloudator version of the Twitter Effective Scala best practises document. Changes have been made to fit more tightly into ways of working in Cloudator. Original document credits belong to <a href="mailto:marius@twitter.com" target="_top">Marius Eriksen, Twitter Inc. </a> (<a href="http://twitter.com/marius">@marius</a>)</p>
 
 <h2>Table of Contents</h2>
 
 .TOC
-
-
-<h2>Other languages</h2>
-<a href="index-ja.html">日本語</a>
-<a href="index-ru.html">Русский</a>
-<a href="index-cn.html">简体中文</a>
 
 
 ## Introduction
