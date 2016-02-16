@@ -122,6 +122,14 @@ whereas <code>sfri</code> is not so common.
 }</code></pre>They are redundant in use: <code>User.getUser</code> provides
 no more information than <code>User.get</code>.
 </dd>
+<dt>Don't use underscores</dt>
+<dd>Scala style guide strongly discourages using underscores. One exception is id fields in data model case classes:
+<pre><code>case class Institution(
+  _id: ObjectId,
+  eventTime:Option[DateTime]                    = None,
+  @References(event) event_id: Option[ObjectId] = None
+)</code></pre>
+</dd>
 </dl>
 
 
