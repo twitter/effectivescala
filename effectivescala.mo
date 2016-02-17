@@ -143,7 +143,7 @@ no more information than <code>User.get</code>.
 <dt>When using collections, qualify names by importing 
 <code>scala.collection.immutable</code> and/or <code>scala.collection.mutable</code></dt>
 <dd>Mutable and immutable collections have dual names. 
-Qualifiying the names makes is obvious to the reader which variant is being used (e.g. "<code>immutable.Map</code>")</dd>
+Qualifiying the names makes it obvious to the reader which variant is being used (e.g. "<code>immutable.Map</code>")</dd>
 <dt>Do not use relative imports from other packages</dt>
 <dd>Avoid <pre><code>import com.twitter
 import concurrent</code></pre> in favor of the unambiguous <pre><code>import com.twitter.concurrent</code></pre></dd>
