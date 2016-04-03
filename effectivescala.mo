@@ -1171,7 +1171,7 @@ time with all the benefits of static type checking.
 A motivation behind the mixin system was to obviate the need for 
 traditional dependency injection. The culmination of this "component
 style" of programming is [the cake
-pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
+pattern](http://jonasboner.com/real-world-scala-dependency-injection-di/).
 
 ### Dependency injection
 

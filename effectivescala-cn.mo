@@ -843,7 +843,7 @@ flatMap——结合了map 和 flatten —— 的使用要特别小心，它有�
 
 Scala的博大很大程度上在于它的对象系统。Scala中所有的值都是对象，就这一意义而言Scala是门纯粹的语言；基本类型和组合类型没有区别。Scala也提供了mixin的特性允许更多正交地、细粒度地构造一些在编译时受益于静态类型检测的可被灵活组装的模块。
 
-mixin系统的背后动机之一是消除传统的依赖注入。这种“组件风格(component style)”编程的高潮是[the cake pattern](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/).
+mixin系统的背后动机之一是消除传统的依赖注入。这种“组件风格(component style)”编程的高潮是[the cake pattern](http://jonasboner.com/real-world-scala-dependency-injection-di/).
 
 ### 依赖注入
 

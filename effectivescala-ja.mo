@@ -846,7 +846,7 @@ Scala において、`lazy` で修飾された `val` フィールド（遅延フ
 Scala の偉大さの大部分は、オブジェクトシステムによるものだ。Scala は*すべての値*がオブジェクトであるという意味で*純粋な*言語であり、プリミティブ型と複合型の間に違いはない。Scala にはミックスイン (mixin) の機能もある。ミックスインを使うと、もっと直交的かつ段階的にモジュールを組み合わせられるだけでなく、そこにコンパイル時の静的な型検査を柔軟に組み合わせて、その恩恵をすべて享受できる。
 
 ミックスインシステムの背景にある動機は、従来の依存性注入 (dependency injection) を不要にすることだ。その”コンポーネントスタイル”のプログラミングの極致こそが [Cake
-パターン](http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/)（[日本語訳](http://eed3si9n.com/ja/real-world-scala-dependency-injection-di)）だ。
+パターン](http://jonasboner.com/real-world-scala-dependency-injection-di/)（[日本語訳](http://eed3si9n.com/ja/real-world-scala-dependency-injection-di)）だ。
 
 ### 依存性注入
 
