@@ -1,0 +1,2 @@
+*.mo linguist-language=Markdown
+*.inc linguist-language=HTML
