@@ -84,9 +84,9 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <dl class="rules">
 <dt>对引入行按字母顺序排序：</dt>
 <dd>这样既方便了视觉上的检查，也简化了自动操作。</dd>
-<dt>当从一个包中引入多个时，用花括号：</dt>
+<dt>当从一个包中引入多个名字时，用花括号：</dt>
 <dd><code>import com.twitter.concurrent.{Broker, Offer}</code></dd>
-<dt>当引入超过6个时使用通配符：</dt>
+<dt>当引入超过6个名字时使用通配符：</dt>
 <dd>e.g.: <code>import com.twitter.concurrent._</code>
 <br />不要轻率的使用: 一些包导入了太多的名字</dd>
 <dt>当引入集合的时候，通过用import scala.collections.immutable(不可变集合)或scala.collections.mutable(可变集合)来限定名称
@@ -96,7 +96,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 <dd>避免<pre><code>import com.twitter
 import concurrent</code></pre> 而应该用清晰的：<pre><code>import com.twitter.concurrent</code></pre>(译注，实际上上面的import不能编译通过，第二个import应该为：import twitter.concurrent
 即import一个包实际是定义了这个包的别名。)</dd>
-<dt>将import放在文件的头部：</dt>
+<dt>将import放在文件的顶部：</dt>
 <dd> 读者可以在一个地方参考所有的引用。</dd>
 </dl>
 
