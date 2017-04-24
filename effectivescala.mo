@@ -1,17 +1,12 @@
 <a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
-<h1 class="header">Effective Scala</h1>
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
+<h1 class="header">Effective Scala for Cloudator</h1>
+
+<p>This is Cloudator version of the Twitter Effective Scala best practises document. Changes have been made to fit more tightly into ways of working in Cloudator. Original document credits belong to <a href="mailto:marius@twitter.com" target="_top">Marius Eriksen, Twitter Inc. </a> (<a href="http://twitter.com/marius">@marius</a>)</p>
 
 <h2>Table of Contents</h2>
 
 .TOC
-
-
-<h2>Other languages</h2>
-<a href="index-ja.html">日本語</a>
-<a href="index-ru.html">Русский</a>
-<a href="index-cn.html">简体中文</a>
 
 
 ## Introduction
@@ -126,6 +121,14 @@ whereas <code>sfri</code> is not so common.
   def getUser(id: Int): Option[User]
 }</code></pre>They are redundant in use: <code>User.getUser</code> provides
 no more information than <code>User.get</code>.
+</dd>
+<dt>Don't use underscores</dt>
+<dd>Scala style guide strongly discourages using underscores. One exception is id fields in data model case classes:
+<pre><code>case class Institution(
+  _id: ObjectId,
+  eventTime:Option[DateTime]                    = None,
+  @References(event) event_id: Option[ObjectId] = None
+)</code></pre>
 </dd>
 </dl>
 
