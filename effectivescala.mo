@@ -662,9 +662,8 @@ include ones that are thrown when resources are exhausted, like
 OutOfMemoryError, and also JVM-level errors like NoSuchMethodError. These
 conditions are ones under which the JVM must exit.
 
-The predicates <code>scala.util.control.NonFatal</code> -- or Twitter's version
-<code>com.twitter.util.NonFatal</code> -- should be used to identify exceptions
-which should be returned as a Future.exception.
+The predicate <code>scala.util.control.NonFatal</code> should be used to
+identify exceptions which should be returned as a Future.exception.
 
 ### Collections
 
@@ -1327,7 +1326,7 @@ code
 	  case _ => ...
 	}
 
-.LP is almost always wrong, as it would catch fatal errors that need to be propagated. Instead, use the <code>com.twitter.util.NonFatal</code> extractor to handle only nonfatal exceptions.
+.LP is almost always wrong, as it would catch fatal errors that need to be propagated. Instead, use the <code>scala.util.control.NonFatal</code> extractor to handle only nonfatal exceptions.
 
 	try {
 	  operation()
