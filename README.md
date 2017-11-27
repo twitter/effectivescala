@@ -1,8 +1,8 @@
 # Effective Scala
 
-This is the repository for the [Effective Scala](http://twitter.github.com/effectivescala/) document. 
+This is the repository for the [Effective Scala](https://twitter.github.com/effectivescala/) document. 
 
-It is "typeset" in [markdown](http://daringfireball.net/projects/markdown/) using [PEG markdown](https://github.com/jgm/peg-markdown). It also requires the [GNU Troff suite (groff)](http://www.gnu.org/software/groff/).
+It is "typeset" in [markdown](https://daringfireball.net/projects/markdown/) using [PEG markdown](https://github.com/jgm/peg-markdown). It also requires the [GNU Troff suite (groff)](https://www.gnu.org/software/groff/).
 
 ## Building
 
@@ -24,4 +24,4 @@ Please create an issue here on GitHub: https://github.com/twitter/effectivescala
 
 Copyright 2012 Twitter, Inc.
 
-Licensed under the CC-BY 3.0: http://creativecommons.org/licenses/by/3.0	
+Licensed under the CC-BY 3.0: https://creativecommons.org/licenses/by/3.0	

@@ -1,7 +1,7 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
+<a href="https://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)</address>
+<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="https://twitter.com/marius">@marius</a>)</address>
 
 <h2>Table of Contents</h2>
 
@@ -18,7 +18,7 @@
 
 [Scala][Scala] is one of the main application programming languages
 used at Twitter. Much of our infrastructure is written in Scala and
-[we have several large libraries](http://github.com/twitter/)
+[we have several large libraries](https://github.com/twitter/)
 supporting our use. While highly effective, Scala is also a large language,
 and our experiences have taught us to practice great care in its
 application. What are its pitfalls? Which features do we embrace,
@@ -46,8 +46,8 @@ it will be inferior in most ways to its original.
 This is not an introduction to Scala; we assume the reader
 is familiar with the language. Some resources for learning Scala are:
 
-* [Scala School](http://twitter.github.com/scala_school/)
-* [Learning Scala](http://www.scala-lang.org/node/1305)
+* [Scala School](https://twitter.github.com/scala_school/)
+* [Learning Scala](https://docs.scala-lang.org/)
 * [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
 
 This is a living document that will change to reflect our current
@@ -84,7 +84,7 @@ application of a carefully chosen set of formatting rules will resolve
 a great deal of ambiguity for both man and machine.
 
 We adhere to the [Scala style
-guide](http://docs.scala-lang.org/style/) plus the following rules.
+guide](https://docs.scala-lang.org/style/) plus the following rules.
 
 ### Whitespace
 
@@ -225,7 +225,7 @@ enhance clarity, being unduly clever only obfuscates.
 
 Scala's powerful type system is a common source of academic
 exploration and exercise (eg. [Type level programming in
-Scala](http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)).
+Scala](https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)).
 While a fascinating academic topic, these techniques rarely find
 useful application in production code. They are to be avoided.
 
@@ -378,7 +378,7 @@ operations. Many collection manipulations and transformations can be
 expressed succinctly and readably, but careless application of these
 features can often lead to the opposite result. Every Scala programmer
 should read the [collections design
-document](http://www.scala-lang.org/docu/files/collections-api/collections.html);
+document](https://www.scala-lang.org/docu/files/collections-api/collections.html);
 it provides great insight and motivation for Scala collections
 library.
 
@@ -515,11 +515,11 @@ Before focusing on low level details, make sure you are using a
 collection appropriate for your use. Make sure your datastructure
 doesn't have unexpected asymptotic complexity. The complexities of the
 various Scala collections are described
-[here](http://www.scala-lang.org/docu/files/collections-api/collections_40.html).
+[here](https://www.scala-lang.org/docu/files/collections-api/collections_40.html).
 
 The first rule of optimizing for performance is to understand *why*
 your application is slow. Do not operate without data;
-profile^[[Yourkit](http://yourkit.com) is a good profiler] your
+profile^[[Yourkit](https://www.yourkit.com/) is a good profiler] your
 application before proceeding. Focus first on hot loops and large data
 structures. Excessive focus on optimization is typically wasted
 effort. Remember Knuth's maxim: "Premature optimisation is the root of
@@ -952,7 +952,7 @@ pattern matching:
 	operate(opt getOrElse defaultValue)
 	
 Do not overuse  `Option`: if there is a sensible
-default -- a [*Null Object*](http://en.wikipedia.org/wiki/Null_Object_pattern) -- use that instead.
+default -- a [*Null Object*](https://en.wikipedia.org/wiki/Null_Object_pattern) -- use that instead.
 
 `Option` also comes with a handy constructor for wrapping nullable values:
 
@@ -987,7 +987,7 @@ example if you are matching case classes); instead of
 	  case other => other.species
 	}
 
-Write [custom extractors](http://www.scala-lang.org/node/112) but only with
+Write [custom extractors](https://docs.scala-lang.org/tour/extractor-objects.html) but only with
 a dual constructor (`apply`), otherwise their use may be out of place.
 
 Don't use pattern matching for conditional execution when defaults
@@ -1344,7 +1344,7 @@ style. Hotspot's generational garbage collection typically makes this
 a nonissue as short-lived garbage is effectively free in most circumstances.
 
 Before tackling GC performance issues, watch
-[this](http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter)
+[this](https://www.infoq.com/presentations/JVM-Performance-Tuning-twitter)
 presentation by Attila that illustrates some of our experiences with
 GC tuning.
 
@@ -1382,7 +1382,7 @@ instead.
 ## Twitter's standard libraries
 
 The most important standard libraries at Twitter are
-[Util](http://github.com/twitter/util) and
+[Util](https://github.com/twitter/util) and
 [Finagle](https://github.com/twitter/finagle). Util should be
 considered an extension to the Scala and Java standard libraries, 
 providing missing functionality or more appropriate implementations. Finagle
@@ -1571,7 +1571,7 @@ other situation.
 
 Concurrent systems are greatly complicated by the need to coordinate
 access to shared data and resources.
-[Actors](http://doc.akka.io/api/akka/current/index.html#akka.actor.Actor)
+[Actors](https://doc.akka.io/api/akka/current/index.html#akka.actor.Actor)
 present one strategy of simplification: each actor is a sequential process
 that maintains its own state and resources, and data is shared by
 messaging with other actors. Sharing data requires communicating between
@@ -1642,7 +1642,7 @@ The `Offer` object has a number of one-off Offers that are used to compose with 
 	).sync()
 
 It may be tempting to compare the use of Offer/Broker to
-[SynchronousQueue](http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
+[SynchronousQueue](https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html),
 but they are different in subtle but important ways. Offers can be composed in ways that such queues simply cannot. For example, consider a set of queues, represented as Brokers:
 
 	val q0 = new Broker[Int]
@@ -1716,7 +1716,7 @@ subroutines, classes, and modules are -- another important
 idea from CSP.
 
 One example of this is the [Sieve of
-Eratosthenes](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes),
+Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes),
 which can be structured as a successive application of filters to a
 stream of integers. First, we'll need a source of integers:
 
@@ -1776,6 +1776,6 @@ I've been a faithful chronicler.
 Blake Matheny, Nick Kallen, Steve Gury, and Raghavendra Prabhu
 provided much helpful guidance and many excellent suggestions.
 
-[Scala]: http://www.scala-lang.org/
-[Finagle]: http://github.com/twitter/finagle
-[Util]: http://github.com/twitter/util
+[Scala]: https://www.scala-lang.org/
+[Finagle]: https://github.com/twitter/finagle
+[Util]: https://github.com/twitter/util
