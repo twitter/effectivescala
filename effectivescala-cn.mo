@@ -1,7 +1,7 @@
 <a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by hongjiang(<a href="http://github.com/hongjiang">@hongjiang</a>), tongqing(<a href="https://github.com/tongqqiu">@tongqing</a>)] </address>
+<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by hongjiang(<a href="http://github.com/hongjiang">@hongjiang</a>), tongqing(<a href="https://github.com/tongqqiu">@tongqing</a>), songkun(<a href="https://github.com/satansk">@songkun</a>)] </address>
 
 <h2>Table of Contents</h2>
 
