@@ -52,7 +52,7 @@ is familiar with the language. Some resources for learning Scala are:
 
 This is a living document that will change to reflect our current
 "best practices," but its core ideas are unlikely to change: Always
-favor readability; write generic code but not at the expensive of
+favor readability; write generic code but not at the expense of
 clarity; take advantage of simple language features that afford great
 power but avoid the esoteric ones (especially in the type system).
 Above all, be always aware of the trade offs you make. A sophisticated
