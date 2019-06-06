@@ -1,7 +1,7 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
+<a href="https://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by hongjiang(<a href="http://github.com/hongjiang">@hongjiang</a>), tongqing(<a href="https://github.com/tongqqiu">@tongqing</a>)] </address>
+<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="https://twitter.com/marius">@marius</a>)<br /><br />[translated by hongjiang(<a href="https://github.com/hongjiang">@hongjiang</a>), tongqing(<a href="https://github.com/tongqqiu">@tongqing</a>)] </address>
 
 <h2>Table of Contents</h2>
 
@@ -15,7 +15,7 @@
 
 ## 序言
 
-[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用scala写的，[我们也有一些大的库](http://github.com/twitter/)支持我们使用。虽然非常有效, Scala也是一门大的语言,经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：哪些是我们发现的，可以高效地使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是定律，但不当的使用应该被调整。
+[Scala][Scala]是Twitter使用的主要应用编程语言之一。很多我们的基础架构都是用scala写的，[我们也有一些大的库](https://github.com/twitter/)支持我们使用。虽然非常有效, Scala也是一门大的语言,经验教会我们在实践中要非常小心。 它有什么陷阱？哪些特性我们应该拥抱，哪些应该避开？我们什么时候采用“纯函数式风格”，什么时候应该避免？换句话说：哪些是我们发现的，可以高效地使用这门语言的地方？本指南试图把我们的经验提炼成短文，提供一系列最佳实践。我们使用scala主要创建一些大容量分布式系统服务——我们的建议也偏向于此——但这里的大多建议也应该自然的适用其他系统。这不是定律，但不当的使用应该被调整。
 
 Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读的少就能更快的读，因此简洁增强了代码的清晰。然而简洁也是一把钝器(blunt tool)也可能起到相反的效果：在考虑正确性之后，也要为读者着想。
 
@@ -23,9 +23,9 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 
 这不是对Scala的一篇介绍，我们假定读者熟悉这门语言。这儿有些学习Scala的资源：
 
-* [Scala School](http://twitter.github.com/scala_school/)
-* [Learning Scala](http://www.scala-lang.org/node/1305)
-* [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
+* [Scala School](https://twitter.github.com/scala_school/)
+* [Learning Scala](https://www.scala-lang.org/node/1305)
+* [Learning Scala in Small Bites](https://matt.might.net/articles/learning-scala-in-small-bites/)
 
 这是一篇“活的”文档，我们会更新它,以反映我们当前的最佳实践，但核心的思想不太可能会变： 永远重视可读性；写泛化的代码但不要牺牲清晰度；
 利用简单的语言特性的威力，但避免晦涩难懂（尤其是类型系统）。最重要的，总要意识到你所做的取舍。一门成熟的(sophisticated)语言需要复杂的实现，复杂性又产生了复杂性：之于推理，之于语义，之于特性之间的交互，以及与你合作者之间的理解。因此复杂性是为成熟所交的税——你必须确保效用超过它的成本。
@@ -38,7 +38,7 @@ Scala提供很多工具使表达式可以很简洁。敲的少读的就少，读
 
 这对Scala来说也特别重要，因为它的语法高度的重叠。一个例子是方法调用：方法调用可以用"."后边跟圆括号，或不使用"."，后边用空格加不带圆括号(针对空元或一元方法)方式调用。此外，不同风格的方法调用揭露了它们在语法上不同的分歧(ambiguities)。当然一致的应用慎重的选择一组格式化规则，对人和机器来说都会消除大量的歧义。
 
-我们依着[Scala style guide](http://docs.scala-lang.org/style/) 增加了以下规则：
+我们依着[Scala style guide](https://docs.scala-lang.org/style/) 增加了以下规则：
 
 ### 空格
 
@@ -1240,6 +1240,6 @@ loop总是提供一个归还的连接，但只有queue非空的时候才会send�
 
 Blake Matheny, Nick Kallen, Steve Gury, 和Raghavendra Prabhu提供了很多有用的指导和许多优秀的建议。
 
-[Scala]: http://www.scala-lang.org/
-[Finagle]: http://github.com/twitter/finagle
-[Util]: http://github.com/twitter/util
+[Scala]: https://www.scala-lang.org/
+[Finagle]: https://github.com/twitter/finagle
+[Util]: https://github.com/twitter/util

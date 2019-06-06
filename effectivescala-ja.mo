@@ -1,7 +1,7 @@
-<a href="http://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
+<a href="https://github.com/twitter/effectivescala"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
 
 <h1 class="header">Effective Scala</h1>
-<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="http://twitter.com/marius">@marius</a>)<br /><br />[translated by Yuta Okamoto (<a href="http://github.com/okapies">@okapies</a>) and Satoshi Kobayashi (<a href="https://github.com/scova0731">@scova0731</a>)]</address>
+<address>Marius Eriksen, Twitter Inc.<br />marius@twitter.com (<a href="https://twitter.com/marius">@marius</a>)<br /><br />[translated by Yuta Okamoto (<a href="https://github.com/okapies">@okapies</a>) and Satoshi Kobayashi (<a href="https://github.com/scova0731">@scova0731</a>)]</address>
 
 <h2>Table of Contents</h2>
 
@@ -23,9 +23,9 @@ Scala が提供するたくさんの道具は、簡潔な表現を可能にす�
 
 これは Scala の入門ではない。本ガイドは Scala に慣れ親しんだ読者を前提としている。これから Scala を学びたい読者には以下のような教材がある:
 
-* [Scala School](http://twitter.github.com/scala_school/)
-* [Learning Scala](http://www.scala-lang.org/node/1305)
-* [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
+* [Scala School](https://twitter.github.com/scala_school/)
+* [Learning Scala](https://www.scala-lang.org/node/1305)
+* [Learning Scala in Small Bites](https://matt.might.net/articles/learning-scala-in-small-bites/)
 
 本ガイドは生きたドキュメントなので、我々の最新の”ベストプラクティス”を反映するために変更されるかもしれない。しかし、中核となるアイデアが変わることはないだろう: 可読性を常に優先せよ; 汎用的なコードを書き、しかし明瞭さを損なわないこと; シンプルな言語機能を活用せよ。シンプルさは偉大な力をもたらし、また（特に型システムにおける）難解さを回避できる。とりわけ、常にトレードオフを意識しよう。洗練された言語は複雑な実装を要求し、複雑さは複雑さを生む。推論の複雑さ、意味論の複雑さ、機能間相互作用の複雑さ、そして君の協力者への理解の複雑さを。したがって、複雑さは洗練がもたらす税金であり、効用がコストを上回っていることを常に確認すべきだ。
 
