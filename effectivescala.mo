@@ -48,7 +48,7 @@ is familiar with the language. Some resources for learning Scala are:
 
 * [Scala School](https://twitter.github.com/scala_school/)
 * [Learning Scala](https://docs.scala-lang.org/)
-* [Learning Scala in Small Bites](http://matt.might.net/articles/learning-scala-in-small-bites/)
+* [Learning Scala in Small Bites](https://matt.might.net/articles/learning-scala-in-small-bites/)
 
 This is a living document that will change to reflect our current
 "best practices," but its core ideas are unlikely to change: Always
